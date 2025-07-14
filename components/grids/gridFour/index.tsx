@@ -30,3 +30,4 @@ const GridFour = ({ products, loading }: Props) => {
 };
 
 export default GridFour;
+

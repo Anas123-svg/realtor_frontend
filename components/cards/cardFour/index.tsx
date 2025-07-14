@@ -96,6 +96,16 @@ const CardFour = ({ product }: Props) => {
             {product.location?.region.split(",").slice(1).join(", ")}
           </span>
         </p>
+        <p className="text-gray-500 flex items-center text-sm gap-1 mb-4">
+          <span className="truncate">
+            {product.reference_no}
+          </span>
+        </p>
+        <p className="text-gray-500 flex items-center text-sm gap-1 mb-4">
+          <span className="truncate">
+            {product.neighborhood || 'N/A'}
+          </span>
+        </p>
         <div className="flex gap-3 mb-4 whitespace-nowrap">
           <div className="flex items-center gap-1 bg-neutral-200 rounded-full p-3">
             <Bed strokeWidth={0.5} size={28} />

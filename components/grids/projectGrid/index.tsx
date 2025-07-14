@@ -30,3 +30,5 @@ const ProjectGrid = ({ projects, loading }: Props) => {
 };
 
 export default ProjectGrid;
+
+

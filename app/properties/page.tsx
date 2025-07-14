@@ -22,6 +22,8 @@ import { SearchFilters } from "@/types/searchTypes";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
+import GridFourS from "@/components/grids/gridFourS";
+import GridThreeS from "@/components/grids/gridThreeS";
 const Properties = () => {
   const searchParams = useSearchParams();
   const filters = useMemo(
@@ -87,12 +89,25 @@ const Properties = () => {
 
   return (
     <div className="pt-16">
-      {isLoaded && !loading ? (
-        <div className="mt-1 md:mt-2 relative">
+      <div className="container py-4 flex justify-center mb-10">
+        <SearchCard onSearchComplete={handleSearchComplete} />
+      </div>
+
+      <h1 className="py-1 text-2xl sm:text-3xl md:text-4xl text-primary text-center">
+        {filters.dealType == "Sale"
+          ? t("existingProperties")
+          : filters.dealType == "Rental"
+            ? t("rentalProperties")
+            : null}
+      </h1>
+      {/* {isLoaded && !loading ? (
+        <div className="mt-1 md:mt-2 absolute z-10 right-[7.5%] top-[46.8%] w-[42%] h-[90%]">
           <GoogleMap
             mapContainerStyle={{
               width: "100%",
-              height: "500px",
+              height: "100%",
+              borderRadius: "2%",
+
             }}
             mapTypeId="hybrid"
             center={center}
@@ -126,17 +141,9 @@ const Properties = () => {
         </div>
       ) : (
         <Skeleton className="mt-1 md:mt-2 w-full h-[500px]" />
-      )}
-      <h1 className="py-10 text-2xl sm:text-3xl md:text-4xl text-primary text-center">
-        {filters.dealType == "Sale"
-          ? t("existingProperties")
-          : filters.dealType == "Rental"
-          ? t("rentalProperties")
-          : null}
-      </h1>
-      <div className="container flex justify-center mb-10">
-        <SearchCard onSearchComplete={handleSearchComplete} />
-      </div>
+      )} */}
+
+
       <div className="container">
         <div className="hidden md:block w-full relative h-5">
           <div className="flex gap-3 absolute right-0">
@@ -149,9 +156,9 @@ const Properties = () => {
           </div>
         </div>
         {view === "grid" ? (
-          <GridFour products={properties} loading={loading} />
+          <GridFourS products={properties} loading={loading} />
         ) : (
-          <GridThree products={properties} loading={loading} />
+          <GridThreeS products={properties} loading={loading} />
         )}
       </div>
     </div>

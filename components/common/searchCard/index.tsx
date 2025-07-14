@@ -147,6 +147,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
     nearbyInfrastructure: initialFilters.nearbyInfrastructure || [],
     powerBackup: initialFilters.powerBackup || [],
     location: location,
+    sortBy: initialFilters.sortBy || "recent",
   });
 
   // Handle place selection with error handling
@@ -238,7 +239,9 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
   }, [filters, location, router, onSearchComplete]);
 
   return (
-    <div className="bg-white p-10 flex justify-between items-center w-full shadow-lg">
+    <div className="bg-white p-10 pb-6 flex justify-between items-center w-full shadow-lg">
+      {/* // <div className="bg-white border rounded-md px-4 py-10 shadow-sm w-full sticky top-10 z-20"> */}
+
       <div className="flex flex-col lg:flex-row gap-5 items-end w-full">
         <div className="w-full flex flex-col sm:flex-row gap-5 whitespace-nowrap">
           <label className="w-full">
@@ -272,11 +275,11 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 ))}
               </SelectContent>
             </Select>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
+            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
               {filters.location?.label
                 ? filters.location?.label
                 : t("selectLocation")}
-            </p>
+            </p> */}
           </label>
           <label className="w-full">
             <Select
@@ -295,18 +298,18 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 ))}
               </SelectContent>
             </Select>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
+            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
               {filters.radius
                 ? filters.radius + " " + t("miles")
                 : t("selectRadius")}
-            </p>
+            </p> */}
           </label>
         </div>
         <div className="w-full flex gap-5 flex-col sm:flex-row">
           <label className="w-full">
             <DropdownMenu>
               <DropdownMenuTrigger
-                className="w-full border-none p-0 text-left outline-none"
+                className="w-[200px] border-none p-0 text-left outline-none"
                 aria-label="Price Range"
               >
                 <div className="flex h-10 w-full items-center justify-between py-2">
@@ -352,10 +355,10 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
               {formatCurrency(filters.minPrice)} COP -{" "}
               {formatCurrency(filters.maxPrice)} COP
-            </p>
+            </p> */}
           </label>
           <label className="w-full">
             <Select
@@ -375,11 +378,11 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 <SelectItem value="4+">4+</SelectItem>
               </SelectContent>
             </Select>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
               {filters.beds.length > 0
                 ? filters.beds.join(", ")
                 : t("selectBeds")}
-            </p>
+            </p> */}
           </label>
           <label className="w-full">
             <Select
@@ -399,12 +402,30 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 <SelectItem value="4+">4+</SelectItem>
               </SelectContent>
             </Select>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
               {filters.baths.length > 0
                 ? filters.baths.join(", ")
                 : t("selectBaths")}
-            </p>
+            </p> */}
           </label>
+          <label className="w-full">
+            <Select
+              onValueChange={(val) =>
+                updateFilter("sortBy", val as SearchFilters["sortBy"])
+              }
+              value={filters.sortBy}
+            >
+              <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+                {t("sortBy")}
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recent">{t("recent")}</SelectItem>
+                <SelectItem value="priceLowToHigh">{t("priceLowToHigh")}</SelectItem>
+                <SelectItem value="priceHighToLow">{t("priceHighToLow")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </label>
+
         </div>
         <div className="flex gap-5 w-full flex-col sm:flex-row">
           <Sheet>

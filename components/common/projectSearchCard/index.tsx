@@ -97,9 +97,9 @@ const ProjectSearchCard = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-10 flex justify-between items-center w-full shadow-lg whitespace-nowrap"
+      className="bg-white mt-10 p-4 flex justify-between items-center w-full shadow-lg whitespace-nowrap"
     >
-      <div className="flex flex-col xl:flex-row gap-5 items-end w-full">
+      <div className="flex flex-col xl:flex-row gap-14 items-end w-full">
         <div className="flex flex-col sm:flex-row gap-5 items-end w-full">
           <label className="w-full">
             <Select
@@ -121,14 +121,19 @@ const ProjectSearchCard = () => {
                   </SelectItem>
                 ))}
               </SelectContent>
+
             </Select>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
-              {selectedLocation.label
-                ? selectedLocation.label
-                : t("selectLocation")}
-            </p>
+
           </label>
-          <label className="w-full">
+          <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
+            {selectedLocation.label
+              ? selectedLocation.label
+              : t("selectLocation")}
+          </p>
+
+
+
+          {/* <label className="w-full">
             <Select
               onValueChange={(e) =>
                 setFilters((prev) => ({ ...prev, radius: e }))
@@ -154,9 +159,36 @@ const ProjectSearchCard = () => {
                 ? filters.radius + " " + t("miles")
                 : t("selectRadius")}
             </p>
+          </label> */}
+
+          <label className="w-full">
+            <Select
+              onValueChange={(e) =>
+                setFilters((prev) => ({ ...prev, radius: e }))
+              }
+              disabled={
+                !selectedLocation.longitude || !selectedLocation.latitude
+              }
+              value={filters.radius}
+            >
+              <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+                {filters.radius
+                  ? `${filters.radius} ${t("miles")}`
+                  : t("Radius")}
+              </SelectTrigger>
+
+              <SelectContent>
+                {RADIUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.value + " " + t("miles")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </label>
+
         </div>
-        <label className="w-full">
+        {/* <label className="w-full">
           <DropdownMenu>
             <DropdownMenuTrigger
               className="w-full border-none p-0 text-left outline-none"
@@ -201,7 +233,56 @@ const ProjectSearchCard = () => {
             {formatCurrency(filters.minPrice)} COP -{" "}
             {formatCurrency(filters.maxPrice)} COP
           </p>
+        </label> */}
+
+        <label className="w-full">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className="w-full border-none p-0 text-left outline-none"
+              aria-label="Price Range"
+            >
+              <div className="flex h-10 w-full items-center justify-between py-2">
+                <p className="truncate text-sm text-muted-foreground">
+                  {filters.minPrice || filters.maxPrice
+                    ? `${formatCurrency(filters.minPrice)} COP - ${formatCurrency(filters.maxPrice)} COP`
+                    : t("priceRange")}
+                </p>
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </div>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent className="p-5 w-[300px]">
+              <div id="range" className="mb-4">
+                <RangeSlider
+                  min={MIN_PRICE}
+                  max={MAX_PRICE}
+                  step={500000}
+                  value={[filters.minPrice, filters.maxPrice]}
+                  onInput={handlePriceChange}
+                  aria-label="Price range slider"
+                />
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  aria-label="Minimum price"
+                  value={`${formatCurrency(filters.minPrice)} COP`}
+                  readOnly
+                  className="border border-black rounded-none w-1/2 p-2 outline-none placeholder:font-light font-light"
+                />
+                <span className="mx-2">-</span>
+                <input
+                  type="text"
+                  aria-label="Maximum price"
+                  value={`${formatCurrency(filters.maxPrice)} COP`}
+                  readOnly
+                  className="border border-black rounded-none w-1/2 p-2 outline-none placeholder:font-light font-light"
+                />
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </label>
+
         <div className="w-full flex gap-5 flex-col sm:flex-row">
           <label className="w-full">
             <Select
@@ -232,12 +313,16 @@ const ProjectSearchCard = () => {
                 </SelectItem>
               </SelectContent>
             </Select>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
-              {filters.delivery_time
-                ? t(filters.delivery_time)
-                : t("selectDeliveryTime")}
-            </p>
+
           </label>
+          {/* <p className="rounded-md border border-neutral-200 bg-white  py-2 text-neutral-500 whitespace-nowrap">
+            {filters.delivery_time
+              ? t(filters.delivery_time)
+              : t("selectDeliveryTime")}
+          </p> */}
+
+
+
           <label className="w-full">
             <Select
               onValueChange={(e) =>
@@ -263,15 +348,16 @@ const ProjectSearchCard = () => {
                 </SelectItem>
               </SelectContent>
             </Select>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
-              {filters.reason ? t(filters.reason) : t("selectTypeOfInvestment")}
-            </p>
+
           </label>
+          {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+            {filters.reason ? t(filters.reason) : t("selectTypeOfInvestment")}
+          </p> */}
         </div>
         <div className="w-full">
           <Button
             variant="primary"
-            className="text-white text-lg px-8 rounded-md w-full"
+            className="text-white text-lg px-8 rounded-md w-[80%]"
             disabled={isSubmitting}
           >
             {isSubmitting ? t("searching") : t("search")}

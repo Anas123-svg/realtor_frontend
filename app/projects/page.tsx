@@ -7,10 +7,12 @@ import { GoogleMap } from "@react-google-maps/api";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LayoutGrid, Rows3, Target } from "lucide-react";
-import ProjectGrid from "@/components/grids/projectGrid";
+// import ProjectGrid from "@/components/grids/projectGrid";
 import ProjectGridTwo from "@/components/grids/projectGridTwo";
 import ProjectSearchCard from "@/components/common/projectSearchCard";
 import { useTranslation } from "react-i18next";
+import ProjectGrids from "@/components/grids/projGridScr";
+import ProjectGridTwoS from "@/components/grids/projGridtwoS";
 const Projects = () => {
   const isLoaded = useGoogleMapsStore((state) => state.isLoaded);
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,7 @@ const Projects = () => {
 
   return (
     <div className="pt-16">
-      {isLoaded && !loading ? (
+      {/* {isLoaded && !loading ? (
         <div className="mt-1 md:mt-2 relative">
           <GoogleMap
             mapContainerStyle={{
@@ -84,13 +86,15 @@ const Projects = () => {
         </div>
       ) : (
         <Skeleton className="mt-1 md:mt-2 w-full h-[500px]" />
-      )}
-      <h1 className="py-10 text-2xl sm:text-3xl md:text-4xl text-primary text-center">
-        {t("newDevelopments")}
-      </h1>
+      )} */}
+
       <div className="container flex justify-center mb-10">
         <ProjectSearchCard />
       </div>
+      <h1 className="py-4 text-2xl sm:text-3xl md:text-4xl text-primary text-center">
+        {t("newDevelopments")}
+      </h1>
+
       <div className="container">
         <div className="hidden md:block w-full relative h-5">
           <div className="flex gap-3 absolute right-0">
@@ -103,9 +107,9 @@ const Projects = () => {
           </div>
         </div>
         {view === "grid" ? (
-          <ProjectGrid projects={projects} loading={loading} />
+          <ProjectGrids projects={projects} loading={loading} />
         ) : (
-          <ProjectGridTwo projects={projects} loading={loading} />
+          <ProjectGridTwoS projects={projects} loading={loading} />
         )}
       </div>
     </div>

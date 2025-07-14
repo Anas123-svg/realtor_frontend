@@ -65,11 +65,10 @@ const Slider2 = ({ photos }: { photos: string[] }) => {
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`w-3 h-1 rounded-full transition-all duration-300 ${
-                    activeIndex === index
+                  className={`w-3 h-1 rounded-full transition-all duration-300 ${activeIndex === index
                       ? "bg-secondary w-6"
                       : "bg-white hover:bg-secondary/70"
-                  }`}
+                    }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}

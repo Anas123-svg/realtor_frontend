@@ -50,10 +50,13 @@ export interface SearchFilters {
   cooling: Array<(typeof COOLING_TYPES)[number]>;
   nearbyInfrastructure: Array<(typeof NEARBY_INFRASTRUCTURE)[number]>;
   powerBackup: Array<(typeof POWER_BACKUP)[number]>;
+  sortBy?: "recent" | "lowestprice" | "highestprice";
+
 }
 
 export interface SearchCardProps {
   dealType?: string;
   condition?: string;
   onSearchComplete?: (filters: SearchFilters) => void;
+  sortBy?: SearchFilters["sortBy"];
 }
