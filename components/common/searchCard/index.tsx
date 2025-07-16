@@ -239,7 +239,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
   }, [filters, location, router, onSearchComplete]);
 
   return (
-    <div className="bg-white p-10 pb-6 flex justify-between items-center w-full shadow-lg">
+    <div className="bg-white px-4 py-3 border rounded-md  flex justify-between items-center w-full shadow-lg sticky top-10 z-20">
       {/* // <div className="bg-white border rounded-md px-4 py-10 shadow-sm w-full sticky top-10 z-20"> */}
 
       <div className="flex flex-col lg:flex-row gap-5 items-end w-full">

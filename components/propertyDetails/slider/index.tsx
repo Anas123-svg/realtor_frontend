@@ -252,7 +252,7 @@
 
 "use client";
 import React, { useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Camera, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const Slider = ({ property }: { property: Property }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -286,19 +286,38 @@ const Slider = ({ property }: { property: Property }) => {
             onClick={() => openLightbox(0)}
             className="w-full h-full object-cover rounded-[2px] cursor-pointer"
           />
+
         </div>
 
         {/* Right 2x2 grid */}
+        {/* Right 2x2 grid */}
         <div className="w-full lg:w-1/2 grid grid-cols-2 grid-rows-2 gap-0 h-full">
           {images.slice(1, 5).map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              alt={`Thumb ${i + 1}`}
-              className="w-full h-full object-cover rounded-[2px] border-2 transition-all duration-300"
-            />
+            <div key={i} className="relative w-full h-full">
+              <img
+                src={img}
+                alt={`Thumb ${i + 1}`}
+                className="w-full h-full object-cover rounded-[2px] border-2 transition-all duration-300"
+              />
+
+              {/* Camera icon only on last (4th) image */}
+              {i === 3 && (
+                <button
+                  onClick={() => openLightbox(0)}
+                  className="absolute bottom-4 left-10 bg-black/50 px-6 py-2 rounded-full flex items-center gap-1 text-xs font-medium shadow hover:bg-black transition"
+                >
+                  <Camera size={14} className="text-white" />
+                  <span className="text-white">{images.length} Photos</span>
+                </button>
+              )}
+            </div>
           ))}
         </div>
+
+
+
+
+
       </div>
 
       {/* Lightbox Modal (only from image[0]) */}

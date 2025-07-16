@@ -89,7 +89,7 @@ const Properties = () => {
 
   return (
     <div className="pt-16">
-      <div className="container py-4 flex justify-center mb-10">
+      <div className="container mt-[2.2%] py-2 flex justify-center mb-10">
         <SearchCard onSearchComplete={handleSearchComplete} />
       </div>
 

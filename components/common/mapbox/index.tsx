@@ -17,6 +17,8 @@ const MapBox = () => {
 
     return (
         <div className="relative w-full h-full rounded-[10px] overflow-hidden shadow">
+            {/* // <div className="relative w-full min-h-[300px] lg:min-h-full rounded-[10px] overflow-hidden shadow"> */}
+
             <GoogleMap
                 mapContainerStyle={{
                     width: "100%",
