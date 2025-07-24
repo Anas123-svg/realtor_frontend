@@ -30,37 +30,100 @@ export const SECURITY_FEATURES = [
   "None",
 ];
 
-export const AMENITIES = [
-  "Adult swimming pool",
-  "Kids' swimming pool",
-  "Lap pool",
-  "BBQ area",
-  "Jacuzzi",
-  "Lounge bar",
-  "Solarium",
-  "Bar/restaurant area",
-  "Staff service area",
-  "Administration office",
-  "Coworking space",
-  "Beach club",
-  "Event hall",
-  "Gym",
-  "Multi-purpose exercise room",
-  "Jogging trail",
-  "Bicycle trail",
-  "Kids' playroom",
-  "Multi-sports court",
-  "Game room",
-  "Reception area",
-  "Mini-market zone",
-  "Mini-theater",
-  "Spa",
-  "Massage room",
-  "Recycling area",
-  "Communal parking",
-  "Elevators",
-  "None",
-];
+
+
+
+export const AMENITIES = {
+  "Pools & Water Features": [
+    "Adult swimming pool",
+    "Kids' swimming pool",
+    "Lap pool",
+    "Jacuzzi",
+    "Solarium"
+  ],
+  "Social & Entertainment": [
+    "BBQ area",
+    "Lounge bar",
+    "Bar/restaurant area",
+    "Event hall",
+    "Beach club",
+    "Mini-theater",
+    "Game room"
+  ],
+  "Health & Wellness": [
+    "Gym",
+    "Multi-purpose exercise room",
+    "Spa",
+    "Massage room"
+  ],
+  "Sports & Outdoor": [
+    "Jogging trail",
+    "Bicycle trail",
+    "Kids' playroom",
+    "Multi-sports court",
+    "Squash court",
+    "Paddle court",
+    "Tennis court",
+    "Football pitch",
+    "Mini golf",
+    "Bowling"
+  ],
+  "Business & Services": [
+    "Coworking space",
+    "Staff service area",
+    "Administration office",
+    "Reception area",
+    "Mini-market zone"
+  ],
+  "Security & Sustainability": [
+    "Recycling area",
+    "Communal parking",
+    "Elevators",
+    "Gated community",
+    "Security guard",
+    "Alarm system"
+  ]
+};
+
+
+
+
+
+
+
+
+
+// export const AMENITIES = [
+//   "Adult swimming pool",
+//   "Kids' swimming pool",
+//   "Lap pool",
+//   "BBQ area",
+//   "Jacuzzi",
+//   "Lounge bar",
+//   "Solarium",
+//   "Bar/restaurant area",
+//   "Staff service area",
+//   "Administration office",
+//   "Coworking space",
+//   "Beach club",
+//   "Event hall",
+//   "Gym",
+//   "Multi-purpose exercise room",
+//   "Jogging trail",
+//   "Bicycle trail",
+//   "Kids' playroom",
+//   "Multi-sports court",
+//   "Game room",
+//   "Reception area",
+//   "Mini-market zone",
+//   "Mini-theater",
+//   "Spa",
+//   "Massage room",
+//   "Recycling area",
+//   "Communal parking",
+//   "Elevators",
+//   "None",
+// ];
 
 export const INTERNET_TYPES = ["Fiber", "Cable", "DSL", "None"];
 
@@ -98,9 +161,38 @@ export const PROPERTY_STATUS = [
 
 export const INVESTMENT_POTENTIAL = ["High", "Medium", "Low", "None"];
 
+
+
+export const PROJECT_STATU = [
+  "Pre-construction",
+  "Under construction",
+  "Near completion",
+  "Completed"
+];
+
+export const HOUSING_TYPE = [
+  "Residential",
+  "Tourism",
+  "Mixed"
+];
+
+export const WATER_HEATER = [
+  "Disponible (Available)",
+  "No disponible",
+  "Eléctrico",
+  "Gas"
+];
+
+export const COLLING_SYS = [
+  "Aire acondicionado central",
+  "Aire acondicionado mini split",
+  "Ninguno",
+];
+
 export const PROJECT_TYPE = [
   "House",
   "Beach House",
+  "Mixed Use",
   "Condo",
   "Apartment",
   "Studio Apartment",
@@ -122,6 +214,9 @@ export const NEIGHBORHOOD = [
   "Mountain View",
   "None",
 ];
+
+
+
 
 export const COMMUNITY_FEATURES = ["Gym", "Swimming Pool", "Parking", "None"];
 

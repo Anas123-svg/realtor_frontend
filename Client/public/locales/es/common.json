@@ -6,11 +6,9 @@
   "navSellRent": "Venda o alquile su propiedad",
   "navRentals": "Alquileres",
   "navContact": "Contáctenos",
-
   "footerQuickLinks": "Enlaces rápidos",
   "footerSocialMedia": "Redes sociales",
   "footerCopyRight": "Realtor Caribe. Todos los derechos reservados",
-
   "heroText": "La <span class='text-secondary2'>Solución</span> para Encontrar<br />Tu Casa Ideal está <span class='text-secondary2 relative inline-block'>Aquí <img src='{{lineSrc}}' alt='Decoración subrayada' class='absolute left-0 top-full w-full mt-1' /></span>",
   "heroButton": "Ver Esta Propiedad",
   "propertyType": "Tipo de propiedad",
@@ -128,7 +126,6 @@
   "residentialRental": "Alquiler residencial",
   "searchProperty": "Buscar Propiedades",
   "searching": "Buscando...",
-
   "deliveryTime": "Tiempo de entrega",
   "selectDeliveryTime": "Seleccionar",
   "Immediate": "Inmediato",
@@ -144,14 +141,12 @@
   "Personal Use": "Uso personal",
   "Tourist Rental": "Alquiler turístico",
   "Long-term Rental": "Alquiler a largo plazo",
-
   "mostViewed": "Los más vistos",
   "mostViewedSubtitle": "Ofrecemos una amplia selección de las más nuevas propiedades listas para que las explore.",
   "newDevelopments": "Nuevos desarrollos",
   "usedProperties": "Propiedades existentes",
   "rentals": "Alquileres",
   "allProperties": "Todas las propiedades",
-
   "heroAboutTitle": "Tu Socio de Confianza en Bienes Raíces en el Caribe",
   "heroAboutText": "En Realtor Caribe, nos especializamos en hacer realidad tus sueños inmobiliarios. Ofrecemos una amplia gama de servicios, incluyendo la venta de casas existentes, nuevos proyectos de vivienda, casas de playa, apartamentos, estudios, propiedades comerciales, terrenos y condominios. Nuestros servicios integrales también incluyen ayudarte a alquilar propiedades para propósitos turísticos, vacaciones a corto plazo y alquileres a largo plazo. Brindamos servicios esenciales de mantenimiento y limpieza para mantener tus propiedades en óptimas condiciones. Con amplia experiencia en la gestión de proyectos, poseemos un profundo conocimiento de la industria inmobiliaria.",
   "heroAboutButton": "Mas sobre nosotros",
@@ -162,16 +157,12 @@
   "whyChooseUsPara2text": "Nuestro portafolio de casas existentes incluye una diversa selección de propiedades, desde encantadoras cabañas frente al mar hasta elegantes apartamentos en la ciudad. Cada propiedad ha sido cuidadosamente seleccionada para garantizar calidad y valor. Permítenos ayudarte a encontrar tu hogar perfecto, ya sea para uso personal o como inversión.",
   "whyChooseUsPara3title": "Soluciones de Alquiler Flexibles",
   "whyChooseUsPara3text": "Ofrecemos una variedad de opciones de alquiler para satisfacer tus necesidades, incluyendo alquileres a corto plazo para turistas, alquileres vacacionales y arrendamientos a largo plazo. Nuestro equipo también ofrece servicios de administración de propiedades, asegurando que tus propiedades en alquiler estén bien mantenidas y que los inquilinos estén satisfechos. Confía en nosotros para manejar todo, desde marketing hasta mantenimiento, para que puedas disfrutar de una experiencia de alquiler sin complicaciones.",
-
   "banner": "La casa de tus sueños está aquí",
-
   "callToActionTitle": "Póngase en contacto con nosotros ahora",
   "callToActionText": "No dude en ponerse en contacto con nuestro equipo para obtener más información o concertar una cita. Estamos listos para ayudarte a encontrar la casa de tus sueños",
   "callToActionBtn": "Contáctenos",
-
   "existingProperties": "Propiedades existentes",
   "rentalProperties": "Propiedades de alquiler",
-
   "Sell/Rent": "Venda o alquile",
   "calcQues": "¿Cuánto vale tu propiedad?",
   "calcQuesDesc": "Proporcione los siguientes detalles y nos pondremos en contacto con usted pronto para una inspección.",
@@ -306,5 +297,13 @@
   "Capital Appreciation": "Apreciación de Capital",
   "Rental Income": "Ingresos por Alquiler",
   "Diversification": "Diversificación",
-  "projectType": "Tipo de Proyecto"
+  "projectType": "Tipo de Proyecto",
+  "projectStatus": "Estado del Proyecto",
+  "areaRange": "Área del Proyecto",
+  "housingType": "Tipo de Vivienda",
+  "bedroomRange": "Dormitorios",
+  "floorRange": "Número de Pisos",
+  "parkingRange": "Parqueaderos",
+  "bathroomRange": "Baños",
+  "adminFeeRange": "Administración Mensual"
 }

@@ -56,8 +56,24 @@ type Project = {
   title: string;
   images: string[];
   projectType: string;
+  projectStatus: string;
+  housingType: string;
+  parkingRange: string;
+
+  delivery_time: string;
+  waterHeater: string;
+  coolingSystem: string;
+  internet: string;
+  powerBackup: string;
+  nearbyInfrastructure: string[];
+
+  areaRange: string;
+  bedroomRange: string;
+  bathroomRange: string;
+  floorRange: string;
   price: number;
   priceRange: string;
+  adminFeeRange: string;
   description: string;
   videos: string[];
   address: string;
@@ -69,7 +85,11 @@ type Project = {
   communityFeatures: string[];
   sustainabilityFeatures: string[];
   investmentReason: string[];
-  amenities: string[];
+  amenities: {
+    id: number;
+    sub_amenities: number[];
+  }[];
+
   progress: number;
   properties: Property[];
   investmentPotential: string;
@@ -80,3 +100,5 @@ type Project = {
   created_at: string;
   updated_at: string;
 };
+
+

@@ -13,6 +13,13 @@ import {
   COMMUNITY_FEATURES,
   SUSTAINABILITY_FEATURES,
   INVESTMENT_REASON,
+  PROJECT_STATU,
+  HOUSING_TYPE,
+  WATER_HEATER,
+  COLLING_SYS,
+  INTERNET_TYPES,
+  POWER_BACKUP,
+  NEARBY_INFRASTRUCTURE,
 } from "@/constants";
 import { useGoogleMapsStore } from "@/store/GoogleMapsStore";
 import Modal from "react-modal";
@@ -40,6 +47,9 @@ const ProjectSchema = z.object({
   neighborhood: z
     .array(z.string())
     .min(1, "At least one neighborhood is required"),
+  nearbyInfrastructure: z
+    .array(z.string())
+    .min(1, "At least one nearbyInfrastructure is required"),
   communityFeatures: z
     .array(z.string())
     .min(1, "At least one community feature is required"),
@@ -49,9 +59,20 @@ const ProjectSchema = z.object({
   investmentReason: z
     .array(z.string())
     .min(1, "At least one investment reason is required"),
-  amenities: z.array(z.string()).min(1, "At least one amenity is required"),
+  amenities: z.array(
+    z.object({
+      name: z.string(),
+      sub_amenities: z.array(z.string())
+    })
+  ),
   progress: z.number().min(0, "Progress is required"),
   investmentPotential: z.string().min(1, "Investment potential is required"),
+  projectStatus: z.string().min(1, "Project Status is required"),
+  housingType: z.string().min(1, "Houseing type is required"),
+  waterHeater: z.string().min(1, "Water Heater is required"),
+  coolingSystem: z.string().min(1, "Cooling System is required"),
+  internet: z.string().min(1, "Internet is required"),
+  powerBackup: z.string().min(1, "Power Backup is required"),
   FAQ: z
     .array(
       z.object({
@@ -241,11 +262,10 @@ const ToggleButtonGroup = memo(
             <button
               key={option}
               type="button"
-              className={`rounded border border-stroke px-3 py-2 text-sm font-medium text-black dark:border-strokedark ${
-                selectedOptions.includes(option)
-                  ? "bg-primary text-white"
-                  : "bg-gray dark:bg-meta-4 dark:text-white"
-              }`}
+              className={`rounded border border-stroke px-3 py-2 text-sm font-medium text-black dark:border-strokedark ${selectedOptions.includes(option)
+                ? "bg-primary text-white"
+                : "bg-gray dark:bg-meta-4 dark:text-white"
+                }`}
               onClick={() => handleToggle(option)}
             >
               {t(option)}
@@ -281,12 +301,22 @@ const AddProject = () => {
       developerInformation: "",
       delivery_time: "",
       neighborhood: [],
+      nearbyInfrastructure: [],
       communityFeatures: [],
       sustainabilityFeatures: [],
       investmentReason: [],
-      amenities: [],
+      amenities: Object.keys(AMENITIES).map((name) => ({
+        name,
+        sub_amenities: [],
+      })),
       progress: 0,
       investmentPotential: "",
+      projectStatus: "",
+      housingType: "",
+      waterHeater: "",
+      coolingSystem: "",
+      internet: "",
+      powerBackup: "",
       FAQ: [],
       properties: [],
     },
@@ -353,12 +383,26 @@ const AddProject = () => {
       setValue("developerInformation", "");
       setValue("delivery_time", "");
       setValue("neighborhood", []);
+      setValue("nearbyInfrastructure", []);
       setValue("communityFeatures", []);
       setValue("sustainabilityFeatures", []);
       setValue("investmentReason", []);
-      setValue("amenities", []);
+      setValue(
+        "amenities",
+        Object.keys(AMENITIES).map((name) => ({
+          name,
+          sub_amenities: [],
+        }))
+      );
+
       setValue("progress", 0);
       setValue("investmentPotential", "");
+      setValue("projectStatus", "");
+      setValue("housingType", "");
+      setValue("waterHeater", "");
+      setValue("coolingSystem", "");
+      setValue("internet", "");
+      setValue("powerBackup", "");
       setValue("FAQ", []);
       setValue("properties", []);
     } catch (error: any) {
@@ -645,6 +689,8 @@ const AddProject = () => {
                     />
                   </div>
                 </div>
+
+
                 <div className="flex flex-col sm:flex-row sm:space-x-5">
                   <div className="mb-5.5 w-full">
                     <Controller
@@ -708,6 +754,251 @@ const AddProject = () => {
                     />
                   </div>
                 </div>
+
+
+
+                {/* Property status  */}
+
+                <div className="flex flex-col sm:flex-row sm:space-x-5">
+
+
+                  <div className="mb-5.5 w-full">
+                    <Controller
+                      name="projectStatus"
+                      control={control}
+                      render={({ field }) => (
+                        <>
+                          <label
+                            className="mb-3 block text-sm font-medium text-black dark:text-white"
+                            htmlFor="projectStatus"
+                          >
+                            {t("projectStatus")}{" "}
+                            {errors.projectStatus && (
+                              <span className="text-red">
+                                - {errors.projectStatus.message}
+                              </span>
+                            )}
+                          </label>
+                          <select
+                            className="w-full appearance-none rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            id="investmentPotential"
+                            {...field}
+                          >
+                            <option value="">{t("select")}</option>
+                            {PROJECT_STATU.map((type) => (
+                              <option key={type} value={type}>
+                                {t(type)}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      )}
+                    />
+                  </div>
+
+                  {/* housing type */}
+
+                  <div className="mb-5.5 w-full">
+                    <Controller
+                      name="housingType"
+                      control={control}
+                      render={({ field }) => (
+                        <>
+                          <label
+                            className="mb-3 block text-sm font-medium text-black dark:text-white"
+                            htmlFor="housingType"
+                          >
+                            {t("housingType")}{" "}
+                            {errors.housingType && (
+                              <span className="text-red">
+                                - {errors.housingType.message}
+                              </span>
+                            )}
+                          </label>
+                          <select
+                            className="w-full appearance-none rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            id="investmentPotential"
+                            {...field}
+                          >
+                            <option value="">{t("select")}</option>
+                            {HOUSING_TYPE.map((type) => (
+                              <option key={type} value={type}>
+                                {t(type)}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      )}
+                    />
+                  </div>
+
+
+                </div>
+
+
+
+
+                {/* water coler */}
+
+                <div className="flex flex-col sm:flex-row sm:space-x-5">
+
+
+                  <div className="mb-5.5 w-full">
+                    <Controller
+                      name="waterHeater"
+                      control={control}
+                      render={({ field }) => (
+                        <>
+                          <label
+                            className="mb-3 block text-sm font-medium text-black dark:text-white"
+                            htmlFor="projectStatus"
+                          >
+                            {t("waterHeater")}{" "}
+                            {errors.waterHeater && (
+                              <span className="text-red">
+                                - {errors.waterHeater.message}
+                              </span>
+                            )}
+                          </label>
+                          <select
+                            className="w-full appearance-none rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            id="waterHeater"
+                            {...field}
+                          >
+                            <option value="">{t("select")}</option>
+                            {WATER_HEATER.map((type) => (
+                              <option key={type} value={type}>
+                                {t(type)}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      )}
+                    />
+                  </div>
+
+                  {/* coolingSystem */}
+
+                  <div className="mb-5.5 w-full">
+                    <Controller
+                      name="coolingSystem"
+                      control={control}
+                      render={({ field }) => (
+                        <>
+                          <label
+                            className="mb-3 block text-sm font-medium text-black dark:text-white"
+                            htmlFor="coolingSystem"
+                          >
+                            {t("coolingSystem")}{" "}
+                            {errors.coolingSystem && (
+                              <span className="text-red">
+                                - {errors.coolingSystem.message}
+                              </span>
+                            )}
+                          </label>
+                          <select
+                            className="w-full appearance-none rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            id="coolingSystem"
+                            {...field}
+                          >
+                            <option value="">{t("select")}</option>
+                            {COLLING_SYS.map((type) => (
+                              <option key={type} value={type}>
+                                {t(type)}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      )}
+                    />
+                  </div>
+
+
+                </div>
+
+
+                {/* INTERNET */}
+
+
+                <div className="flex flex-col sm:flex-row sm:space-x-5">
+
+
+                  <div className="mb-5.5 w-full">
+                    <Controller
+                      name="internet"
+                      control={control}
+                      render={({ field }) => (
+                        <>
+                          <label
+                            className="mb-3 block text-sm font-medium text-black dark:text-white"
+                            htmlFor="internet"
+                          >
+                            {t("internet")}{" "}
+                            {errors.internet && (
+                              <span className="text-red">
+                                - {errors.internet.message}
+                              </span>
+                            )}
+                          </label>
+                          <select
+                            className="w-full appearance-none rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            id="internet"
+                            {...field}
+                          >
+                            <option value="">{t("select")}</option>
+                            {INTERNET_TYPES.map((type) => (
+                              <option key={type} value={type}>
+                                {t(type)}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      )}
+                    />
+                  </div>
+
+                  {/* powerBackup */}
+
+                  <div className="mb-5.5 w-full">
+                    <Controller
+                      name="powerBackup"
+                      control={control}
+                      render={({ field }) => (
+                        <>
+                          <label
+                            className="mb-3 block text-sm font-medium text-black dark:text-white"
+                            htmlFor="powerBackup"
+                          >
+                            {t("powerBackup")}{" "}
+                            {errors.powerBackup && (
+                              <span className="text-red">
+                                - {errors.powerBackup.message}
+                              </span>
+                            )}
+                          </label>
+                          <select
+                            className="w-full appearance-none rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            id="powerBackup"
+                            {...field}
+                          >
+                            <option value="">{t("select")}</option>
+                            {POWER_BACKUP.map((type) => (
+                              <option key={type} value={type}>
+                                {t(type)}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      )}
+                    />
+                  </div>
+
+
+                </div>
+
+
+
+
                 <div className="mb-5.5">
                   <Controller
                     name="delivery_time"
@@ -779,13 +1070,35 @@ const AddProject = () => {
                     setValue("sustainabilityFeatures", selected)
                   }
                 />
-                <ToggleButtonGroup
-                  label={t("amenities")}
-                  error={errors.amenities?.message}
-                  options={AMENITIES}
-                  selectedOptions={watch("amenities")}
-                  onChange={(selected) => setValue("amenities", selected)}
-                />
+
+
+                {Object.entries(AMENITIES).map(([name, options]) => (
+                  <ToggleButtonGroup
+                    key={name}
+                    label={t(name)}
+                    error={errors.amenities?.message}
+                    options={options}
+                    selectedOptions={
+                      watch("amenities")?.find((item: any) => item.name === name)?.sub_amenities || []
+                    }
+                    onChange={(selected) => {
+                      const updatedAmenities = [...(watch("amenities") || [])];
+                      const categoryIndex = updatedAmenities.findIndex((item: any) => item.name === name);
+
+                      if (categoryIndex > -1) {
+                        updatedAmenities[categoryIndex].sub_amenities = selected;
+                      } else {
+                        updatedAmenities.push({ name, sub_amenities: selected });
+                      }
+
+                      setValue("amenities", updatedAmenities);
+                    }}
+                  />
+                ))}
+
+
+
+
                 <ToggleButtonGroup
                   label={t("neighborhood")}
                   error={errors.neighborhood?.message}
@@ -793,6 +1106,17 @@ const AddProject = () => {
                   selectedOptions={watch("neighborhood")}
                   onChange={(selected) => setValue("neighborhood", selected)}
                 />
+
+
+                <ToggleButtonGroup
+                  label={t("nearbyInfrastructure")}
+                  error={errors.nearbyInfrastructure?.message}
+                  options={NEARBY_INFRASTRUCTURE}
+                  selectedOptions={watch("nearbyInfrastructure")}
+                  onChange={(selected) => setValue("nearbyInfrastructure", selected)}
+                />
+
+
                 <div className="mb-5.5 w-full">
                   <Controller
                     name={"videos"}

@@ -172,9 +172,8 @@ export default function PhotosUploader({
           ))}
         {addedPhotos.length < maxPhotos && (
           <label
-            className={`text-gray-600 flex h-24 w-24 cursor-pointer items-center justify-center border bg-transparent p-2 text-lg ${
-              isUploading ? "animate-pulse" : ""
-            }`}
+            className={`text-gray-600 flex h-24 w-24 cursor-pointer items-center justify-center border bg-transparent p-2 text-lg ${isUploading ? "animate-pulse" : ""
+              }`}
           >
             <input
               type="file"

@@ -6,11 +6,9 @@
   "navSellRent": "Sell or Rent Property",
   "navRentals": "Rentals",
   "navContact": "Contact Us",
-
   "footerQuickLinks": "Quick Links",
   "footerSocialMedia": "Social Media",
   "footerCopyRight": "Realtor Caribe. All rights reserved",
-
   "heroText": "The <span class='text-secondary2'>Solution</span> to Finding<br />Your Dream Home is <span class='text-secondary2 relative inline-block'>Here <img src='{{lineSrc}}' alt='Underline decoration' class='absolute left-0 top-full w-full mt-1' /></span>",
   "heroButton": "View This Property",
   "propertyType": "Property Type",
@@ -128,7 +126,6 @@
   "residentialRental": "Residential Rental",
   "searchProperty": "Search Property",
   "searching": "Searching...",
-
   "deliveryTime": "Delivery Time",
   "selectDeliveryTime": "Select",
   "Immediate": "Immediate",
@@ -144,14 +141,12 @@
   "Personal Use": "Personal Use",
   "Tourist Rental": "Tourist Rental",
   "Long-term Rental": "Long-term Rental",
-
   "mostViewed": "Most Viewed",
   "mostViewedSubtitle": "We offer a wide selection of the newest properties ready for you to explore.",
   "newDevelopments": "New Developments",
   "usedProperties": "Existing Properties",
   "rentals": "Rentals",
   "allProperties": "All Properties",
-
   "heroAboutTitle": "Your Trusted Real Estate Partner in the Caribbean",
   "heroAboutText": "At Realtor Caribe, we specialize in turning your property dreams into reality. We offer a wide range of services, including the sale of existing homes, new housing projects, beach houses, apartments, studio apartments, commercial properties, land, and condos. Our comprehensive services also include helping you rent properties for short-term, tourism/vacation purposes, and long-term rentals. We provide essential maintenance and cleaning services to keep your properties in top condition. With extensive experience in project management, we possess a deep understanding of the real estate industry.",
   "heroAboutButton": "More Portfolio",
@@ -162,16 +157,12 @@
   "whyChooseUsPara2text": "Our portfolio of existing homes includes a diverse selection of properties, from charming beachfront cottages to elegant city apartments. Each property is carefully selected to ensure quality and value. Let us help you find your perfect home, whether it's for personal use or investment purposes.",
   "whyChooseUsPara3title": "Flexible Rental Solutions",
   "whyChooseUsPara3text": "We provide a range of rental options to meet your needs, including short-term rentals for tourists, vacation rentals, and long-term leases. Our team also offers property management services, ensuring your rental properties are well-maintained and tenants are satisfied. Trust us to handle everything from marketing to maintenance, so you can enjoy a hassle-free rental experience.",
-
   "banner": "Your Dream Home Is In Front Of Your Eyes",
-
   "callToActionTitle": "Contact Us Now",
   "callToActionText": "Don't hesitate to contact our team for more information or to set up an appointment. We are ready to help you find your dream home",
   "callToActionBtn": "Contact Us",
-
   "existingProperties": "Existing Properties",
   "rentalProperties": "Rental Properties",
-
   "Sell/Rent": "Sell or Rent",
   "calcQues": "How much is your property worth?",
   "calcQuesDesc": "Please provide the following details and we will contact you soon for an inspection.",
@@ -306,5 +297,13 @@
   "Capital Appreciation": "Capital Appreciation",
   "Rental Income": "Rental Income",
   "Diversification": "Diversification",
-  "projectType": "Project Type"
+  "projectType": "Project Type",
+  "projectStatus": "Project Status",
+  "areaRange": "Area Size/Range",
+  "housingType": "Housing Type",
+  "bathroomRange": "Bathroom Range",
+  "floorRange": "Floor Range",
+  "parkingRange": "Parking Range",
+  "bedroomRange": "Bedroom Range",
+  "adminFeeRange": "Admin Fee Range"
 }

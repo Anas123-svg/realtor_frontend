@@ -73,7 +73,12 @@ const PropertySchema = z.object({
   securityFeatures: z
     .array(z.string())
     .min(1, "At least one security feature is required"),
-  amenities: z.array(z.string()).min(1, "At least one amenity is required"),
+  amenities: z.array(
+    z.object({
+      name: z.string(),
+      sub_amenities: z.array(z.string())
+    })
+  ),
   internet: z.string().min(1, "Internet type is required"),
   heating: z
     .array(z.string())
@@ -319,7 +324,10 @@ const AddProperty = () => {
       noiseLevel: "",
       laundry: "",
       securityFeatures: [],
-      amenities: [],
+      amenities: Object.keys(AMENITIES).map((name) => ({
+        name,
+        sub_amenities: [],
+      })),
       internet: "",
       heating: [],
       cooling: [],
@@ -379,7 +387,13 @@ const AddProperty = () => {
       setValue("noiseLevel", "");
       setValue("laundry", "");
       setValue("securityFeatures", []);
-      setValue("amenities", []);
+      setValue(
+        "amenities",
+        Object.keys(AMENITIES).map((name) => ({
+          name,
+          sub_amenities: [],
+        }))
+      );
       setValue("internet", "");
       setValue("heating", []);
       setValue("cooling", []);
@@ -1045,13 +1059,39 @@ const AddProperty = () => {
                 selectedOptions={watch("propertyStyle")}
                 onChange={(selected) => setValue("propertyStyle", selected)}
               />
-              <ToggleButtonGroup
+              {/* <ToggleButtonGroup
                 label={t("amenities")}
                 error={errors.amenities?.message}
                 options={AMENITIES}
                 selectedOptions={watch("amenities")}
                 onChange={(selected) => setValue("amenities", selected)}
-              />
+              /> */}
+
+              {Object.entries(AMENITIES).map(([name, options]) => (
+                <ToggleButtonGroup
+                  key={name}
+                  label={t(name)}
+                  error={errors.amenities?.message}
+                  options={options}
+                  selectedOptions={
+                    watch("amenities")?.find((item: any) => item.name === name)?.sub_amenities || []
+                  }
+                  onChange={(selected) => {
+                    const updatedAmenities = [...(watch("amenities") || [])];
+                    const categoryIndex = updatedAmenities.findIndex((item: any) => item.name === name);
+
+                    if (categoryIndex > -1) {
+                      updatedAmenities[categoryIndex].sub_amenities = selected;
+                    } else {
+                      updatedAmenities.push({ name, sub_amenities: selected });
+                    }
+
+                    setValue("amenities", updatedAmenities);
+                  }}
+                />
+              ))}
+
+
               <ToggleButtonGroup
                 label={t("views")}
                 error={errors.view?.message}

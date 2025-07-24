@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link"; // Importing Next.js Link
 import logo from "@/assets/logo.png";
 import {
@@ -12,11 +12,15 @@ import {
   FileText,
   MapPin,
   DollarSign,
+  Shield,
 } from "lucide-react"; // Importing icons
 import { useTranslation } from "react-i18next";
+import PoliticaTratamientoDatosModal from "../dialogue";
 
 const Footer = () => {
   const { t } = useTranslation();
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+
   return (
     <div className="bg-white mt-10 py-10">
       <div className="container grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-8 px-6">
@@ -51,6 +55,21 @@ const Footer = () => {
                 {t("navContact")}
               </Link>
             </li>
+            <li>
+              <button
+                onClick={() => setIsPrivacyOpen(true)}
+                className="flex items-center text-gray-600 hover:text-gray-800 hover:underline transition-all"
+              >
+                <Shield className="w-5 h-5 mr-2 hover:scale-110 transition-transform" />{" "}
+                {t("Data and Privacy")}
+              </button>
+            </li>
+
+            {/* Modal */}
+            <PoliticaTratamientoDatosModal
+              isOpen={isPrivacyOpen}
+              onClose={() => setIsPrivacyOpen(false)}
+            />
           </ul>
         </div>
 
