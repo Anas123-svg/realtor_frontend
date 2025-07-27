@@ -20,6 +20,8 @@ import {
   Coffee,
   Trees,
   Mountain,
+  Clock,
+  DollarSign,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -79,6 +81,16 @@ const About = (props: Props) => {
           label: t("dealType"),
           value: props.property.dealType,
         },
+        {
+          icon: Clock,
+          label: t("dateBuilt"),
+          value: props.property.dateBuilt,
+        },
+        {
+          icon: DollarSign,
+          label: t("administrationFee"),
+          value: props.property.administrationFee,
+        },
       ],
     },
     {
@@ -93,6 +105,8 @@ const About = (props: Props) => {
           label: t("condition"),
           value: props.property.condition,
         },
+        { icon: Ruler, label: t("parkingSpace"), value: `${props.property.parkingSpace} m²` },
+
       ],
     },
     {

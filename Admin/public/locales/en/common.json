@@ -377,5 +377,8 @@
   "Completed": "Completed",
   "housingType": "Housing Type",
   "Mixed": "Mixed",
-  "Tourism": "Tourism"
+  "Tourism": "Tourism",
+  "administrationFee": "Administration Fee",
+  "dateBuilt": "Year Built / Age",
+  "parkingSpace": "Parking Space"
 }

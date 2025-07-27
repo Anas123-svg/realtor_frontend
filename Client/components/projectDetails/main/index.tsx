@@ -205,7 +205,7 @@ const Main = ({ project }: Props) => {
 
 
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
               {
                 title: t("neighborhood"),
@@ -261,6 +261,66 @@ const Main = ({ project }: Props) => {
                 </CardContent>
               </Card>
             ))}
+          </div> */}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              {
+                title: t("neighborhood"),
+                icon: <Home className="w-5 h-5" />,
+                items: project?.neighborhood,
+                color: "bg-[#f7f3e8]",
+                dotColor: "bg-primary",
+              },
+              {
+                title: t("nearbyInfrastructure"),
+                icon: <Home className="w-5 h-5" />,
+                items: project?.nearbyInfrastructure,
+                color: "bg-[#f7f3e8]",
+                dotColor: "bg-primary",
+              },
+              {
+                title: t("communityFeatures"),
+                icon: <Trees className="w-5 h-5" />,
+                items: project?.communityFeatures,
+                color: "bg-[#f7f3e8]",
+                dotColor: "bg-primary",
+              },
+              {
+                title: t("sustainabilityFeatures"),
+                icon: <Leaf className="w-5 h-5" />,
+                items: project?.sustainabilityFeatures,
+                color: "bg-[#f7f3e8]",
+                dotColor: "bg-primary",
+              },
+            ]
+              .filter((feature) => Array.isArray(feature.items) && feature.items.length > 0)
+              .map((feature, idx) => (
+                <Card
+                  key={idx}
+                  className="overflow-hidden border-[1px] border-gray-300 bg-[#f7f3e8]"
+                >
+                  <CardHeader className={feature.color}>
+                    <CardTitle className="flex items-center gap-2 text-gray-700">
+                      {feature.icon}
+                      {feature.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-6 pb-3 bg-[#f7f3e8]">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {feature.items.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 px-3 py-2 bg-[#f7f3e8] rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition"
+                        >
+                          <div className={`w-2 h-2 rounded-full ${feature.dotColor}`} />
+                          <span className="text-gray-700 text-sm">{t(item)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
 
 

@@ -377,5 +377,8 @@
   "Completed": "Finalizado",
   "housingType": "Tipo de Vivienda",
   "Mixed": "Mixta",
-  "Tourism": "Turística"
+  "Tourism": "Turística",
+  "administrationFee": "Administración mensual",
+  "dateBuilt": "Año de construcción / Antigüedad",
+  "parkingSpace": "Parqueaderos"
 }

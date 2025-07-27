@@ -137,6 +137,9 @@ export const COOLING_TYPES = [
 
 export const NEARBY_INFRASTRUCTURE = [
   "Hospital",
+  "Airport",
+  "Natural Reserve",
+  "University",
   "School",
   "Supermarket",
   "Park",

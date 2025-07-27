@@ -3,6 +3,7 @@ type Property = {
   images: string[];
   title: string;
   description: string;
+  dateBuilt: string;
   location: {
     longitude: number;
     latitude: number;
@@ -11,6 +12,7 @@ type Property = {
   bedrooms: number;
   bathrooms: number;
   area: number;
+  parkingSpace: number;
   propertyType: string;
   propertyStatus: string;
   dealType: string;
@@ -30,6 +32,7 @@ type Property = {
   condition: string;
   video: string;
   price: number;
+  administrationFee: number;
   priceType: string;
   views: number;
   likes: number;

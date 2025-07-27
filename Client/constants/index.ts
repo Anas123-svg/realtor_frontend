@@ -218,6 +218,58 @@ export const AMENITIES_WITH_ID = [
 ];
 
 
+export const AMENITIESF = {
+  "Pools & Water Features": [
+    "Adult swimming pool",
+    "Kids' swimming pool",
+    "Lap pool",
+    "Jacuzzi",
+    "Solarium"
+  ],
+  "Social & Entertainment": [
+    "BBQ area",
+    "Lounge bar",
+    "Bar/restaurant area",
+    "Event hall",
+    "Beach club",
+    "Mini-theater",
+    "Game room"
+  ],
+  "Health & Wellness": [
+    "Gym",
+    "Multi-purpose exercise room",
+    "Spa",
+    "Massage room"
+  ],
+  "Sports & Outdoor": [
+    "Jogging trail",
+    "Bicycle trail",
+    "Kids' playroom",
+    "Multi-sports court",
+    "Squash court",
+    "Paddle court",
+    "Tennis court",
+    "Football pitch",
+    "Mini golf",
+    "Bowling"
+  ],
+  "Business & Services": [
+    "Coworking space",
+    "Staff service area",
+    "Administration office",
+    "Reception area",
+    "Mini-market zone"
+  ],
+  "Security & Sustainability": [
+    "Recycling area",
+    "Communal parking",
+    "Elevators",
+    "Gated community",
+    "Security guard",
+    "Alarm system"
+  ],
+};
+
 
 
 
@@ -336,6 +388,9 @@ export const AMENITIES = [
   "Communal parking",
   "Elevators",
 ];
+
+
+
 
 export const INTERNET_TYPES = ["Fiber", "Cable", "DSL"];
 

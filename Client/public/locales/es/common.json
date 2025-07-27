@@ -305,5 +305,7 @@
   "floorRange": "Número de Pisos",
   "parkingRange": "Parqueaderos",
   "bathroomRange": "Baños",
+  "administrationFee": "Administración mensual",
+  "parkingSpace": "Parqueaderos",
   "adminFeeRange": "Administración Mensual"
 }

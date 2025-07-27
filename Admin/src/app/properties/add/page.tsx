@@ -37,6 +37,7 @@ const PropertySchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   neighborhood: z.string().min(1, "Neighborhood is required"),
+  dateBuilt: z.string().min(1, "dateBuilt is required"),
   location: z.object({
     longitude: z.number(),
     latitude: z.number(),
@@ -51,6 +52,10 @@ const PropertySchema = z.object({
     .min(0, "Bathrooms must be 0 or greater")
     .max(100, "Bathrooms must be less than 100"),
   area: z
+    .number()
+    .min(1, "Area must be greater than 0")
+    .max(10000, "Area must be less than 10000"),
+  parkingSpace: z
     .number()
     .min(1, "Area must be greater than 0")
     .max(10000, "Area must be less than 10000"),
@@ -95,6 +100,7 @@ const PropertySchema = z.object({
   condition: z.enum(["New", "Used"]),
   video: z.string().optional(),
   price: z.number().min(1, "Price must be greater than 0"),
+  administrationFee: z.number().min(1, "Price must be greater than 0"),
   priceType: z.enum(["Cash", "Financing Options"]),
 });
 
@@ -306,6 +312,7 @@ const AddProperty = () => {
       title: "",
       description: "",
       neighborhood: "",
+      dateBuilt: "",
       location: {
         longitude: 0,
         latitude: 0,
@@ -314,6 +321,7 @@ const AddProperty = () => {
       bedrooms: 0,
       bathrooms: 0,
       area: 0,
+      parkingSpace: 0,
       propertyType: "",
       propertyStatus: "",
       dealType: "Sale",
@@ -336,6 +344,7 @@ const AddProperty = () => {
       condition: "New",
       video: "",
       price: 0,
+      administrationFee: 0,
       priceType: "Cash",
     },
   });
@@ -369,6 +378,7 @@ const AddProperty = () => {
       setValue("title", "");
       setValue("description", "");
       setValue("neighborhood", "");
+      setValue("dateBuilt", "");
       setValue("location", {
         longitude: 0,
         latitude: 0,
@@ -377,6 +387,7 @@ const AddProperty = () => {
       setValue("bedrooms", 0);
       setValue("bathrooms", 0);
       setValue("area", 0);
+      setValue("parkingSpace", 0);
       setValue("propertyType", "");
       setValue("propertyStatus", "");
       setValue("dealType", "Sale");
@@ -402,6 +413,7 @@ const AddProperty = () => {
       setValue("condition", "New");
       setValue("video", "");
       setValue("price", 0);
+      setValue("administrationFee", 0);
       setValue("priceType", "Cash");
     } catch (error) {
       console.error(error);
@@ -610,32 +622,7 @@ const AddProperty = () => {
                 />
               </div>
 
-              <div className="mb-5.5 w-full">
-                <Controller
-                  name="neighborhood"
-                  control={control}
-                  render={({ field }) => (
-                    <>
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="neighborhood"
-                      >
-                        {t("neighborhood")}{" "}
-                        {errors.neighborhood && (
-                          <span className="text-red">- {errors.neighborhood.message}</span>
-                        )}
-                      </label>
-                      <input
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                        type="text"
-                        id="neighborhood"
-                        placeholder={t("neighborhood")}
-                        {...field}
-                      />
-                    </>
-                  )}
-                />
-              </div>
+
 
               <div className="flex flex-col sm:flex-row sm:space-x-5">
                 <div className="mb-5.5 w-full">
@@ -852,6 +839,80 @@ const AddProperty = () => {
                 </div>
               </div>
 
+
+              <div className="flex flex-col sm:flex-row sm:space-x-5">
+                <div className="mb-5.5 w-full">
+                  <Controller
+                    name="parkingSpace"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <label
+                          className="mb-3 block text-sm font-medium text-black dark:text-white"
+                          htmlFor="parkingSpace"
+                        >
+                          {t("parkingSpace")}
+                          {errors.parkingSpace && (
+                            <span className="text-red">
+                              - {errors.parkingSpace.message}
+                            </span>
+                          )}
+                        </label>
+                        <input
+                          className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="number"
+                          id="parkingSpace"
+                          placeholder={t("parkingSpace")}
+                          value={field.value}
+                          onChange={(e) => {
+                            const value =
+                              e.target.value === ""
+                                ? ""
+                                : Number(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
+                      </>
+                    )}
+                  />
+                </div>
+                <div className="mb-5.5 w-full">
+                  <Controller
+                    name="administrationFee"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <label
+                          className="mb-3 block text-sm font-medium text-black dark:text-white"
+                          htmlFor="administrationFee"
+                        >
+                          {t("administrationFee")}{" "}
+                          {errors.administrationFee && (
+                            <span className="text-red">
+                              - {errors.administrationFee.message}
+                            </span>
+                          )}
+                        </label>
+                        <input
+                          className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="number"
+                          id="administrationFee"
+                          placeholder={t("administrationFee")}
+                          value={field.value}
+                          onChange={(e) => {
+                            const value =
+                              e.target.value === ""
+                                ? ""
+                                : Number(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+
               <div className="flex flex-col sm:flex-row sm:space-x-5">
                 <div className="mb-5.5 w-full">
                   <Controller
@@ -1051,6 +1112,64 @@ const AddProperty = () => {
                     )}
                   />
                 </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:space-x-5">
+                <div className="mb-5.5 w-full">
+                  <Controller
+                    name="neighborhood"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <label
+                          className="mb-3 block text-sm font-medium text-black dark:text-white"
+                          htmlFor="neighborhood"
+                        >
+                          {t("neighborhood")}{" "}
+                          {errors.neighborhood && (
+                            <span className="text-red">- {errors.neighborhood.message}</span>
+                          )}
+                        </label>
+                        <input
+                          className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="text"
+                          id="neighborhood"
+                          placeholder={t("neighborhood")}
+                          {...field}
+                        />
+                      </>
+                    )}
+                  />
+                </div>
+
+                <div className="mb-5.5 w-full">
+                  <Controller
+                    name="dateBuilt"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <label
+                          className="mb-3 block text-sm font-medium text-black dark:text-white"
+                          htmlFor="dateBuilt"
+                        >
+                          {t("dateBuilt")}{" "}
+                          {errors.dateBuilt && (
+                            <span className="text-red">- {errors.dateBuilt.message}</span>
+                          )}
+                        </label>
+                        <input
+                          className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="date"
+                          id="dateBuilt"
+                          placeholder={t("dateBuilt")}
+                          value={field.value ? field.value.split("T")[0] : ""} // ensures correct format
+                          onChange={(e) => field.onChange(e.target.value)}
+                        />
+                      </>
+                    )}
+                  />
+                </div>
+
               </div>
               <ToggleButtonGroup
                 label={t("propertyStyle")}

@@ -47,6 +47,8 @@ import {
   NEARBY_INFRASTRUCTURE,
   POWER_BACKUP,
   locations,
+  AMENITIESF,
+  AMENITIES_WITH_I,
 } from "@/constants";
 import { SearchCardProps, SearchFilters, Location } from "@/types/searchTypes";
 import {
@@ -619,7 +621,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                   </div>
                 </div>
                 {/* Amenities Filter */}
-                <div>
+                {/* <div>
                   <p className="py-2 font-semibold text-primary text-base">
                     {t("amenities")}
                   </p>
@@ -633,7 +635,36 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                       />
                     ))}
                   </div>
+                </div> */}
+
+
+                <div>
+                  <p className="py-2 font-semibold text-primary text-base">
+                    {t("amenities")}
+                  </p>
+
+                  <div className="flex flex-col gap-4">
+                    {AMENITIES_WITH_I.map((category) => (
+                      <div key={category.id}>
+                        <p className="text-sm font-semibold text-gray-700 mb-2">
+                          {t(category.name)}
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                          {category.items.map((amenity) => (
+                            <FilterButton
+                              key={amenity}
+                              label={t(amenity)}
+                              isSelected={filters.amenities.includes(amenity)}
+                              onClick={() => toggleArrayFilter("amenities", amenity)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+
                 {/* Internet Filter */}
                 <div>
                   <p className="py-2 font-semibold text-primary text-base">

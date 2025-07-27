@@ -305,5 +305,7 @@
   "floorRange": "Floor Range",
   "parkingRange": "Parking Range",
   "bedroomRange": "Bedroom Range",
+  "administrationFee": "Administration Fee",
+  "parkingSpace": "Parking Space",
   "adminFeeRange": "Admin Fee Range"
 }
