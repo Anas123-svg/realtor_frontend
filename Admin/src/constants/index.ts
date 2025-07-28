@@ -33,7 +33,7 @@ export const SECURITY_FEATURES = [
 
 
 
-export const AMENITIES = {
+export const AMENITIE = {
   "Pools & Water Features": [
     "Adult swimming pool",
     "Kids' swimming pool",
@@ -85,7 +85,75 @@ export const AMENITIES = {
   ]
 };
 
-
+export const AMENITIES = [
+  {
+    name: "Pools & Water Features",
+    sub_amenities: [
+      "Adult swimming pool",
+      "Kids' swimming pool",
+      "Lap pool",
+      "Jacuzzi",
+      "Solarium"
+    ]
+  },
+  {
+    name: "Social & Entertainment",
+    sub_amenities: [
+      "BBQ area",
+      "Lounge bar",
+      "Bar/restaurant area",
+      "Event hall",
+      "Beach club",
+      "Mini-theater",
+      "Game room"
+    ]
+  },
+  {
+    name: "Health & Wellness",
+    sub_amenities: [
+      "Gym",
+      "Multi-purpose exercise room",
+      "Spa",
+      "Massage room"
+    ]
+  },
+  {
+    name: "Sports & Outdoor",
+    sub_amenities: [
+      "Jogging trail",
+      "Bicycle trail",
+      "Kids' playroom",
+      "Multi-sports court",
+      "Squash court",
+      "Paddle court",
+      "Tennis court",
+      "Football pitch",
+      "Mini golf",
+      "Bowling"
+    ]
+  },
+  {
+    name: "Business & Services",
+    sub_amenities: [
+      "Coworking space",
+      "Staff service area",
+      "Administration office",
+      "Reception area",
+      "Mini-market zone"
+    ]
+  },
+  {
+    name: "Security & Sustainability",
+    sub_amenities: [
+      "Recycling area",
+      "Communal parking",
+      "Elevators",
+      "Gated community",
+      "Security guard",
+      "Alarm system"
+    ]
+  }
+];
 
 
 

@@ -21,6 +21,7 @@ import {
   NEARBY_INFRASTRUCTURE,
   POWER_BACKUP,
   PROPERTY_STATUS,
+  AMENITIE,
 } from "@/constants";
 import { useGoogleMapsStore } from "@/store/GoogleMapsStore";
 import Modal from "react-modal";
@@ -72,8 +73,12 @@ const PropertySchema = z.object({
   securityFeatures: z
     .array(z.string())
     .min(1, "At least one security feature is required"),
-  amenities: z.array(z.string()).min(1, "At least one amenity is required"),
-  internet: z.string().min(1, "Internet type is required"),
+  amenities: z.array(
+    z.object({
+      name: z.string(),
+      sub_amenities: z.array(z.string())
+    })
+  ), internet: z.string().min(1, "Internet type is required"),
   heating: z
     .array(z.string())
     .min(1, "At least one heating option is required"),
@@ -272,8 +277,8 @@ const ToggleButtonGroup = memo(
                 key={option}
                 type="button"
                 className={`rounded border border-stroke px-3 py-2 text-sm font-medium text-black dark:border-strokedark ${selectedOptions.includes(option)
-                    ? "bg-primary text-white"
-                    : "bg-gray dark:bg-meta-4 dark:text-white"
+                  ? "bg-primary text-white"
+                  : "bg-gray dark:bg-meta-4 dark:text-white"
                   }`}
                 onClick={() => handleToggle(option)}
               >
@@ -320,7 +325,10 @@ const EditProperty = () => {
       noiseLevel: "",
       laundry: "",
       securityFeatures: [],
-      amenities: [],
+      amenities: Object.keys(AMENITIES).map((name) => ({
+        name,
+        sub_amenities: [],
+      })),
       internet: "",
       heating: [],
       cooling: [],
@@ -367,7 +375,19 @@ const EditProperty = () => {
       setValue("noiseLevel", property.noiseLevel);
       setValue("laundry", property.laundry);
       setValue("securityFeatures", property.securityFeatures);
-      setValue("amenities", property.amenities);
+
+      setValue(
+        "amenities",
+        Object.keys(AMENITIE).map((name) => {
+          const matched = property.amenities?.find((item: any) => item.name === name);
+          return {
+            name,
+            sub_amenities: matched?.sub_amenities || [],
+          };
+        })
+      );
+
+
       setValue("internet", property.internet);
       setValue("heating", property.heating);
       setValue("cooling", property.cooling);
@@ -1034,13 +1054,38 @@ const EditProperty = () => {
                 selectedOptions={watch("propertyStyle")}
                 onChange={(selected) => setValue("propertyStyle", selected)}
               />
-              <ToggleButtonGroup
-                label={t("amenities")}
-                error={errors.amenities?.message}
-                options={AMENITIES}
-                selectedOptions={watch("amenities")}
-                onChange={(selected) => setValue("amenities", selected)}
-              />
+
+              <h1 className="font-bold text-black mt-4">{t("amenities")}</h1>
+              <div className="w-full h-[1px] bg-slate-300 mb-4" />
+
+              {Object.entries(AMENITIE).map(([name, options]) => (
+                <ToggleButtonGroup
+                  key={name}
+                  label={t(name)}
+                  error={errors.amenities?.message}
+                  options={options}
+                  selectedOptions={
+                    watch("amenities")?.find((item: any) => item.name === name)?.sub_amenities || []
+                  }
+                  onChange={(selected) => {
+                    const currentAmenities = [...(watch("amenities") || [])];
+                    const existingIndex = currentAmenities.findIndex((item: any) => item.name === name);
+
+                    if (existingIndex > -1) {
+                      currentAmenities[existingIndex].sub_amenities = selected;
+                    } else {
+                      currentAmenities.push({ name, sub_amenities: selected });
+                    }
+
+                    setValue("amenities", currentAmenities);
+                  }}
+                />
+              ))}
+
+              <div className="w-full h-[1px] bg-slate-300 mb-4" />
+
+
+
               <ToggleButtonGroup
                 label={t("views")}
                 error={errors.view?.message}

@@ -1186,6 +1186,10 @@ const AddProperty = () => {
                 onChange={(selected) => setValue("amenities", selected)}
               /> */}
 
+              <h1 className="font-bold text-black mt-4 " >{t("amenities")}</h1>
+              <div className="w-full h-[1px]  bg-slate-300 mb-4" />
+
+
               {Object.entries(AMENITIES).map(([name, options]) => (
                 <ToggleButtonGroup
                   key={name}
@@ -1209,6 +1213,8 @@ const AddProperty = () => {
                   }}
                 />
               ))}
+
+              <div className="w-full h-[1px] mb-4 bg-slate-300" />
 
 
               <ToggleButtonGroup

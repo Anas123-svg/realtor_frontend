@@ -13,6 +13,7 @@ import {
   COMMUNITY_FEATURES,
   SUSTAINABILITY_FEATURES,
   INVESTMENT_REASON,
+  AMENITIE,
 } from "@/constants";
 import { useGoogleMapsStore } from "@/store/GoogleMapsStore";
 import Modal from "react-modal";
@@ -50,7 +51,12 @@ const ProjectSchema = z.object({
   investmentReason: z
     .array(z.string())
     .min(1, "At least one investment reason is required"),
-  amenities: z.array(z.string()).min(1, "At least one amenity is required"),
+  amenities: z.array(
+    z.object({
+      name: z.string(),
+      sub_amenities: z.array(z.string())
+    })
+  ),
   progress: z.number().min(0, "Progress is required"),
   investmentPotential: z.string().min(1, "Investment potential is required"),
   FAQ: z
@@ -238,7 +244,7 @@ const ToggleButtonGroup = memo(
         <p className="mb-3 block text-sm font-medium text-black dark:text-white">
           {label} {error && <span className="text-red">- {error}</span>}
         </p>
-        <div className="flex flex-wrap gap-2">
+        {/* <div className="flex flex-wrap gap-2">
           {options.map((option) => (
             <button
               key={option}
@@ -253,7 +259,25 @@ const ToggleButtonGroup = memo(
               {t(option)}
             </button>
           ))}
+        </div> */}
+
+        <div className="flex flex-wrap gap-2">
+          {Array.isArray(options) &&
+            options.map((option) => (
+              <button
+                key={option}
+                type="button"
+                className={`rounded border border-stroke px-3 py-2 text-sm font-medium text-black dark:border-strokedark ${selectedOptions?.includes(option)
+                  ? "bg-primary text-white"
+                  : "bg-gray dark:bg-meta-4 dark:text-white"
+                  }`}
+                onClick={() => handleToggle(option)}
+              >
+                {t(option)}
+              </button>
+            ))}
         </div>
+
       </div>
     );
   },
@@ -286,8 +310,10 @@ const EditProject = () => {
       communityFeatures: [],
       sustainabilityFeatures: [],
       investmentReason: [],
-      amenities: [],
-      progress: 0,
+      amenities: Object.keys(AMENITIES).map((name) => ({
+        name,
+        sub_amenities: [],
+      })), progress: 0,
       investmentPotential: "",
       FAQ: [],
       properties: [],
@@ -329,7 +355,18 @@ const EditProject = () => {
       setValue("communityFeatures", project.communityFeatures);
       setValue("sustainabilityFeatures", project.sustainabilityFeatures);
       setValue("investmentReason", project.investmentReason);
-      setValue("amenities", project.amenities);
+
+      setValue(
+        "amenities",
+        Object.keys(AMENITIE).map((name) => {
+          const matched = project.amenities?.find((item: any) => item.name === name);
+          return {
+            name,
+            sub_amenities: matched?.sub_amenities || [],
+          };
+        })
+      );
+
       setValue("progress", project.progress);
       setValue("investmentPotential", project.investmentPotential);
       setValue("FAQ", project.FAQ);
@@ -796,13 +833,50 @@ const EditProject = () => {
                     setValue("sustainabilityFeatures", selected)
                   }
                 />
+
+
+                {/*                 
                 <ToggleButtonGroup
                   label={t("amenities")}
                   error={errors.amenities?.message}
                   options={AMENITIES}
                   selectedOptions={watch("amenities")}
                   onChange={(selected) => setValue("amenities", selected)}
-                />
+                /> */}
+
+
+                <h1 className="font-bold text-black mt-4">{t("amenities")}</h1>
+                <div className="w-full h-[1px] bg-slate-300 mb-4" />
+
+                {Object.entries(AMENITIE).map(([name, options]) => (
+                  <ToggleButtonGroup
+                    key={name}
+                    label={t(name)}
+                    error={errors.amenities?.message}
+                    options={options}
+                    selectedOptions={
+                      watch("amenities")?.find((item: any) => item.name === name)?.sub_amenities || []
+                    }
+                    onChange={(selected) => {
+                      const updatedAmenities = [...(watch("amenities") || [])];
+                      const categoryIndex = updatedAmenities.findIndex((item: any) => item.name === name);
+
+                      if (categoryIndex > -1) {
+                        updatedAmenities[categoryIndex].sub_amenities = selected;
+                      } else {
+                        updatedAmenities.push({ name, sub_amenities: selected });
+                      }
+
+                      setValue("amenities", updatedAmenities);
+                    }}
+                  />
+                ))}
+
+                <div className="w-full h-[1px] mb-4 bg-slate-300" />
+
+
+
+
                 <ToggleButtonGroup
                   label={t("neighborhood")}
                   error={errors.neighborhood?.message}
