@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
 import React from "react";
 
-const CLOUDINARY_UPLOAD_PRESET = process.env.CLOUDINARY_UPLOAD_PRESET || "";
-const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "";
+const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
+const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "";
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
 export default function PhotosUploader({
@@ -23,6 +23,7 @@ export default function PhotosUploader({
     const data = new FormData();
     data.append("file", file);
     data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    console.log(CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_CLOUD_NAME);
 
     const res = await axios.post(
       `${CLOUDINARY_UPLOAD_URL}?quality=auto:best`,

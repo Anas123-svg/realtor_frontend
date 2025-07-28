@@ -239,25 +239,21 @@ const ToggleButtonGroup = memo(
           {label} {error && <span className="text-red">- {error}</span>}
         </p>
         <div className="flex flex-wrap gap-2">
-          {Array.isArray(options) ? (
-            options.map((option) => (
-              <button
-                key={option}
-                type="button"
-                className={`rounded border border-stroke px-3 py-2 text-sm font-medium text-black dark:border-strokedark ${selectedOptions.includes(option)
-                    ? "bg-primary text-white"
-                    : "bg-gray dark:bg-meta-4 dark:text-white"
-                  }`}
-                onClick={() => handleToggle(option)}
-              >
-                {t(option)}
-              </button>
-            ))
-          ) : (
-            <p className="text-sm text-red-500">No options available</p>
-          )}
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              className={`rounded border border-stroke px-3 py-2 text-sm font-medium text-black dark:border-strokedark ${
+                selectedOptions.includes(option)
+                  ? "bg-primary text-white"
+                  : "bg-gray dark:bg-meta-4 dark:text-white"
+              }`}
+              onClick={() => handleToggle(option)}
+            >
+              {t(option)}
+            </button>
+          ))}
         </div>
-
       </div>
     );
   },
