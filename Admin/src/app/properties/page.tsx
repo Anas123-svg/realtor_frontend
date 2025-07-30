@@ -34,8 +34,8 @@ const Properties = () => {
 
   const filteredProperties = properties.filter(
     (property) =>
-      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.location.region.toLowerCase().includes(searchTerm.toLowerCase()),
+      property.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.location?.region.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -64,7 +64,7 @@ const Properties = () => {
             </div>
           </div>
           <div className="hidden sm:block">
-            <div className="grid grid-cols-10 gap-5 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
+            <div className="grid grid-cols-11 gap-4 border-t border-stroke px-3 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
               <div className="col-span-1 flex items-center">
                 <p className="font-medium text-black dark:text-white">
                   {t("cover")}
@@ -92,6 +92,11 @@ const Properties = () => {
               </div>
               <div className="col-span-1 flex items-center">
                 <p className="font-medium text-black dark:text-white">
+                  {t("reference_no")}
+                </p>
+              </div>
+              <div className="col-span-1 flex items-center">
+                <p className="font-medium text-black dark:text-white">
                   {t("dealType")}
                 </p>
               </div>
@@ -112,7 +117,7 @@ const Properties = () => {
               filteredProperties.map((property) => (
                 <div
                   key={property.id}
-                  className="grid grid-cols-10 items-center gap-5 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5"
+                  className="grid grid-cols-11 items-center gap-5 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5"
                 >
                   <div className="col-span-1 flex items-center">
                     <img
@@ -133,14 +138,19 @@ const Properties = () => {
 
                     </p>
                   </div>
-                  <div className="col-span-1">
+                  <div className="col-span-1 pl-3">
                     <p className="text-sm text-black dark:text-white">
                       {property.views}
                     </p>
                   </div>
-                  <div className="col-span-1">
+                  <div className="col-span-1 pl-3">
                     <p className="text-sm text-black dark:text-white">
                       {property.likes}
+                    </p>
+                  </div>
+                  <div className="col-span-1 ">
+                    <p className="text-sm text-black dark:text-white">
+                      {property.reference_no}
                     </p>
                   </div>
                   <div className="col-span-1">

@@ -377,7 +377,9 @@
   "Completed": "Finalizado",
   "housingType": "Tipo de Vivienda",
   "Mixed": "Mixta",
+  "reference_no": "la ref",
   "Tourism": "Turística",
+  "short-term-rental": "Alquiler Turístico",
   "administrationFee": "Administración mensual",
   "dateBuilt": "Año de construcción / Antigüedad",
   "parkingSpace": "Parqueaderos"

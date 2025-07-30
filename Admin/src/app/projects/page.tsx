@@ -34,9 +34,10 @@ const Projects = () => {
 
   const filteredProjects = projects.filter(
     (project) =>
-      project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.region.toLowerCase().includes(searchTerm.toLowerCase()),
+      project.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.region?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const { t } = useTranslation();
   return (
     <DefaultLayout>

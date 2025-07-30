@@ -59,6 +59,9 @@ type Property = {
   likes: number;
   created_at: string;
   updated_at: string;
+  neighborhood: string;
+  reference_no: string;
+
 };
 
 type Project = {
