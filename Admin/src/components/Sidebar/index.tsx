@@ -40,7 +40,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         {
           icon: <FaHouseChimney className="fill-current" size={20} />,
           label: t("short-term-rental"),
-          route: "/properties",
+          route: "/rental",
         },
         {
           icon: <FaBuilding className="fill-current" size={20} />,

@@ -1077,7 +1077,7 @@ const AddProject = () => {
                 <div className="w-full h-[1px]  bg-slate-300 mb-4" />
 
 
-                {Object.entries(AMENITIES).map(([name, options]) => (
+                {/* {Object.entries(AMENITIES).map(([name, options]) => (
                   <ToggleButtonGroup
                     key={name}
                     label={t(name)}
@@ -1099,7 +1099,31 @@ const AddProject = () => {
                       setValue("amenities", updatedAmenities);
                     }}
                   />
-                ))}
+                ))} */}
+
+
+                AMENITIES.map(({name, sub_amenities}) => (
+                <ToggleButtonGroup
+                  key={name}
+                  label={t(name)}
+                  options={sub_amenities} // string labels, not ids
+                  selectedOptions={
+                    watch("amenities")?.find((item) => item.name === name)?.sub_amenities || []
+                  }
+                  onChange={(selected) => {
+                    const updatedAmenities = [...(watch("amenities") || [])];
+                    const index = updatedAmenities.findIndex((item) => item.name === name);
+
+                    if (index > -1) {
+                      updatedAmenities[index].sub_amenities = selected;
+                    } else {
+                      updatedAmenities.push({ name, sub_amenities: selected });
+                    }
+
+                    setValue("amenities", updatedAmenities);
+                  }}
+                />
+                ))
 
 
                 <div className="w-full h-[1px] mb-4 bg-slate-300" />

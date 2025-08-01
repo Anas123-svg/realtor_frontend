@@ -89,11 +89,11 @@ const Properties = () => {
 
   return (
     <div className="pt-16">
-      <div className="container mt-[2.2%] py-2 flex justify-center mb-10">
+      <div className="container mt-[2.2%] py-2 flex justify-center mb-2">
         <SearchCard onSearchComplete={handleSearchComplete} />
       </div>
 
-      <h1 className="py-1 text-2xl sm:text-3xl md:text-4xl text-primary text-center">
+      <h1 className="py-1 my-0 font-hel text-2xl sm:text-3xl md:text-4xl text-primary text-center">
         {filters.dealType == "Sale"
           ? t("existingProperties")
           : filters.dealType == "Rental"
@@ -145,7 +145,7 @@ const Properties = () => {
 
 
       <div className="container">
-        <div className="hidden md:block w-full relative h-5">
+        <div className="hidden md:block w-full relative h-1">
           <div className="flex gap-3 absolute right-0">
             <button onClick={() => setView("grid")}>
               <LayoutGrid size={30} className="text-primary" />

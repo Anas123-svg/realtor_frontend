@@ -22,7 +22,8 @@ const Video = ({ video, photos }: Props) => {
 
   return (
     <div className="py-10 border-y flex flex-col md:flex-row gap-10  border-black">
-      <div className="w-full h-[50vh] flex flex-col items-center">
+
+      {/* <div className="w-full h-[50vh] flex flex-col items-center">
         <Swiper
           className="mySwiper2 h-full w-full relative"
           direction={"vertical"}
@@ -77,12 +78,13 @@ const Video = ({ video, photos }: Props) => {
           )}
         </Swiper>
         <p className="text-xl mt-5">{t("photos")}</p>
-      </div>
+      </div> */}
+
       <div className="w-full flex flex-col items-center">
         <video
           src={video}
           controls
-          className="w-full h-[44.15vh] object-cover"
+          className="w-full h-[66.15vh] object-cover"
         />
         <p className="text-xl mt-5">{t("Video")}</p>
       </div>

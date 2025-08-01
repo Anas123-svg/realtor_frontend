@@ -38,6 +38,8 @@ type Property = {
   likes: number;
   created_at: string;
   updated_at: string;
+  reference_no: string;
+  neighborhood: string;
 };
 
 type Blog = {

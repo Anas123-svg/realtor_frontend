@@ -164,7 +164,7 @@ const About = (props: Props) => {
         <div className="space-y-12">
           {categories.map((category, idx) => (
             <div key={idx}>
-              <h2 className="text-2xl font-medium text-gray-800 mb-3">
+              <h2 className="text-2xl font-hel font-medium text-gray-800 mb-3">
                 {category.title}
               </h2>
               <div className="flex flex-wrap gap-6">

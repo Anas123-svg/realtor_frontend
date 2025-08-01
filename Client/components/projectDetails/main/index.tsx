@@ -179,7 +179,7 @@ const Main = ({ project }: Props) => {
           {/* Developer Info Card */}
           <Card className="overflow-hidden border-[1px] border-gray-300">
             <CardHeader className="bg-[#f7f3e8]">
-              <CardTitle className="flex items-center gap-2 text-gray-700">
+              <CardTitle className="flex font-hel items-center gap-2 text-gray-700">
                 <Building2 className="w-5 h-5" />
                 {t("developerInfo")}
               </CardTitle>
@@ -301,7 +301,7 @@ const Main = ({ project }: Props) => {
                   className="overflow-hidden border-[1px] border-gray-300 bg-[#f7f3e8]"
                 >
                   <CardHeader className={feature.color}>
-                    <CardTitle className="flex items-center gap-2 text-gray-700">
+                    <CardTitle className="flex font-hel items-center gap-2 text-gray-700">
                       {feature.icon}
                       {feature.title}
                     </CardTitle>
@@ -377,7 +377,7 @@ const Main = ({ project }: Props) => {
           {hasValidAmenities && (
             <Card className="overflow-hidden border border-gray-300 bg-[#f7f3e8]">
               <CardHeader className="bg-[#f7f3e8]">
-                <CardTitle className="flex items-center gap-2 text-gray-700">
+                <CardTitle className="flex font-hel items-center gap-2 text-gray-700">
                   <Coffee className="w-5 h-5" />
                   {t("amenities")}
                 </CardTitle>
@@ -407,7 +407,7 @@ const Main = ({ project }: Props) => {
                           className="overflow-hidden border border-gray-300 bg-[#f7f3e8]"
                         >
                           <CardHeader className="bg-[#f7f3e8]">
-                            <CardTitle className="flex items-center gap-2 text-gray-700 text-sm">
+                            <CardTitle className="flex font-hel items-center gap-2 text-gray-700 text-sm">
                               {t(category.name)}
                             </CardTitle>
                           </CardHeader>
@@ -436,7 +436,7 @@ const Main = ({ project }: Props) => {
 
           <Card className="overflow-hidden border-[1px] border-gray-300 ">
             <CardHeader className="bg-[#f7f3e8] text-gray-800">
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex font-hel items-center gap-2">
                 <LineChart className="w-5 h-5" />
                 {t("investmentPotential")}
               </CardTitle>
@@ -473,7 +473,7 @@ const Main = ({ project }: Props) => {
           {project?.FAQ && project?.FAQ.length > 0 && (
             <Card className="overflow-hidden border-[1px] border-gray-300">
               <CardHeader className="bg-[#f7f3e8] text-black">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex font-hel items-center gap-2">
                   <HelpCircle className="w-5 h-5" />
                   {t("faq")}
                 </CardTitle>
@@ -519,7 +519,7 @@ const Main = ({ project }: Props) => {
           {/* Progress Card */}
           <Card className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="bg-primary2 text-white">
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex font-hel items-center gap-2">
                 <Clock className="w-5 h-5" />
                 {t("projectProgress")}
               </CardTitle>

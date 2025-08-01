@@ -380,6 +380,7 @@ import {
   Heart,
   Forward,
   ArrowLeft,
+  Video,
 } from "lucide-react";
 import {
   Dialog,
@@ -434,7 +435,7 @@ const Slider = ({ property }: { property: Property }) => {
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row gap-0 w-full h-[65vh] relative">
+      <div className="flex flex-col lg:flex-row gap-1 w-full h-[65vh] relative">
         {/* Left large image */}
         <div className="w-full lg:w-1/2 h-full relative">
           <img
@@ -547,7 +548,7 @@ const Slider = ({ property }: { property: Property }) => {
         </div>
 
         {/* Right 2x2 image grid */}
-        <div className="w-full lg:w-1/2 grid grid-cols-2 grid-rows-2 gap-0 h-full">
+        <div className="w-full lg:w-1/2 grid grid-cols-2 grid-rows-2 gap-1 h-full">
           {images.slice(1, 5).map((img, i) => (
             <div key={i} className="relative w-full h-full">
               <img
@@ -556,17 +557,34 @@ const Slider = ({ property }: { property: Property }) => {
                 className="w-full h-full object-cover rounded-[2px]"
               />
               {i === 3 && (
-                <button
-                  // onClick={() => openLightbox(0)}
-                  onClick={() => setGalleryOpen(true)}
+                <div className="absolute bottom-4 left-4 flex gap-2">
+                  {/* Photos button */}
+                  <button
+                    onClick={() => setGalleryOpen(true)}
+                    className="bg-black/50 px-4 py-2 rounded-full flex items-center gap-1 text-xs font-medium shadow hover:bg-black transition"
+                  >
+                    <Camera size={14} className="text-white" />
+                    <span className="text-white">{images.length} Photos</span>
+                  </button>
 
-                  className="absolute bottom-4 left-10 bg-black/50 px-6 py-2 rounded-full flex items-center gap-1 text-xs font-medium shadow hover:bg-black transition"
-                >
-                  <Camera size={14} className="text-white" />
-                  <span className="text-white">{images.length} Photos</span>
-                </button>
+                  {/* Video button */}
+                  <button
+                    onClick={() => {
+                      const videoElement = document.getElementById("full-video");
+                      if (videoElement) {
+                        videoElement.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
+                    className="bg-black/50 px-4 py-2 rounded-full flex items-center gap-1 text-xs font-medium shadow hover:bg-black transition"
+                  >
+                    <Video size={14} className="text-white" />
+                    <span className="text-white">Video</span>
+                  </button>
+                </div>
               )}
+
             </div>
+
           ))}
         </div>
       </div>

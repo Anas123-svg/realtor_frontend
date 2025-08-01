@@ -88,15 +88,15 @@ const Projects = () => {
         <Skeleton className="mt-1 md:mt-2 w-full h-[500px]" />
       )} */}
 
-      <div className="container flex justify-center mb-10">
+      <div className="container flex justify-center mb-4">
         <ProjectSearchCard />
       </div>
-      <h1 className="py-4 text-2xl sm:text-3xl md:text-4xl text-primary text-center">
+      <h1 className="py-1 mb-0 font-hel text-2xl sm:text-3xl md:text-4xl text-primary text-center">
         {t("newDevelopments")}
       </h1>
 
       <div className="container">
-        <div className="hidden md:block w-full relative h-5">
+        <div className="hidden md:block w-full relative h-1">
           <div className="flex gap-3 absolute right-0">
             <button onClick={() => setView("grid")}>
               <LayoutGrid size={30} className="text-primary" />

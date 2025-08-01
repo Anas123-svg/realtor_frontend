@@ -79,9 +79,9 @@ const page = () => {
         <Slider property={property} />
       </div>
       <div className="container">
-        <div className="lg:hidden">
+        {/* <div className="lg:hidden">
           <Slider2 photos={property.images} />
-        </div>
+        </div> */}
         <Main property={property} admin={admin} />
         <div className="flex gap-5 mb-5 lg:hidden">
           <button
@@ -190,7 +190,7 @@ const page = () => {
             </DialogContent>
           </Dialog>
         </div>
-        <Video photos={property.images} video={property.video} />
+        {/* <Video photos={property.images} video={property.video} /> */}
         <Map
           latitude={Number(property.location.latitude)}
           longitude={Number(property.location.longitude)}
@@ -198,6 +198,10 @@ const page = () => {
         />
         <Characteristics characteristics={property.amenities} />
         <About property={property} />
+        <div id="full-video">
+          <Video photos={property.images} video={property.video} />
+        </div>
+
         {admin && (
           <div className="md:hidden">
             <Form admin={admin} />

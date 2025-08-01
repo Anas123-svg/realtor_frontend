@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
-import useAuthStore from "@/store/authStore";
+import { useParams, useRouter } from "next/navigation";
 import {
   PROPERTY_TYPES,
   VIEW_OPTIONS,
@@ -37,8 +37,6 @@ const PropertySchema = z.object({
   images: z.array(z.string()).min(1, "At least one image is required"),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  neighborhood: z.string().min(1, "Neighborhood is required"),
-  dateBuilt: z.string().min(1, "dateBuilt is required"),
   location: z.object({
     longitude: z.number(),
     latitude: z.number(),
@@ -53,10 +51,6 @@ const PropertySchema = z.object({
     .min(0, "Bathrooms must be 0 or greater")
     .max(100, "Bathrooms must be less than 100"),
   area: z
-    .number()
-    .min(1, "Area must be greater than 0")
-    .max(10000, "Area must be less than 10000"),
-  parkingSpace: z
     .number()
     .min(1, "Area must be greater than 0")
     .max(10000, "Area must be less than 10000"),
@@ -84,8 +78,7 @@ const PropertySchema = z.object({
       name: z.string(),
       sub_amenities: z.array(z.string())
     })
-  ),
-  internet: z.string().min(1, "Internet type is required"),
+  ), internet: z.string().min(1, "Internet type is required"),
   heating: z
     .array(z.string())
     .min(1, "At least one heating option is required"),
@@ -101,7 +94,6 @@ const PropertySchema = z.object({
   condition: z.enum(["New", "Used"]),
   video: z.string().optional(),
   price: z.number().min(1, "Price must be greater than 0"),
-  administrationFee: z.number().min(1, "Price must be greater than 0"),
   priceType: z.enum(["Cash", "Financing Options"]),
 });
 
@@ -301,21 +293,20 @@ const ToggleButtonGroup = memo(
 );
 ToggleButtonGroup.displayName = "ToggleButtonGroup";
 
-const AddProperty = () => {
+const EditProperty = () => {
   const {
     control,
     handleSubmit,
     formState: { errors },
     watch,
     setValue,
+    getValues,
   } = useForm<PropertyFormData>({
     resolver: zodResolver(PropertySchema),
     defaultValues: {
       images: [],
       title: "",
       description: "",
-      neighborhood: "",
-      dateBuilt: "",
       location: {
         longitude: 0,
         latitude: 0,
@@ -324,7 +315,6 @@ const AddProperty = () => {
       bedrooms: 0,
       bathrooms: 0,
       area: 0,
-      parkingSpace: 0,
       propertyType: "",
       propertyStatus: "",
       dealType: "Sale",
@@ -347,7 +337,6 @@ const AddProperty = () => {
       condition: "New",
       video: "",
       price: 0,
-      administrationFee: 0,
       priceType: "Cash",
     },
   });
@@ -355,8 +344,67 @@ const AddProperty = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const isLoaded = useGoogleMapsStore((state) => state.isLoaded);
-  const { user } = useAuthStore();
+  const { id } = useParams();
+  const router = useRouter();
   const { t } = useTranslation();
+  const fetchProperty = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/properties/${id}`,
+      );
+      const property = response.data.property;
+      const location = {
+        latitude: Number(property.location.latitude),
+        longitude: Number(property.location.longitude),
+        region: property.location.region,
+      };
+      setValue("images", property.images);
+      setValue("title", property.title);
+      setValue("description", property.description);
+      setValue("location", location);
+      setValue("bedrooms", property.bedrooms);
+      setValue("bathrooms", property.bathrooms);
+      setValue("area", property.area);
+      setValue("propertyType", property.propertyType);
+      setValue("propertyStatus", property.propertyStatus);
+      setValue("dealType", property.dealType);
+      setValue("view", property.view);
+      setValue("outdoor", property.outdoor);
+      setValue("propertyStyle", property.propertyStyle);
+      setValue("floors", property.floors);
+      setValue("noiseLevel", property.noiseLevel);
+      setValue("laundry", property.laundry);
+      setValue("securityFeatures", property.securityFeatures);
+
+      setValue(
+        "amenities",
+        Object.keys(AMENITIE).map((name) => {
+          const matched = property.amenities?.find((item: any) => item.name === name);
+          return {
+            name,
+            sub_amenities: matched?.sub_amenities || [],
+          };
+        })
+      );
+
+
+      setValue("internet", property.internet);
+      setValue("heating", property.heating);
+      setValue("cooling", property.cooling);
+      setValue("powerBackup", property.powerBackup);
+      setValue("nearbyInfrastructure", property.nearbyInfrastructure);
+      setValue("condition", property.condition);
+      setValue("price", property.price);
+      setValue("priceType", property.priceType);
+      if (property.video) setValue("video", property.video);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProperty();
+  }, []);
 
   const handleLocationSelect = useCallback(
     (location: { latitude: number; longitude: number; region: string }) => {
@@ -372,55 +420,15 @@ const AddProperty = () => {
   const onSubmit = async (data: PropertyFormData) => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/properties`,
-        { ...data, adminId: user?.id },
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/properties/${id}`,
+        data,
       );
-      toast.success(response.data.message || "Property added successfully");
-      setValue("images", []);
-      setValue("title", "");
-      setValue("description", "");
-      setValue("neighborhood", "");
-      setValue("dateBuilt", "");
-      setValue("location", {
-        longitude: 0,
-        latitude: 0,
-        region: "",
-      });
-      setValue("bedrooms", 0);
-      setValue("bathrooms", 0);
-      setValue("area", 0);
-      setValue("parkingSpace", 0);
-      setValue("propertyType", "");
-      setValue("propertyStatus", "");
-      setValue("dealType", "Sale");
-      setValue("view", []);
-      setValue("outdoor", []);
-      setValue("propertyStyle", []);
-      setValue("floors", 0);
-      setValue("noiseLevel", "");
-      setValue("laundry", "");
-      setValue("securityFeatures", []);
-      setValue(
-        "amenities",
-        Object.keys(AMENITIES).map((name) => ({
-          name,
-          sub_amenities: [],
-        }))
-      );
-      setValue("internet", "");
-      setValue("heating", []);
-      setValue("cooling", []);
-      setValue("powerBackup", []);
-      setValue("nearbyInfrastructure", []);
-      setValue("condition", "New");
-      setValue("video", "");
-      setValue("price", 0);
-      setValue("administrationFee", 0);
-      setValue("priceType", "Cash");
+      toast.success(response.data.message || "Property edited successfully");
+      router.push("/properties");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add property");
+      toast.error("Failed to edit property");
     } finally {
       setLoading(false);
     }
@@ -429,11 +437,11 @@ const AddProperty = () => {
   return (
     <DefaultLayout>
       <div className="relative mx-auto min-h-screen max-w-270">
-        <Breadcrumb prev={t("properties")} pageName={t("addProperty")} />
+        <Breadcrumb prev={t("properties")} pageName={t("editProperty")} />
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
             <h3 className="font-medium text-black dark:text-white">
-              {t("addProperty")}
+              {t("editProperty")}
             </h3>
           </div>
           <div className="p-7">
@@ -543,7 +551,7 @@ const AddProperty = () => {
                         {t("location")}{" "}
                         {errors.location && (
                           <span className="text-red">
-                            - {errors.location?.message}
+                            - {errors.location?.region?.message}
                           </span>
                         )}
                       </label>
@@ -624,9 +632,6 @@ const AddProperty = () => {
                   )}
                 />
               </div>
-
-
-
               <div className="flex flex-col sm:flex-row sm:space-x-5">
                 <div className="mb-5.5 w-full">
                   <Controller
@@ -842,80 +847,6 @@ const AddProperty = () => {
                 </div>
               </div>
 
-
-              <div className="flex flex-col sm:flex-row sm:space-x-5">
-                <div className="mb-5.5 w-full">
-                  <Controller
-                    name="parkingSpace"
-                    control={control}
-                    render={({ field }) => (
-                      <>
-                        <label
-                          className="mb-3 block text-sm font-medium text-black dark:text-white"
-                          htmlFor="parkingSpace"
-                        >
-                          {t("parkingSpace")}
-                          {errors.parkingSpace && (
-                            <span className="text-red">
-                              - {errors.parkingSpace.message}
-                            </span>
-                          )}
-                        </label>
-                        <input
-                          className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="number"
-                          id="parkingSpace"
-                          placeholder={t("parkingSpace")}
-                          value={field.value}
-                          onChange={(e) => {
-                            const value =
-                              e.target.value === ""
-                                ? ""
-                                : Number(e.target.value);
-                            field.onChange(value);
-                          }}
-                        />
-                      </>
-                    )}
-                  />
-                </div>
-                <div className="mb-5.5 w-full">
-                  <Controller
-                    name="administrationFee"
-                    control={control}
-                    render={({ field }) => (
-                      <>
-                        <label
-                          className="mb-3 block text-sm font-medium text-black dark:text-white"
-                          htmlFor="administrationFee"
-                        >
-                          {t("administrationFee")}{" "}
-                          {errors.administrationFee && (
-                            <span className="text-red">
-                              - {errors.administrationFee.message}
-                            </span>
-                          )}
-                        </label>
-                        <input
-                          className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="number"
-                          id="administrationFee"
-                          placeholder={t("administrationFee")}
-                          value={field.value}
-                          onChange={(e) => {
-                            const value =
-                              e.target.value === ""
-                                ? ""
-                                : Number(e.target.value);
-                            field.onChange(value);
-                          }}
-                        />
-                      </>
-                    )}
-                  />
-                </div>
-              </div>
-
               <div className="flex flex-col sm:flex-row sm:space-x-5">
                 <div className="mb-5.5 w-full">
                   <Controller
@@ -1116,64 +1047,6 @@ const AddProperty = () => {
                   />
                 </div>
               </div>
-
-              <div className="flex flex-col sm:flex-row sm:space-x-5">
-                <div className="mb-5.5 w-full">
-                  <Controller
-                    name="neighborhood"
-                    control={control}
-                    render={({ field }) => (
-                      <>
-                        <label
-                          className="mb-3 block text-sm font-medium text-black dark:text-white"
-                          htmlFor="neighborhood"
-                        >
-                          {t("neighborhood")}{" "}
-                          {errors.neighborhood && (
-                            <span className="text-red">- {errors.neighborhood.message}</span>
-                          )}
-                        </label>
-                        <input
-                          className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="text"
-                          id="neighborhood"
-                          placeholder={t("neighborhood")}
-                          {...field}
-                        />
-                      </>
-                    )}
-                  />
-                </div>
-
-                <div className="mb-5.5 w-full">
-                  <Controller
-                    name="dateBuilt"
-                    control={control}
-                    render={({ field }) => (
-                      <>
-                        <label
-                          className="mb-3 block text-sm font-medium text-black dark:text-white"
-                          htmlFor="dateBuilt"
-                        >
-                          {t("dateBuilt")}{" "}
-                          {errors.dateBuilt && (
-                            <span className="text-red">- {errors.dateBuilt.message}</span>
-                          )}
-                        </label>
-                        <input
-                          className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="date"
-                          id="dateBuilt"
-                          placeholder={t("dateBuilt")}
-                          value={field.value ? field.value.split("T")[0] : ""} // ensures correct format
-                          onChange={(e) => field.onChange(e.target.value)}
-                        />
-                      </>
-                    )}
-                  />
-                </div>
-
-              </div>
               <ToggleButtonGroup
                 label={t("propertyStyle")}
                 error={errors.propertyStyle?.message}
@@ -1181,17 +1054,9 @@ const AddProperty = () => {
                 selectedOptions={watch("propertyStyle")}
                 onChange={(selected) => setValue("propertyStyle", selected)}
               />
-              {/* <ToggleButtonGroup
-                label={t("amenities")}
-                error={errors.amenities?.message}
-                options={AMENITIES}
-                selectedOptions={watch("amenities")}
-                onChange={(selected) => setValue("amenities", selected)}
-              /> */}
 
-              <h1 className="font-bold text-black mt-4 " >{t("amenities")}</h1>
-              <div className="w-full h-[1px]  bg-slate-300 mb-4" />
-
+              <h1 className="font-bold text-black mt-4">{t("amenities")}</h1>
+              <div className="w-full h-[1px] bg-slate-300 mb-4" />
 
               {Object.entries(AMENITIE).map(([name, options]) => (
                 <ToggleButtonGroup
@@ -1203,21 +1068,22 @@ const AddProperty = () => {
                     watch("amenities")?.find((item: any) => item.name === name)?.sub_amenities || []
                   }
                   onChange={(selected) => {
-                    const updatedAmenities = [...(watch("amenities") || [])];
-                    const categoryIndex = updatedAmenities.findIndex((item: any) => item.name === name);
+                    const currentAmenities = [...(watch("amenities") || [])];
+                    const existingIndex = currentAmenities.findIndex((item: any) => item.name === name);
 
-                    if (categoryIndex > -1) {
-                      updatedAmenities[categoryIndex].sub_amenities = selected;
+                    if (existingIndex > -1) {
+                      currentAmenities[existingIndex].sub_amenities = selected;
                     } else {
-                      updatedAmenities.push({ name, sub_amenities: selected });
+                      currentAmenities.push({ name, sub_amenities: selected });
                     }
 
-                    setValue("amenities", updatedAmenities);
+                    setValue("amenities", currentAmenities);
                   }}
                 />
               ))}
 
-              <div className="w-full h-[1px] mb-4 bg-slate-300" />
+              <div className="w-full h-[1px] bg-slate-300 mb-4" />
+
 
 
               <ToggleButtonGroup
@@ -1324,7 +1190,7 @@ const AddProperty = () => {
                 type="submit"
                 disabled={loading}
               >
-                {loading ? t("loading") : t("addProperty")}
+                {loading ? t("loading") : t("editProperty")}
               </button>
             </form>
           </div>
@@ -1334,4 +1200,4 @@ const AddProperty = () => {
   );
 };
 
-export default AddProperty;
+export default EditProperty;
