@@ -335,10 +335,11 @@ const AddProperty = () => {
       noiseLevel: "",
       laundry: "",
       securityFeatures: [],
-      amenities: Object.keys(AMENITIES).map((name) => ({
-        name,
+      amenities: AMENITIES.map((item) => ({
+        name: item.name,
         sub_amenities: [],
       })),
+
       internet: "",
       heating: [],
       cooling: [],
@@ -1193,12 +1194,12 @@ const AddProperty = () => {
               <div className="w-full h-[1px]  bg-slate-300 mb-4" />
 
 
-              {Object.entries(AMENITIE).map(([name, options]) => (
+              {AMENITIES.map(({ name, sub_amenities }) => (
                 <ToggleButtonGroup
                   key={name}
                   label={t(name)}
                   error={errors.amenities?.message}
-                  options={options}
+                  options={sub_amenities}
                   selectedOptions={
                     watch("amenities")?.find((item: any) => item.name === name)?.sub_amenities || []
                   }
@@ -1216,6 +1217,9 @@ const AddProperty = () => {
                   }}
                 />
               ))}
+
+
+
 
               <div className="w-full h-[1px] mb-4 bg-slate-300" />
 

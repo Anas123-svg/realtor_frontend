@@ -57,7 +57,7 @@ const ProjectDetails = () => {
 
   return (
     <div className="pt-16">
-      {project.images?.length > 0 && <Slider images={project.images} />}
+      {project.images?.length > 0 && <Slider images={project.images} property={project} />}
       <div className="container">
         <Main project={project} />
         {properties.length > 0 && (

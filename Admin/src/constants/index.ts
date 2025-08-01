@@ -85,6 +85,8 @@ export const AMENITIE = {
   ]
 };
 
+
+
 export const AMENITIES = [
   {
     name: "Pools & Water Features",
