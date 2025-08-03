@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/lib/utils";
-import { AMENITIES_WITH_ID } from "@/constants";
+import { AMENITIES_WITH_I, AMENITIES_WITH_ID } from "@/constants";
 
 interface Props {
   project: Project | undefined;
@@ -40,11 +40,10 @@ const Main = ({ project }: Props) => {
   const lng = project?.longitude ? Number(project.longitude) : 0;
 
 
-
   const hasValidAmenities =
     (project?.amenities?.length ?? 0) > 0 &&
-    project?.amenities?.some((cat) => {
-      const category = AMENITIES_WITH_ID.find((c) => c.id === cat.id);
+    project?.amenities.some((cat) => {
+      const category = AMENITIES_WITH_I.find((c) => c.name === cat.name);
       return category && cat.sub_amenities?.length > 0;
     });
 
@@ -307,20 +306,20 @@ const Main = ({ project }: Props) => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="px-6 pb-3 bg-[#f7f3e8]">
+                    {/* <div className="grid grid-cols-2 sm:grid-cols-3 gap-2"> */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {feature.items?.map((item, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-2 px-3 py-2 bg-[#f7f3e8] rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition"
-                          >
-                            <div className={`w-2 h-2 rounded-full ${feature.dotColor}`} />
-                            <span className="text-gray-700 text-sm">{t(item)}</span>
-                          </div>
-                        ))}
-                      </div>
-
+                      {feature.items?.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 px-3 py-2 bg-[#f7f3e8] rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition"
+                        >
+                          <div className={`w-2 h-2 rounded-full ${feature.dotColor}`} />
+                          <span className="text-gray-700 text-sm">{t(item)}</span>
+                        </div>
+                      ))}
                     </div>
+
+                    {/* </div> */}
                   </CardContent>
                 </Card>
               ))}
@@ -391,16 +390,16 @@ const Main = ({ project }: Props) => {
                   {project.amenities
                     .filter(
                       (cat) =>
-                        AMENITIES_WITH_ID.find((c) => c.id === cat.id) &&
+                        AMENITIES_WITH_I.find((c) => c.name === cat.name) &&
                         cat.sub_amenities.length > 0
                     )
                     .map((cat, catIndex) => {
-                      const category = AMENITIES_WITH_ID.find((c) => c.id === cat.id);
+                      const category = AMENITIES_WITH_I.find((c) => c.name === cat.name);
                       if (!category) return null;
 
-                      const subAmenities = cat.sub_amenities
-                        .map((subId) => category.items[subId - 1])
-                        .filter(Boolean); // Remove undefined if subId is out of bounds
+                      const subAmenities = cat.sub_amenities.filter((item) =>
+                        category.items.includes(item)
+                      );
 
                       if (subAmenities.length === 0) return null;
 
@@ -419,7 +418,7 @@ const Main = ({ project }: Props) => {
                               {subAmenities.map((item, index) => (
                                 <li key={index} className="flex items-center gap-3">
                                   <div className="w-2 h-2 rounded-full bg-primary" />
-                                  <span className="text-gray-700 text-sm">{t(item)}</span>
+                                  <span className="text-gray-700 text-sm">{t(item) || item}</span>
                                 </li>
                               ))}
                             </ul>
@@ -431,6 +430,7 @@ const Main = ({ project }: Props) => {
               </CardContent>
             </Card>
           )}
+
 
 
 

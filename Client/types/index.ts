@@ -91,9 +91,10 @@ type Project = {
   sustainabilityFeatures: string[];
   investmentReason: string[];
   amenities: {
-    id: number;
-    sub_amenities: number[];
+    name: string;
+    sub_amenities: string[];
   }[];
+
 
   progress: number;
   properties: Property[];
