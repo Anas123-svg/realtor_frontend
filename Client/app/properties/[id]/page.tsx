@@ -75,7 +75,7 @@ const page = () => {
 
   return property ? (
     <div className="pt-28">
-      <div className=" lg:block px-16">
+      <div className=" lg:block ">
         <Slider property={property} />
       </div>
       <div className="container">

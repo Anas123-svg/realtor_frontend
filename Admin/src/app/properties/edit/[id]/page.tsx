@@ -36,6 +36,7 @@ import { useTranslation } from "react-i18next";
 const PropertySchema = z.object({
   images: z.array(z.string()).min(1, "At least one image is required"),
   title: z.string().min(1, "Title is required"),
+  neighborhood: z.string().min(1, "neighborhood is required"),
   description: z.string().min(1, "Description is required"),
   location: z.object({
     longitude: z.number(),
@@ -306,6 +307,7 @@ const EditProperty = () => {
     defaultValues: {
       images: [],
       title: "",
+      neighborhood: "",
       description: "",
       location: {
         longitude: 0,
@@ -360,6 +362,7 @@ const EditProperty = () => {
       };
       setValue("images", property.images);
       setValue("title", property.title);
+      setValue("neighborhood", property.neighborhood);
       setValue("description", property.description);
       setValue("location", location);
       setValue("bedrooms", property.bedrooms);
@@ -501,6 +504,7 @@ const EditProperty = () => {
                     )}
                   />
                 </div>
+
                 <div className="mb-5.5 w-full">
                   <Controller
                     name="dealType"
@@ -1047,6 +1051,43 @@ const EditProperty = () => {
                   />
                 </div>
               </div>
+
+
+              {/* <div className="flex flex-col sm:flex-row sm:space-x-5"> */}
+              <div className="mb-5.5 w-full">
+                <Controller
+                  name="neighborhood"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="neighborhood"
+                      >
+                        {t("neighborhood")}{" "}
+                        {errors.neighborhood && (
+                          <span className="text-red">
+                            - {errors.neighborhood.message}
+                          </span>
+                        )}
+                      </label>
+                      <input
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        type="text"
+                        id="neighborhood"
+                        placeholder={t("neighborhood")}
+                        {...field}
+                      />
+                    </>
+                  )}
+                />
+              </div>
+              {/* </div> */}
+
+
+
+
+
               <ToggleButtonGroup
                 label={t("propertyStyle")}
                 error={errors.propertyStyle?.message}

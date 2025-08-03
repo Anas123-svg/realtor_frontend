@@ -43,8 +43,8 @@ const MostViewed = () => {
     selected === "New-Developments"
       ? newDevelopments
       : selected === "Used-Properties"
-      ? usedProperties
-      : Rentals;
+        ? usedProperties
+        : Rentals;
 
   return (
     <div className="container py-10">
@@ -55,42 +55,45 @@ const MostViewed = () => {
       {/* Mobile Button Group (Improved) */}
       <div className="flex justify-between flex-wrap items-center gap-2 bg-white shadow-md p-3 rounded-lg">
         <Button
-          className={`flex-1 text-center text-sm sm:text-base h-14 rounded-lg px-4 whitespace-nowrap transition duration-200 ${
-            selected === "Used-Properties"
+          className={`flex-1 text-center text-sm sm:text-base h-14 rounded-lg px-4 whitespace-nowrap transition duration-200 ${selected === "Used-Properties"
               ? "bg-primary text-white shadow-lg"
               : "bg-gray-200 text-black hover:bg-primary hover:text-white"
-          }`}
+            }`}
           onClick={() => setSelected("Used-Properties")}
         >
           {t("usedProperties")}
         </Button>
         <Button
-          className={`flex-1 text-center text-sm sm:text-base h-14 rounded-lg px-4 whitespace-nowrap transition duration-200 ${
-            selected === "New-Developments"
+          className={`flex-1 text-center text-sm sm:text-base h-14 rounded-lg px-4 whitespace-nowrap transition duration-200 ${selected === "New-Developments"
               ? "bg-primary text-white shadow-lg"
               : "bg-gray-200 text-black hover:bg-primary hover:text-white"
-          }`}
+            }`}
           onClick={() => setSelected("New-Developments")}
         >
           {t("newDevelopments")}
         </Button>
         <Button
-          className={`flex-1 text-center text-sm sm:text-base h-14 rounded-lg px-4 whitespace-nowrap transition duration-200 ${
-            selected === "Rentals"
+          className={`flex-1 text-center text-sm sm:text-base h-14 rounded-lg px-4 whitespace-nowrap transition duration-200 ${selected === "Rentals"
               ? "bg-primary text-white shadow-lg"
               : "bg-gray-200 text-black hover:bg-primary hover:text-white"
-          }`}
+            }`}
           onClick={() => setSelected("Rentals")}
         >
           {t("rentals")}
         </Button>
       </div>
-
       {selected === "New-Developments" ? (
-        <ProjectGrid loading={loading} projects={properties} />
+        <ProjectGrid
+          loading={loading}
+          projects={properties as Partial<Project>[]}
+        />
       ) : (
-        <GridFour loading={loading} products={properties} />
+        <GridFour
+          loading={loading}
+          products={properties as Partial<Property>[]}
+        />
       )}
+
     </div>
   );
 };

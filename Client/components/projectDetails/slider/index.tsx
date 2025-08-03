@@ -132,9 +132,10 @@ const Slider = ({
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row gap-1 w-[90%] mx-auto mt-11 h-[65vh] relative">
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex flex-row gap-1 w-[90%] mx-auto mt-11 h-[65vh] relative">
         {/* Left Main Image */}
-        <div className="w-full lg:w-1/2 h-full relative">
+        <div className="w-1/2 h-full relative">
           <img
             src={images[0]}
             alt="Main"
@@ -144,7 +145,7 @@ const Slider = ({
         </div>
 
         {/* 2x2 Grid Images */}
-        <div className="w-full lg:w-1/2 grid grid-cols-2 grid-rows-2 gap-1 h-full">
+        <div className="w-1/2 grid grid-cols-2 grid-rows-2 gap-1 h-full">
           {images.slice(1, 5).map((img, i) => (
             <div key={i} className="relative w-full h-full">
               <img
@@ -161,13 +162,33 @@ const Slider = ({
                   >
                     <Camera size={14} /> {images.length} Photos
                   </button>
-
                 </div>
               )}
             </div>
           ))}
         </div>
       </div>
+
+      {/* Mobile Layout */}
+      <div className="block lg:hidden w-[90%] mx-auto mt-6 relative">
+        <div className="w-full h-[300px] sm:h-[400px] relative">
+          <img
+            src={images[0]}
+            alt="Main"
+            onClick={() => openLightbox(0)}
+            className="w-full h-full object-cover rounded-[2px] cursor-pointer"
+          />
+          <div className="absolute bottom-4 right-4">
+            <button
+              onClick={() => setGalleryOpen(true)}
+              className="bg-black/50 px-4 py-2 rounded-full flex items-center gap-1 text-xs text-white"
+            >
+              <Camera size={14} /> {images.length} Photos
+            </button>
+          </div>
+        </div>
+      </div>
+
 
       {/* Lightbox */}
       {lightboxOpen && (

@@ -81,7 +81,9 @@ const ProjectSchema = z.object({
       }),
     )
     .optional(),
-  properties: z.array(z.number()).min(1, "At least one property is required"),
+  // properties: z.array(z.number()).min(0, "At least one property is required"),
+  properties: z.array(z.number()).default([]),
+
 });
 
 type MapComponentProps = {
@@ -423,6 +425,18 @@ const AddProject = () => {
     );
   };
   const { t } = useTranslation();
+
+
+  const [search, setSearch] = useState("");
+
+  // Filtered properties based on search query
+  const filteredProperties = properties.filter((property) =>
+    (property.title + " - " + t(property.dealType))
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+
   return (
     <DefaultLayout>
       <div className="relative mx-auto min-h-screen max-w-270">
@@ -1194,7 +1208,7 @@ const AddProject = () => {
                     )}
                   />
                 </div>
-                <ToggleButtonGroup
+                {/* <ToggleButtonGroup
                   label={t("properties")}
                   error={errors.properties?.message}
                   options={properties.map(
@@ -1217,7 +1231,50 @@ const AddProject = () => {
                       .map((property) => property.id);
                     setValue("properties", selectedIDs);
                   }}
+                /> */}
+
+
+                <h1 className="text-black">{t("properties")}</h1>
+
+                {/* Search input */}
+                <input
+                  type="text"
+                  placeholder={t("Search property...")}
+                  className="w-full  bg-gray    border rounded px-3 py-2 mb-2"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
+
+                {/* Scrollable container with hidden scrollbar */}
+                <div className="max-h-[300px] overflow-y-auto border rounded p-2 scrollbar-hide">
+                  <ToggleButtonGroup
+                    label=""
+                    error={errors.properties?.message}
+                    options={filteredProperties.map(
+                      (property) => property.title + " - " + t(property.dealType)
+                    )}
+                    selectedOptions={watch("properties").map((id) => {
+                      const prop = properties.find((property) => property.id === id);
+                      return prop ? prop.title + " - " + t(prop.dealType) : "";
+                    })}
+                    onChange={(selectedTitles) => {
+                      const selectedIDs = properties
+                        .filter((property) =>
+                          selectedTitles.includes(
+                            property.title + " - " + t(property.dealType)
+                          )
+                        )
+                        .map((property) => property.id);
+                      setValue("properties", selectedIDs);
+                    }}
+                  />
+                </div>
+
+
+
+
+
+
                 <div className="mb-5.5 w-full">
                   <Controller
                     name="FAQ"
