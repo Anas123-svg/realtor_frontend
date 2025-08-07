@@ -23,29 +23,25 @@ const Characteristics: React.FC<Props> = ({ characteristics }) => {
             {t("amenities")}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-6 py-4 bg-[#f7f3e8]">
+        <CardContent className="px-6 pb-4 bg-[#f7f3e8]">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {grouped.map((cat) => (
               <Card
                 key={cat.id}
-                className="overflow-hidden border border-gray-300 bg-white"
+                className="overflow-hidden border border-gray-300 bg-[#f7f3e8]"
               >
-                <CardHeader className="bg-white p-3">
+                <CardHeader className="bg-[#f7f3e8] p-3">
                   <CardTitle className="text-sm font-semibold text-gray-800">
                     {t(cat.name)}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-3">
-                  <div className="flex flex-wrap gap-2">
+                <CardContent className="px-6">
+                  <ul className="list-disc marker:text-xl marker:text-black list-inside text-sm text-black ">
                     {cat.items.map((itm, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-primary4 text-white text-sm rounded-lg"
-                      >
-                        {t(itm)}
-                      </span>
+                      <li key={idx}>{t(itm)}</li>
                     ))}
-                  </div>
+                  </ul>
+
                 </CardContent>
               </Card>
             ))}

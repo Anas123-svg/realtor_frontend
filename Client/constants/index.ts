@@ -317,6 +317,8 @@ export const BEDROOM_OPTIONS = ["1", "2", "3", "4", "4+"] as const;
 
 export const BATHROOM_OPTIONS = ["1", "2", "3", "4", "4+"] as const;
 
+export const PARKIING_OPTIONS = ["1", "2", "3", "4", "4+"] as const;
+
 export const FLOOR_OPTIONS = ["1", "2", "3", "4", "4+"] as const;
 
 export const RADIUS_OPTIONS = [
@@ -335,6 +337,8 @@ export const PROPERTY_TYPES = [
   "Studio Apartment",
   "Commercial",
   "Land",
+  "Offices",
+
 ];
 
 export const VIEW_OPTIONS = ["City", "Mountain", "Water", "Park"];

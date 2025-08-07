@@ -16,6 +16,7 @@ import {
   PROPERTY_STATUS,
   NEARBY_INFRASTRUCTURE,
   POWER_BACKUP,
+  PARKIING_OPTIONS,
 } from "@/constants";
 
 export interface Location {
@@ -34,8 +35,11 @@ export interface SearchFilters {
   propertyType: Array<(typeof PROPERTY_TYPES)[number]>;
   minPrice: number;
   maxPrice: number;
+  aminPrice: number;
+  amaxPrice: number;
   beds: Array<(typeof BEDROOM_OPTIONS)[number]>;
   baths: Array<(typeof BATHROOM_OPTIONS)[number]>;
+  parking: Array<(typeof PARKIING_OPTIONS)[number]>;
   views: Array<(typeof VIEW_OPTIONS)[number]>;
   outdoor: Array<(typeof OUTDOOR_OPTIONS)[number]>;
   propertyStyle: Array<(typeof PROPERTY_STYLES)[number]>;

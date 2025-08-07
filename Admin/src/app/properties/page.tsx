@@ -35,6 +35,8 @@ const Properties = () => {
   const filteredProperties = properties.filter(
     (property) =>
       property.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.reference_no?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.neighborhood?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.location?.region.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 

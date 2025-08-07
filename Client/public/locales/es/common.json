@@ -307,5 +307,11 @@
   "bathroomRange": "Baños",
   "administrationFee": "Administración mensual",
   "parkingSpace": "Parqueaderos",
+  "sortBy": "Ordenar por",
+  "recent": "reciente",
+  "priceLowToHigh": "precio de menor a mayor",
+  "priceHighToLow": "precio de mayor a menor",
+  "administration": "Administracion mensual",
+  "parking": "parquederos",
   "adminFeeRange": "Administración Mensual"
 }

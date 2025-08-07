@@ -413,7 +413,7 @@ const Main = ({ project }: Props) => {
                               {t(category.name)}
                             </CardTitle>
                           </CardHeader>
-                          <CardContent className="px-4 pb-6 bg-[#f7f3e8]">
+                          <CardContent className="px-6 pb-6 bg-[#f7f3e8]">
                             <ul className="space-y-2">
                               {subAmenities.map((item, index) => (
                                 <li key={index} className="flex items-center gap-3">

@@ -100,48 +100,7 @@ const Properties = () => {
             ? t("rentalProperties")
             : null}
       </h1>
-      {/* {isLoaded && !loading ? (
-        <div className="mt-1 md:mt-2 absolute z-10 right-[7.5%] top-[46.8%] w-[42%] h-[90%]">
-          <GoogleMap
-            mapContainerStyle={{
-              width: "100%",
-              height: "100%",
-              borderRadius: "2%",
 
-            }}
-            mapTypeId="hybrid"
-            center={center}
-            zoom={14}
-            onLoad={(map) => {
-              setMap(map);
-            }}
-          >
-            {properties.map((property) => (
-              <Marker
-                onClick={() => router.push(`/properties/${property.id}`)}
-                key={property.id}
-                position={{
-                  lat: Number(property.location?.latitude) || 0,
-                  lng: Number(property.location?.longitude) || 0,
-                }}
-              />
-            ))}
-          </GoogleMap>
-          <button
-            onClick={() => {
-              map?.panTo(center);
-            }}
-            className="group font-medium absolute top-14 right-[0.6rem] border shadow bg-white text-black rounded-none p-2"
-          >
-            <Target
-              className="text-gray-500 group-hover:text-black"
-              size={22}
-            />
-          </button>
-        </div>
-      ) : (
-        <Skeleton className="mt-1 md:mt-2 w-full h-[500px]" />
-      )} */}
 
 
       <div className="container">

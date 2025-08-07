@@ -307,5 +307,11 @@
   "bedroomRange": "Bedroom Range",
   "administrationFee": "Administration Fee",
   "parkingSpace": "Parking Space",
+  "sortBy": "Sort by",
+  "recent": "Recent",
+  "priceLowToHigh": "Price Low-High",
+  "priceHighToLow": "Price High-Low",
+  "administration": "Administration Price",
+  "parking": "Parking spots",
   "adminFeeRange": "Admin Fee Range"
 }

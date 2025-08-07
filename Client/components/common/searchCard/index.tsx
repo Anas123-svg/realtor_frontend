@@ -7,6 +7,7 @@ import React, {
   useEffect,
 } from "react";
 import { Button } from "@/components/ui/button";
+
 import {
   Select,
   SelectContent,
@@ -49,6 +50,7 @@ import {
   locations,
   AMENITIESF,
   AMENITIES_WITH_I,
+  PARKIING_OPTIONS,
 } from "@/constants";
 import { SearchCardProps, SearchFilters, Location } from "@/types/searchTypes";
 import {
@@ -68,6 +70,17 @@ const MIN_PRICE_RENTAL = 500000;
 const MAX_PRICE_RENTAL = 10000000;
 const MIN_PRICE_SALE = 50000000;
 const MAX_PRICE_SALE = 5000000000;
+
+const AMIN_PRICE_RENTAL = 50000;
+const AMAX_PRICE_RENTAL = 1000000;
+const AMIN_PRICE_SALE = 50000;
+const AMAX_PRICE_SALE = 1000000;
+
+const STEP_PRICE_SALE = 50_000_000;
+const STEP_PRICE_RENTAL = 500_000;
+
+const ASTEP_PRICE_RENTAL = 50_000;
+
 
 // Reusable Filter Button Component
 const FilterButton: React.FC<{
@@ -124,16 +137,21 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
     condition: initialFilters.condition || "",
     propertyType: initialFilters.propertyType || [],
     minPrice:
-      initialFilters.minPrice || initialFilters.dealType === "Sale"
-        ? MIN_PRICE_SALE
-        : MIN_PRICE_RENTAL,
+      initialFilters.minPrice ??
+      (initialFilters.dealType === "Sale" ? MIN_PRICE_SALE : MIN_PRICE_RENTAL),
     maxPrice:
-      initialFilters.maxPrice || initialFilters.dealType === "Sale"
-        ? MAX_PRICE_SALE
-        : MAX_PRICE_RENTAL,
+      initialFilters.amaxPrice ??
+      (initialFilters.dealType === "Sale" ? MAX_PRICE_SALE : MAX_PRICE_RENTAL),
+    aminPrice:
+      initialFilters.aminPrice ??
+      (initialFilters.dealType === "Sale" ? AMIN_PRICE_SALE : AMIN_PRICE_RENTAL),
+    amaxPrice:
+      initialFilters.maxPrice ??
+      (initialFilters.dealType === "Sale" ? AMAX_PRICE_SALE : AMAX_PRICE_RENTAL),
     radius: initialFilters.radius || "",
     beds: initialFilters.beds || [],
     baths: initialFilters.baths || [],
+    parking: initialFilters.parking || [],
     views: initialFilters.views || [],
     outdoor: initialFilters.outdoor || [],
     propertyStyle: initialFilters.propertyStyle || [],
@@ -152,34 +170,45 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
     sortBy: initialFilters.sortBy || "recent",
   });
 
-  // Handle place selection with error handling
-  // const handlePlaceChanged = useCallback(() => {
-  //   try {
-  //     if (autocompleteRef.current) {
-  //       const place = autocompleteRef.current.getPlace();
-  //       if (!place.geometry || !place.geometry.location) {
-  //         toast.error("Error selecting place. Please try again.");
-  //         return;
-  //       }
 
-  //       const lat = place.geometry.location?.lat();
-  //       const lng = place.geometry.location?.lng();
 
-  //       if (lat !== undefined && lng !== undefined) {
-  //         const newLocation = {
-  //           latitude: lat,
-  //           longitude: lng,
-  //           region: place.formatted_address || "",
-  //         };
-  //         setLocation(newLocation);
-  //         setFilters((prev) => ({ ...prev, location: newLocation }));
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error selecting place:", error);
-  //     toast.error("Error selecting place. Please try again.");
-  //   }
-  // }, []);
+  useEffect(() => {
+    const [min, max] =
+      filters.dealType === "Sale"
+        ? [MIN_PRICE_SALE, MAX_PRICE_SALE]
+        : [MIN_PRICE_RENTAL, MAX_PRICE_RENTAL];
+
+    setFilters((prev) => ({
+      ...prev,
+      minPrice: min,
+      maxPrice: max,
+    }));
+  }, [filters.dealType]);
+
+
+
+  useEffect(() => {
+    const [min, max] = getPriceRange();
+    setFilters((prev) => ({
+      ...prev,
+      minPrice: min,
+      maxPrice: max,
+    }));
+  }, [filters.dealType]);
+
+
+
+
+  const getStep = () => {
+    return filters.dealType === "Sale" ? STEP_PRICE_SALE : STEP_PRICE_RENTAL;
+  };
+
+  const getPriceRange = () => {
+    return filters.dealType === "Sale"
+      ? [MIN_PRICE_SALE, MAX_PRICE_SALE]
+      : [MIN_PRICE_RENTAL, MAX_PRICE_RENTAL];
+  };
+
 
   const handleLocationChange = useCallback((value: string) => {
     const selectedLocation = locations.find(
@@ -224,6 +253,49 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
     }));
   }, []);
 
+
+
+  const handlePriceChangea = useCallback((value: [number, number]) => {
+    setFilters((prev) => ({
+      ...prev,
+      aminPrice: value[0],
+      amaxPrice: value[1],
+    }));
+  }, []);
+
+  const ahandlePriceChange = (value: [number, number]) => {
+    handlePriceChangea(value); // Or directly update filters.aminPrice, amaxPrice
+  };
+
+
+
+  // Format numbers to short form (50K, 1M)
+  const formatShort = (value: number): string => {
+    if (value >= 1_000_000) return `${value / 1_000_000}M`;
+    if (value >= 1_000) return `${value / 1_000}K`;
+    return value.toString();
+  };
+
+  // Parse input like "50K", "1M" into numbers
+  const parseShort = (val: string): number => {
+    const clean = val.toUpperCase().replace(/[^\dKM]/g, "");
+    if (clean.endsWith("M")) return parseFloat(clean) * 1_000_000;
+    if (clean.endsWith("K")) return parseFloat(clean) * 1_000;
+    return parseFloat(clean);
+  };
+
+
+
+  const formatToMillions = (value: number) => `${Math.round(value / 1_000_000)}M`;
+  const parseMillions = (value: string): number => {
+    const match = value.toUpperCase().replace(/[^0-9M]/g, '');
+    if (match.includes("M")) {
+      return parseInt(match.replace("M", "")) * 1_000_000;
+    }
+    return parseInt(match);
+  };
+
+
   // Handle search with validation
   const handleSearch = useCallback(() => {
     let updatedFilters = { ...filters };
@@ -245,20 +317,9 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
       {/* // <div className="bg-white border rounded-md px-4 py-10 shadow-sm w-full sticky top-10 z-20"> */}
 
       <div className="flex flex-col lg:flex-row gap-5 items-end w-full">
-        <div className="w-full flex flex-col sm:flex-row gap-5 whitespace-nowrap">
-          <label className="w-full">
-            {/* <Autocomplete
-              onLoad={(autocomplete) =>
-                (autocompleteRef.current = autocomplete)
-              }
-              onPlaceChanged={handlePlaceChanged}
-            >
-              <Input
-                ref={inputRef}
-                placeholder="Search by location"
-                aria-label="Location search"
-              />
-            </Autocomplete> */}
+        <div className="w-full flex flex-col sm:flex-row gap-10 whitespace-nowrap">
+
+          <label className="flex-1">
             <Select
               onValueChange={handleLocationChange}
               value={filters.location?.id?.toString()}
@@ -270,20 +331,21 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 {t("location")}
               </SelectTrigger>
               <SelectContent>
-                {locations.map((location) => (
-                  <SelectItem key={location.id} value={location.id.toString()}>
-                    {location.label}
-                  </SelectItem>
-                ))}
+                {locations
+                  .slice()
+                  .sort((a, b) => a.label.localeCompare(b.label))
+                  .map((location) => (
+                    <SelectItem key={location.id} value={location.id.toString()}>
+                      {location.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
-            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
-              {filters.location?.label
-                ? filters.location?.label
-                : t("selectLocation")}
-            </p> */}
           </label>
-          <label className="w-full">
+
+
+
+          <label className="flex-1">
             <Select
               onValueChange={(e) => updateFilter("radius", e)}
               disabled={!location.longitude || !location.latitude}
@@ -306,12 +368,12 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 : t("selectRadius")}
             </p> */}
           </label>
-        </div>
-        <div className="w-full flex gap-5 flex-col sm:flex-row">
-          <label className="w-full">
+
+
+          <label className="flex-1">
             <DropdownMenu>
               <DropdownMenuTrigger
-                className="w-[200px] border-none p-0 text-left outline-none"
+                className="w-full border-none p-0 text-left outline-none"
                 aria-label="Price Range"
               >
                 <div className="flex h-10 w-full items-center justify-between py-2">
@@ -319,50 +381,72 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                   <ChevronDown className="h-4 w-4 opacity-50" />
                 </div>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent className="p-5 w-[300px]">
                 <div id="range" className="mb-4">
                   <RangeSlider
-                    min={
-                      filters.dealType === "Sale"
-                        ? MIN_PRICE_SALE
-                        : MIN_PRICE_RENTAL
-                    }
-                    max={
-                      filters.dealType === "Sale"
-                        ? MAX_PRICE_SALE
-                        : MAX_PRICE_RENTAL
-                    }
-                    step={500000}
+
+                    key={filters.dealType} // Forces re-render
+                    min={getPriceRange()[0]}
+                    max={getPriceRange()[1]}
+                    step={getStep()}
                     value={[filters.minPrice, filters.maxPrice]}
                     onInput={handlePriceChange}
+
+
+
                     aria-label="Price range slider"
                   />
                 </div>
-                <div className="flex items-center">
-                  <input
-                    type="text"
-                    aria-label="Minimum price"
-                    value={`${formatCurrency(filters.minPrice)} COP`}
-                    readOnly
-                    className="border border-black rounded-none w-1/2 p-2 outline-none placeholder:font-light font-light"
-                  />
-                  <span className="mx-2">-</span>
-                  <input
-                    type="text"
-                    aria-label="Maximum price"
-                    value={`${formatCurrency(filters.maxPrice)} COP`}
-                    readOnly
-                    className="border border-black rounded-none w-1/2 p-2 outline-none placeholder:font-light font-light"
-                  />
+
+                <div className="flex items-center gap-2">
+                  {/* Min Price Input */}
+                  <div className="relative w-1/2">
+                    <input
+                      type="text"
+                      aria-label="Minimum Price"
+                      inputMode="text"
+                      value={`${formatToMillions(filters.minPrice)} COP`}
+                      onChange={(e) => {
+                        const parsed = parseMillions(e.target.value);
+                        const [minRange, maxRange] = getPriceRange();
+                        if (!isNaN(parsed) && parsed >= minRange && parsed <= filters.maxPrice) {
+                          handlePriceChange([parsed, filters.maxPrice]);
+                        }
+                      }}
+                      placeholder={t("min")}
+                      className="border border-black rounded-none w-full p-2 pr-10 outline-none font-light"
+                    />
+                  </div>
+
+                  {/* Max Price Input */}
+                  <div className="relative w-1/2">
+                    <input
+                      type="text"
+                      aria-label="Maximum Price"
+                      inputMode="text"
+                      value={`${formatToMillions(filters.maxPrice)} COP`}
+                      onChange={(e) => {
+                        const parsed = parseMillions(e.target.value);
+                        const [minRange, maxRange] = getPriceRange();
+                        if (!isNaN(parsed) && parsed <= maxRange && parsed >= filters.minPrice) {
+                          handlePriceChange([filters.minPrice, parsed]);
+                        }
+                      }}
+                      placeholder={t("max")}
+                      className="border border-black rounded-none w-full p-2 pr-1 outline-none font-light"
+                    />
+                  </div>
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
-            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
-              {formatCurrency(filters.minPrice)} COP -{" "}
-              {formatCurrency(filters.maxPrice)} COP
-            </p> */}
           </label>
-          <label className="w-full">
+
+
+
+
+
+          <label className="flex-1">
             <Select
               onValueChange={(e) =>
                 updateFilter("beds", [e] as SearchFilters["beds"])
@@ -386,7 +470,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 : t("selectBeds")}
             </p> */}
           </label>
-          <label className="w-full">
+          <label className="flex-1">
             <Select
               onValueChange={(e) =>
                 updateFilter("baths", [e] as SearchFilters["baths"])
@@ -410,7 +494,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 : t("selectBaths")}
             </p> */}
           </label>
-          <label className="w-full">
+          <label className="flex-1">
             <Select
               onValueChange={(val) =>
                 updateFilter("sortBy", val as SearchFilters["sortBy"])
@@ -428,10 +512,12 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
             </Select>
           </label>
 
-        </div>
-        <div className="flex gap-5 w-full flex-col sm:flex-row">
+
+
+
+
           <Sheet>
-            <SheetTrigger className="w-full bg-secondary rounded-md border border-neutral-200 text-white px-3 py-2 whitespace-nowrap hover:bg-secondary2 transition duration-300">
+            <SheetTrigger className="w-full mr-[-30px] bg-secondary rounded-md border border-neutral-200 text-white px-3 py-2 whitespace-nowrap hover:bg-secondary2 transition duration-300">
               {t("more")}
             </SheetTrigger>
             <SheetContent>
@@ -440,6 +526,65 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
               </SheetTitle>
               <div className="flex flex-col h-full gap-3 overflow-y-scroll scrollbar scrollbar-none pb-12">
                 {/* Property Type Filter */}
+
+                {/* Price Range Filter */}
+                <div>
+                  <p className="py-2 font-semibold text-primary text-base">
+                    {t("administration")}
+                  </p>
+
+                  <div id="administration" className="mb-4">
+                    <RangeSlider
+                      min={50_000}
+                      max={1_000_000}
+                      step={50_000}
+                      value={[filters.aminPrice, filters.amaxPrice]} // ✅ dynamic
+                      onInput={ahandlePriceChange}
+                      aria-label="Price range slider"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {/* Min Price Input */}
+                    <div className="relative w-1/2">
+                      <input
+                        type="text"
+                        aria-label="Minimum Price"
+                        inputMode="text"
+                        value={`${formatShort(filters.aminPrice)} COP`}
+                        onChange={(e) => {
+                          const parsed = parseShort(e.target.value);
+                          if (!isNaN(parsed) && parsed >= 50_000 && parsed <= filters.amaxPrice) {
+                            ahandlePriceChange([parsed, filters.amaxPrice]);
+                          }
+                        }}
+                        placeholder={t("min")}
+                        className="border border-black rounded-none w-full p-2 pr-10 outline-none font-light"
+                      />
+                    </div>
+
+                    {/* Max Price Input */}
+                    <div className="relative w-1/2">
+                      <input
+                        type="text"
+                        aria-label="Maximum Price"
+                        inputMode="text"
+                        value={`${formatShort(filters.amaxPrice)} COP`}
+                        onChange={(e) => {
+                          const parsed = parseShort(e.target.value);
+                          if (!isNaN(parsed) && parsed <= 1_000_000 && parsed >= filters.aminPrice) {
+                            ahandlePriceChange([filters.aminPrice, parsed]);
+                          }
+                        }}
+                        placeholder={t("max")}
+                        className="border border-black rounded-none w-full p-2 pr-1 outline-none font-light"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+
+
                 <div>
                   <p className="py-2 font-semibold text-primary">
                     {t("propertyType")}
@@ -487,6 +632,22 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                     ))}
                   </div>
                 </div>
+                {/* parking spot */}
+                <div>
+                  <p className="py-2 font-semibold text-primary text-base">
+                    {t("parking")}
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    {PARKIING_OPTIONS.map((parking) => (
+                      <FilterButton
+                        key={parking}
+                        label={parking}
+                        isSelected={filters.baths.includes(parking)}
+                        onClick={() => toggleArrayFilter("parking", parking)}
+                      />
+                    ))}
+                  </div>
+                </div>
                 {/* Views Filter */}
                 <div>
                   <p className="py-2 font-semibold text-primary text-base">
@@ -503,6 +664,11 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                     ))}
                   </div>
                 </div>
+
+
+
+
+
                 {/* Outdoor Filter */}
                 <div>
                   <p className="py-2 font-semibold text-primary text-base">
@@ -620,22 +786,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                     ))}
                   </div>
                 </div>
-                {/* Amenities Filter */}
-                {/* <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("amenities")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {AMENITIES.map((amen) => (
-                      <FilterButton
-                        key={amen}
-                        label={t(amen)}
-                        isSelected={filters.amenities.includes(amen)}
-                        onClick={() => toggleArrayFilter("amenities", amen)}
-                      />
-                    ))}
-                  </div>
-                </div> */}
+
 
 
                 <div>
@@ -758,9 +909,12 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                         propertyType: [],
                         minPrice: 50,
                         maxPrice: 500,
+                        aminPrice: 50,
+                        amaxPrice: 500,
                         radius: "",
                         beds: [],
                         baths: [],
+                        parking: [],
                         views: [],
                         outdoor: [],
                         propertyStyle: [],
@@ -796,10 +950,12 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
           <Button
             variant="primary"
             onClick={handleSearch}
-            className="text-white text-lg px-8 rounded-md w-full"
+            className="text-white text-lg px-6 rounded-md w-full"
           >
             {t("search")}
           </Button>
+
+
         </div>
       </div>
     </div>
