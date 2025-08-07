@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Bed, Bath, LandPlot, Heart } from "lucide-react";
+import { MapPin, Bed, Bath, LandPlot, Heart, Car } from "lucide-react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
@@ -106,19 +106,24 @@ const CardFour = ({ product }: Props) => {
             {product.neighborhood || 'N/A'}
           </span>
         </p>
-        <div className="flex gap-3 mb-4 whitespace-nowrap">
+        <div className="flex gap-2 mb-4 whitespace-nowrap">
           <div className="flex items-center gap-1 bg-neutral-200 rounded-full p-3">
-            <Bed strokeWidth={0.5} size={28} />
+            <Bed strokeWidth={0.5} size={22} />
             <span className="text-xs">{product.bedrooms}</span>
           </div>
           <div className="flex items-center gap-1 bg-neutral-200 rounded-full p-3">
-            <Bath strokeWidth={0.5} size={28} />
+            <Bath strokeWidth={0.5} size={22} />
             <span className="text-xs">{product.bathrooms}</span>
           </div>
           <div className="flex items-center gap-1 bg-neutral-200 rounded-full p-3">
-            <LandPlot strokeWidth={0.5} size={28} />
+            <Car strokeWidth={0.5} size={22} />
+            <span className="text-xs">{product.parkingSpace}</span>
+          </div>
+          <div className="flex items-center gap-1 bg-neutral-200 rounded-full p-3">
+            <LandPlot strokeWidth={0.5} size={22} />
             <span className="text-xs">{product.area} m²</span>
           </div>
+
         </div>
         <div className="pt-5 border-t">
           <p className="text-xl font-semibold">

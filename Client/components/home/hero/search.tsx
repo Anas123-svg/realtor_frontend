@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PROPERTY_TYPES } from "@/constants";
+import { PROPERTY_TYPES, RADIUS_OPTIONS } from "@/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   DropdownMenu,
@@ -27,10 +27,15 @@ import { formatCurrency } from "@/lib/utils";
 interface Filters {
   propertyType: string;
   location: string;
-  dealType: "Sale" | "Rental";
+  dealType: "Sale" | "New" | "Rental";
+  radius: string;
   minPrice: number;
   maxPrice: number;
+  beds: string;
+  baths: string;
 }
+
+
 
 const MIN_PRICE_RENTAL = 500000;
 const MAX_PRICE_RENTAL = 10000000;
@@ -41,13 +46,20 @@ const SearchCard: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+
   const [filters, setFilters] = useState<Filters>({
     propertyType: "House",
     location: "0",
-    dealType: "Sale",
     minPrice: MIN_PRICE_SALE,
     maxPrice: MAX_PRICE_SALE,
+    radius: "",
+    beds: "",
+    baths: "",
+    dealType: "Sale",
   });
+
+
+
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useTranslation();
@@ -62,6 +74,9 @@ const SearchCard: React.FC = () => {
       propertyType: searchParams.get("propertyType") || "House",
       location: searchParams.get("id") || "0",
       dealType,
+      radius: searchParams.get("radius") || "",
+      beds: searchParams.get("beds") || "",
+      baths: searchParams.get("baths") || "",
       minPrice: Number(searchParams.get("minPrice")) || minPrice,
       maxPrice: Number(searchParams.get("maxPrice")) || maxPrice,
     });
@@ -86,12 +101,15 @@ const SearchCard: React.FC = () => {
         dealType: filters.dealType,
         minPrice: filters.minPrice.toString(),
         maxPrice: filters.maxPrice.toString(),
+        beds: filters.beds,
+        baths: filters.baths,
         longitude: selectedLocation.longitude.toString(),
         latitude: selectedLocation.latitude.toString(),
         region: selectedLocation.region,
         radius: "5",
         id: selectedLocation.id.toString(),
       });
+
 
       router.push(`/properties/all?${queryParams.toString()}`);
     } catch (error) {
@@ -215,28 +233,122 @@ const SearchCard: React.FC = () => {
           </p>
         </label>
 
-        <label className="w-full flex items-center justify-center gap-3">
-          <span className="font-semibold">{t("sale")}</span>
-          <Switch
-            checked={filters.dealType === "Rental"}
-            onCheckedChange={() => {
-              setFilters((prev) => {
-                const newDealType =
-                  prev.dealType === "Sale" ? "Rental" : "Sale";
-                return {
-                  ...prev,
-                  dealType: newDealType,
-                  minPrice:
-                    newDealType === "Sale" ? MIN_PRICE_SALE : MIN_PRICE_RENTAL,
-                  maxPrice:
-                    newDealType === "Sale" ? MAX_PRICE_SALE : MAX_PRICE_RENTAL,
-                };
-              });
-            }}
-            aria-label="Toggle between Sale and Rental"
-          />
-          <span className="font-semibold">{t("rental")}</span>
+
+        <label className="w-full">
+          <Select
+            onValueChange={(e) =>
+              setFilters((prev) => ({ ...prev, radius: e }))
+            }
+            disabled={
+              !selectedLocation.longitude || !selectedLocation.latitude
+            }
+            value={filters.radius}
+          >
+            <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
+              {filters.radius
+                ? `${filters.radius} ${t("miles")}`
+                : t("Radius")}
+            </SelectTrigger>
+
+            <SelectContent>
+              {RADIUS_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.value + " " + t("miles")}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
+
+
+      </div>
+
+
+      <div className="w-full flex flex-col sm:flex-row items-center gap-10">
+
+        <label className="w-full">
+          <Select
+            onValueChange={(value) =>
+              setFilters((prev) => ({ ...prev, beds: value }))
+            }
+            value={filters.beds}
+          >
+            <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
+              {filters.beds ? `${filters.beds} ${t("beds")}` : t("beds")}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1</SelectItem>
+              <SelectItem value="2">2</SelectItem>
+              <SelectItem value="3">3</SelectItem>
+              <SelectItem value="4">4</SelectItem>
+              <SelectItem value="4+">4+</SelectItem>
+            </SelectContent>
+          </Select>
+        </label>
+
+        <label className="w-full">
+          <Select
+            onValueChange={(value) =>
+              setFilters((prev) => ({ ...prev, baths: value }))
+            }
+            value={filters.baths}
+          >
+            <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
+              {filters.baths ? `${filters.baths} ${t("baths")}` : t("baths")}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1</SelectItem>
+              <SelectItem value="2">2</SelectItem>
+              <SelectItem value="3">3</SelectItem>
+              <SelectItem value="4">4</SelectItem>
+              <SelectItem value="4+">4+</SelectItem>
+            </SelectContent>
+          </Select>
+        </label>
+
+
+
+
+        <label className="w-full flex flex-col  items-center justify-center gap-3">
+          {/* <span className="font-bold">{t("propertyType")}</span> */}
+          <Select
+            value={filters.dealType}
+            onValueChange={(value: "Sale" | "New" | "Rental") => {
+              setFilters((prev) => ({
+                ...prev,
+                dealType: value,
+                minPrice:
+                  value === "Sale" || value === "New"
+                    ? MIN_PRICE_SALE
+                    : MIN_PRICE_RENTAL,
+                maxPrice:
+                  value === "Sale" || value === "New"
+                    ? MAX_PRICE_SALE
+                    : MAX_PRICE_RENTAL,
+              }));
+            }}
+
+          >
+            <SelectTrigger className=" rounded-md">
+              <span>
+                {filters.dealType === "Sale"
+                  ? t("existingProperties")
+                  : filters.dealType === "New"
+                    ? t("newDevelopments")
+                    : t("rentalProperties")}
+              </span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Sale">{t("existingProperties")}</SelectItem>
+              <SelectItem value="New">{t("newDevelopments")}</SelectItem>
+              <SelectItem value="Rental">{t("rentalProperties")}</SelectItem>
+            </SelectContent>
+          </Select>
+          {/* <p className="font-semibold ">{t(filters.dealType)}</p> */}
+
+        </label>
+
+
       </div>
 
       <Button

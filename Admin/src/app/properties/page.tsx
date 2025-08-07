@@ -45,26 +45,104 @@ const Properties = () => {
       <div className="relative mx-auto min-h-screen max-w-270">
         <Breadcrumb pageName={t("properties")} />
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div className="flex flex-col items-start justify-between px-4 py-6 sm:flex-row sm:items-center md:px-6 xl:px-7.5">
-            <h4 className="mb-4 text-xl font-semibold text-black dark:text-white sm:mb-0">
-              {t("allProperties")}
-            </h4>
-            <div className="flex w-full flex-col items-start gap-4 sm:w-auto sm:flex-row sm:items-center">
+          <div className="flex flex-col items-center justify-center px-4 py-6 md:px-6 xl:px-7.5">
+            {/* Top Row: All Properties + Filters + Search */}
+            <div className="flex items-center gap-4 overflow-x-auto px-1 py-6 md:px-6 xl:px-7.5">
+              {/* Left: All Properties */}
+              {/* <h4 className="text-xl font-semibold text-black dark:text-white whitespace-nowrap">
+                {t("allProperties")}
+              </h4> */}
+
+              {/* Filters in the middle */}
+              <div className="flex items-center gap-4 flex-1 min-w-max">
+                {/* Property Type */}
+                <div className="flex flex-col items-center gap-2">
+                  <span className="font-medium whitespace-nowrap">{t("propertyType")}:</span>
+                  <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
+                    <option>Casa</option>
+                    <option>Apartamento</option>
+                    <option>Local Comercial</option>
+                    <option>Lotes</option>
+                    <option>Bodegas</option>
+                    <option>Oficinas</option>
+                    <option>Apartasuite</option>
+                  </select>
+                </div>
+
+                {/* Property Status */}
+                <div className="flex flex-col items-center gap-2">
+                  <span className="font-medium whitespace-nowrap">{t("propertyStatus")}:</span>
+                  <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
+                    <option>Usados</option>
+                    <option>Nuevos</option>
+                    <option>Sobre Planos</option>
+                  </select>
+                </div>
+
+                {/* Property Style */}
+                <div className="flex flex-col items-center gap-2">
+                  <span className="font-medium whitespace-nowrap">{t("propertyStyle")}:</span>
+                  <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
+                    <option>Moderno</option>
+                    <option>Clásico</option>
+                    <option>Contemporáneo</option>
+                    <option>Campestre</option>
+                    <option>Colonial</option>
+                  </select>
+                </div>
+
+                {/* Location */}
+                {/* <div className="flex flex-col items-center gap-2">
+                  <span className="font-medium whitespace-nowrap">{t("location")}:</span>
+                  <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
+                    Fill with alphabetical locations
+                  </select>
+                </div> */}
+
+                {/* Amenities */}
+                {/* <div className="flex flex-col items-center gap-2">
+                  <span className="font-medium whitespace-nowrap">{t("amenities")}:</span>
+                  <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
+                    Sports, Social, Wellness...
+                  </select>
+                </div> */}
+
+                {/* Nearby Infrastructure */}
+                <div className="flex flex-col items-center gap-2">
+                  <span className="font-medium whitespace-nowrap">{t("nearbyInfrastructure")}:</span>
+                  <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
+                    <option>Airport</option>
+                    <option>Universities</option>
+                    <option>Natural Reserves</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Right: Search */}
               <input
                 type="text"
                 placeholder={t("searchProperties")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded border border-stroke bg-gray px-4 py-2 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary sm:w-auto"
+                className="w-48 rounded border border-stroke bg-gray px-4 py-2 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
               />
-              <Link
-                href="/properties/add"
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90"
-              >
-                {t("addProperty")}
-              </Link>
+
+              {/* Add Property Button */}
+
+              <div className="">
+                <Link
+                  href="/properties/add"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90"
+                >
+                  {t("addProperty")}
+                </Link>
+              </div>
             </div>
+
+
+
           </div>
+
           <div className="hidden sm:block">
             <div className="grid grid-cols-11 gap-4 border-t border-stroke px-3 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
               <div className="col-span-1 flex items-center">

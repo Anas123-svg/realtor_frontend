@@ -535,6 +535,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
 
                   <div id="administration" className="mb-4">
                     <RangeSlider
+                      type="range"
                       min={50_000}
                       max={1_000_000}
                       step={50_000}
@@ -642,7 +643,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                       <FilterButton
                         key={parking}
                         label={parking}
-                        isSelected={filters.baths.includes(parking)}
+                        isSelected={filters.parking.includes(parking)}
                         onClick={() => toggleArrayFilter("parking", parking)}
                       />
                     ))}

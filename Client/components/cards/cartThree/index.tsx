@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Bed, Bath, LandPlot, Heart } from "lucide-react";
+import { MapPin, Bed, Bath, LandPlot, Heart, Car } from "lucide-react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
@@ -104,6 +104,12 @@ const CardThree = ({ product }: Props) => {
             <Bath strokeWidth={0.75} />
             <span>
               {product.bathrooms} {t("baths")}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 bg-neutral-200 rounded-full p-3">
+            <Car strokeWidth={0.75} />
+            <span>
+              {product.parkingSpace} {t("parking")}
             </span>
           </div>
           <div className="flex items-center gap-2 bg-neutral-200 rounded-full p-3">
