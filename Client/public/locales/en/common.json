@@ -313,5 +313,6 @@
   "priceHighToLow": "Price High-Low",
   "administration": "Administration Price",
   "parking": "Parking spots",
+  "areaSize": "Area Size",
   "adminFeeRange": "Admin Fee Range"
 }

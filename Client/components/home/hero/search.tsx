@@ -28,7 +28,7 @@ interface Filters {
   propertyType: string;
   location: string;
   dealType: "Sale" | "New" | "Rental";
-  radius: string;
+  areaSize: string;
   minPrice: number;
   maxPrice: number;
   beds: string;
@@ -52,7 +52,7 @@ const SearchCard: React.FC = () => {
     location: "0",
     minPrice: MIN_PRICE_SALE,
     maxPrice: MAX_PRICE_SALE,
-    radius: "",
+    areaSize: "",
     beds: "",
     baths: "",
     dealType: "Sale",
@@ -74,7 +74,7 @@ const SearchCard: React.FC = () => {
       propertyType: searchParams.get("propertyType") || "House",
       location: searchParams.get("id") || "0",
       dealType,
-      radius: searchParams.get("radius") || "",
+      areaSize: searchParams.get("areaSize") || "",
       beds: searchParams.get("beds") || "",
       baths: searchParams.get("baths") || "",
       minPrice: Number(searchParams.get("minPrice")) || minPrice,
@@ -106,7 +106,7 @@ const SearchCard: React.FC = () => {
         longitude: selectedLocation.longitude.toString(),
         latitude: selectedLocation.latitude.toString(),
         region: selectedLocation.region,
-        radius: "5",
+        areaSize: filters.areaSize,
         id: selectedLocation.id.toString(),
       });
 
@@ -236,26 +236,21 @@ const SearchCard: React.FC = () => {
 
         <label className="w-full">
           <Select
-            onValueChange={(e) =>
-              setFilters((prev) => ({ ...prev, radius: e }))
+            onValueChange={(value) =>
+              setFilters((prev) => ({ ...prev, areaSize: value }))
             }
-            disabled={
-              !selectedLocation.longitude || !selectedLocation.latitude
-            }
-            value={filters.radius}
+            value={filters.areaSize}
           >
             <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
-              {filters.radius
-                ? `${filters.radius} ${t("miles")}`
-                : t("Radius")}
+              {filters.areaSize
+                ? `${filters.areaSize} m²`
+                : t("areaSize")}
             </SelectTrigger>
 
             <SelectContent>
-              {RADIUS_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.value + " " + t("miles")}
-                </SelectItem>
-              ))}
+              <SelectItem value="10">10 m²</SelectItem>
+              <SelectItem value="20">20 m²</SelectItem>
+              <SelectItem value="50+">50+ m²</SelectItem>
             </SelectContent>
           </Select>
         </label>
