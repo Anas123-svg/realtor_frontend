@@ -63,9 +63,10 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/lib/utils";
+import { Checkbox, Popover } from "@headlessui/react";
 const MIN_PRICE_RENTAL = 500000;
 const MAX_PRICE_RENTAL = 10000000;
 const MIN_PRICE_SALE = 50000000;
@@ -116,21 +117,10 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
     () => parseSearchParams(searchParams),
     [searchParams]
   );
-  // State management with type safety
-  const [location, setLocation] = useState<Location>(
-    initialFilters.location || {
-      id: 0,
-      label: "",
-      longitude: 0,
-      latitude: 0,
-      region: "",
-    }
+  const [location, setLocation] = useState<Location[]>(
+    initialFilters.location || []
   );
-  useEffect(() => {
-    if (inputRef.current && location.region) {
-      inputRef.current.value = location.region;
-    }
-  }, [location.region]);
+
 
   const [filters, setFilters] = useState<SearchFilters>({
     dealType: initialFilters.dealType || "",
@@ -166,8 +156,8 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
     cooling: initialFilters.cooling || [],
     nearbyInfrastructure: initialFilters.nearbyInfrastructure || [],
     powerBackup: initialFilters.powerBackup || [],
-    location: location,
-    sortBy: initialFilters.sortBy || "recent",
+    location: initialFilters.location || [], // now an array
+    sortBy: initialFilters.sortBy || "",
   });
 
 
@@ -212,13 +202,24 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
 
   const handleLocationChange = useCallback((value: string) => {
     const selectedLocation = locations.find(
-      (loc) => loc.id === parseInt(value)
+      (loc) => loc.id === parseInt(value, 10)
     );
-    if (selectedLocation) {
-      setLocation(selectedLocation);
-      setFilters((prev) => ({ ...prev, location: selectedLocation }));
-    }
-  }, []);
+    if (!selectedLocation) return;
+
+    setFilters((prev) => {
+      const exists = prev.location?.some(
+        (loc) => loc.id === selectedLocation.id
+      );
+
+      return {
+        ...prev,
+        location: exists
+          ? prev.location?.filter((loc) => loc.id !== selectedLocation.id) || []
+          : [...(prev.location || []), selectedLocation],
+      };
+    });
+  }, [locations]);
+
 
   // Generic filter update method
   const updateFilter = useCallback(
@@ -297,11 +298,31 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
 
 
   // Handle search with validation
+  // const handleSearch = useCallback(() => {
+  //   let updatedFilters = { ...filters };
+  //   if (location.latitude && location.longitude)
+  //     updatedFilters = { ...filters, location };
+  //   else updatedFilters = { ...filters, location: undefined };
+
+  //   const query = buildSearchQuery(updatedFilters);
+
+  //   // Optional callback for external handling
+  //   onSearchComplete?.(updatedFilters);
+
+  //   // Navigate to properties page with search params
+  //   router.push(`/properties?${query.toString()}`);
+  // }, [filters, location, router, onSearchComplete]);
+
   const handleSearch = useCallback(() => {
     let updatedFilters = { ...filters };
-    if (location.latitude && location.longitude)
+
+    if (location.length > 0) {
+      // Store full array of selected locations
       updatedFilters = { ...filters, location };
-    else updatedFilters = { ...filters, location: undefined };
+    } else {
+      // No locations selected
+      updatedFilters = { ...filters, location: [] };
+    }
 
     const query = buildSearchQuery(updatedFilters);
 
@@ -312,89 +333,259 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
     router.push(`/properties?${query.toString()}`);
   }, [filters, location, router, onSearchComplete]);
 
+
   return (
-    <div className="bg-white px-4 py-3 border rounded-md  flex justify-between items-center w-full shadow-lg sticky top-10 z-20">
+    <div className="bg-white  gap-3 px-4 py-3 border rounded-md  flex justify-between items-center w-full shadow-lg sticky top-10 z-20">
       {/* // <div className="bg-white border rounded-md px-4 py-10 shadow-sm w-full sticky top-10 z-20"> */}
 
-      <div className="flex flex-col lg:flex-row gap-5 items-end w-full">
-        <div className="w-full flex flex-col sm:flex-row gap-10 whitespace-nowrap">
-
-          <label className="flex-1">
-            <Select
-              onValueChange={handleLocationChange}
-              value={filters.location?.id?.toString()}
-            >
-              <SelectTrigger
-                className="border-none gap-2 focus:ring-0 p-0 text-base"
-                aria-label="Location"
-              >
-                {t("location")}
-              </SelectTrigger>
-              <SelectContent>
-                {locations
-                  .slice()
-                  .sort((a, b) => a.label.localeCompare(b.label))
-                  .map((location) => (
-                    <SelectItem key={location.id} value={location.id.toString()}>
-                      {location.label}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </label>
 
 
+      {/* import { Check } from "lucide-react"; // icon for the tick */}
 
-          <label className="flex-1">
-            <Select
-              onValueChange={(e) => updateFilter("radius", e)}
-              disabled={!location.longitude || !location.latitude}
-              value={filters.radius}
-            >
-              <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
-                {t("radius")}
-              </SelectTrigger>
-              <SelectContent>
-                {RADIUS_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.value + " " + t("miles")}
+
+      <label className="flex-1">
+        <Select
+          onValueChange={handleLocationChange}
+          value="" // keep empty so it doesn't overwrite with single value
+        >
+          {/* Fixed height, horizontal scroll for multiple locations */}
+          <SelectTrigger
+            className="border px-2 py-1 rounded w-full text-left h-9 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-300"
+          >
+            {filters.location?.length
+              ? filters.location.map((l) => l.label).join(", ")
+              : t("location")}
+          </SelectTrigger>
+
+          <SelectContent>
+            {locations
+              .slice()
+              .sort((a, b) => a.label.localeCompare(b.label))
+              .map((location) => {
+                const isSelected = filters.location?.some((l) => l.id === location.id);
+                return (
+                  <SelectItem
+                    key={location.id}
+                    value={location.id.toString()}
+                    // Flex layout so tick appears left of text
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+
+                      <span>{location.label}</span>
+                      {/* Check icon always on the left when selected */}
+                      {isSelected && (
+                        <Check className="w-4 h-4 text-black flex-shrink-0" />
+                      )}
+                    </div>
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
+                );
+              })}
+          </SelectContent>
+        </Select>
+      </label>
+
+
+
+
+
+      <label className="flex-1">
+        <Select
+          onValueChange={(e) => updateFilter("radius", e)}
+          disabled={location.length === 0}
+          value={filters.radius}
+        >
+
+          <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+            {t("radius")}
+          </SelectTrigger>
+          <SelectContent>
+            {RADIUS_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.value + " " + t("miles")}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
               {filters.radius
                 ? filters.radius + " " + t("miles")
                 : t("selectRadius")}
             </p> */}
-          </label>
+      </label>
 
 
-          <label className="flex-1">
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                className="w-full border-none p-0 text-left outline-none"
-                aria-label="Price Range"
-              >
-                <div className="flex h-10 w-full items-center justify-between py-2">
-                  <p>{t("priceRange")}</p>
-                  <ChevronDown className="h-4 w-4 opacity-50" />
-                </div>
-              </DropdownMenuTrigger>
+      <label className="flex-1">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="w-full border-none p-0 text-left outline-none"
+            aria-label="Price Range"
+          >
+            <div className="flex h-10 w-full items-center justify-between py-2">
+              <p>{t("priceRange")}</p>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </div>
+          </DropdownMenuTrigger>
 
-              <DropdownMenuContent className="p-5 w-[300px]">
-                <div id="range" className="mb-4">
+          <DropdownMenuContent className="p-5 w-[300px]">
+            <div id="range" className="mb-4">
+              <RangeSlider
+
+                key={filters.dealType} // Forces re-render
+                min={getPriceRange()[0]}
+                max={getPriceRange()[1]}
+                step={getStep()}
+                value={[filters.minPrice, filters.maxPrice]}
+                onInput={handlePriceChange}
+
+
+
+                aria-label="Price range slider"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Min Price Input */}
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  aria-label="Minimum Price"
+                  inputMode="text"
+                  value={`${formatToMillions(filters.minPrice)} COP`}
+                  onChange={(e) => {
+                    const parsed = parseMillions(e.target.value);
+                    const [minRange, maxRange] = getPriceRange();
+                    if (!isNaN(parsed) && parsed >= minRange && parsed <= filters.maxPrice) {
+                      handlePriceChange([parsed, filters.maxPrice]);
+                    }
+                  }}
+                  placeholder={t("min")}
+                  className="border border-black rounded-none w-full p-2 pr-10 outline-none font-light"
+                />
+              </div>
+
+              {/* Max Price Input */}
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  aria-label="Maximum Price"
+                  inputMode="text"
+                  value={`${formatToMillions(filters.maxPrice)} COP`}
+                  onChange={(e) => {
+                    const parsed = parseMillions(e.target.value);
+                    const [minRange, maxRange] = getPriceRange();
+                    if (!isNaN(parsed) && parsed <= maxRange && parsed >= filters.minPrice) {
+                      handlePriceChange([filters.minPrice, parsed]);
+                    }
+                  }}
+                  placeholder={t("max")}
+                  className="border border-black rounded-none w-full p-2 pr-1 outline-none font-light"
+                />
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </label>
+
+
+
+
+
+      <label className="flex-1">
+        <Select
+          onValueChange={(e) =>
+            updateFilter("beds", [e] as SearchFilters["beds"])
+          }
+          value={filters.beds.toString()}
+        >
+          <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+            {t("beds")}
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">1</SelectItem>
+            <SelectItem value="2">2</SelectItem>
+            <SelectItem value="3">3</SelectItem>
+            <SelectItem value="4">4</SelectItem>
+            <SelectItem value="4+">4+</SelectItem>
+          </SelectContent>
+        </Select>
+        {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+              {filters.beds.length > 0
+                ? filters.beds.join(", ")
+                : t("selectBeds")}
+            </p> */}
+      </label>
+      <label className="flex-1">
+        <Select
+          onValueChange={(e) =>
+            updateFilter("baths", [e] as SearchFilters["baths"])
+          }
+          value={filters.baths.toString()}
+        >
+          <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+            {t("baths")}
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">1</SelectItem>
+            <SelectItem value="2">2</SelectItem>
+            <SelectItem value="3">3</SelectItem>
+            <SelectItem value="4">4</SelectItem>
+            <SelectItem value="4+">4+</SelectItem>
+          </SelectContent>
+        </Select>
+        {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+              {filters.baths.length > 0
+                ? filters.baths.join(", ")
+                : t("selectBaths")}
+            </p> */}
+      </label>
+      <label className="flex-1">
+        <Select
+          onValueChange={(val) =>
+            updateFilter("sortBy", val as SearchFilters["sortBy"])
+          }
+          value={filters.sortBy}
+        >
+          <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+            {t("sortBy")}
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="recent">{t("recent")}</SelectItem>
+            <SelectItem value="priceLowToHigh">{t("priceLowToHigh")}</SelectItem>
+            <SelectItem value="priceHighToLow">{t("priceHighToLow")}</SelectItem>
+          </SelectContent>
+        </Select>
+      </label>
+
+
+
+
+      <div className="flex  flex-row w-[35%] justify-between">
+        <Sheet>
+          <SheetTrigger className="w-[49%] mr-[-30px] bg-secondary rounded-md border border-neutral-200 text-white px-3 py-2 whitespace-nowrap hover:bg-secondary2 transition duration-300">
+            {t("more")}
+          </SheetTrigger>
+          <SheetContent>
+            <SheetTitle className="mb-5 text-center text-secondary font-bold text-3xl">
+              {t("advanceFilters")}
+            </SheetTitle>
+            <div className="flex flex-col h-full gap-3 overflow-y-scroll scrollbar scrollbar-none pb-12">
+              {/* Property Type Filter */}
+
+              {/* Price Range Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("administration")}
+                </p>
+
+                <div id="administration" className="mb-4">
                   <RangeSlider
-
-                    key={filters.dealType} // Forces re-render
-                    min={getPriceRange()[0]}
-                    max={getPriceRange()[1]}
-                    step={getStep()}
-                    value={[filters.minPrice, filters.maxPrice]}
-                    onInput={handlePriceChange}
-
-
-
+                    type="range"
+                    min={50_000}
+                    max={1_000_000}
+                    step={50_000}
+                    value={[filters.aminPrice, filters.amaxPrice]} // ✅ dynamic
+                    onInput={ahandlePriceChange}
                     aria-label="Price range slider"
                   />
                 </div>
@@ -406,12 +597,11 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                       type="text"
                       aria-label="Minimum Price"
                       inputMode="text"
-                      value={`${formatToMillions(filters.minPrice)} COP`}
+                      value={`${formatShort(filters.aminPrice)} COP`}
                       onChange={(e) => {
-                        const parsed = parseMillions(e.target.value);
-                        const [minRange, maxRange] = getPriceRange();
-                        if (!isNaN(parsed) && parsed >= minRange && parsed <= filters.maxPrice) {
-                          handlePriceChange([parsed, filters.maxPrice]);
+                        const parsed = parseShort(e.target.value);
+                        if (!isNaN(parsed) && parsed >= 50_000 && parsed <= filters.amaxPrice) {
+                          ahandlePriceChange([parsed, filters.amaxPrice]);
                         }
                       }}
                       placeholder={t("min")}
@@ -425,12 +615,11 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                       type="text"
                       aria-label="Maximum Price"
                       inputMode="text"
-                      value={`${formatToMillions(filters.maxPrice)} COP`}
+                      value={`${formatShort(filters.amaxPrice)} COP`}
                       onChange={(e) => {
-                        const parsed = parseMillions(e.target.value);
-                        const [minRange, maxRange] = getPriceRange();
-                        if (!isNaN(parsed) && parsed <= maxRange && parsed >= filters.minPrice) {
-                          handlePriceChange([filters.minPrice, parsed]);
+                        const parsed = parseShort(e.target.value);
+                        if (!isNaN(parsed) && parsed <= 1_000_000 && parsed >= filters.aminPrice) {
+                          ahandlePriceChange([filters.aminPrice, parsed]);
                         }
                       }}
                       placeholder={t("max")}
@@ -438,528 +627,385 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                     />
                   </div>
                 </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </label>
+              </div>
 
 
 
-
-
-          <label className="flex-1">
-            <Select
-              onValueChange={(e) =>
-                updateFilter("beds", [e] as SearchFilters["beds"])
-              }
-              value={filters.beds.toString()}
-            >
-              <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
-                {t("beds")}
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="3">3</SelectItem>
-                <SelectItem value="4">4</SelectItem>
-                <SelectItem value="4+">4+</SelectItem>
-              </SelectContent>
-            </Select>
-            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
-              {filters.beds.length > 0
-                ? filters.beds.join(", ")
-                : t("selectBeds")}
-            </p> */}
-          </label>
-          <label className="flex-1">
-            <Select
-              onValueChange={(e) =>
-                updateFilter("baths", [e] as SearchFilters["baths"])
-              }
-              value={filters.baths.toString()}
-            >
-              <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
-                {t("baths")}
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="3">3</SelectItem>
-                <SelectItem value="4">4</SelectItem>
-                <SelectItem value="4+">4+</SelectItem>
-              </SelectContent>
-            </Select>
-            {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
-              {filters.baths.length > 0
-                ? filters.baths.join(", ")
-                : t("selectBaths")}
-            </p> */}
-          </label>
-          <label className="flex-1">
-            <Select
-              onValueChange={(val) =>
-                updateFilter("sortBy", val as SearchFilters["sortBy"])
-              }
-              value={filters.sortBy}
-            >
-              <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
-                {t("sortBy")}
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recent">{t("recent")}</SelectItem>
-                <SelectItem value="priceLowToHigh">{t("priceLowToHigh")}</SelectItem>
-                <SelectItem value="priceHighToLow">{t("priceHighToLow")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </label>
-
-
-
-
-
-          <Sheet>
-            <SheetTrigger className="w-full mr-[-30px] bg-secondary rounded-md border border-neutral-200 text-white px-3 py-2 whitespace-nowrap hover:bg-secondary2 transition duration-300">
-              {t("more")}
-            </SheetTrigger>
-            <SheetContent>
-              <SheetTitle className="mb-5 text-center text-secondary font-bold text-3xl">
-                {t("advanceFilters")}
-              </SheetTitle>
-              <div className="flex flex-col h-full gap-3 overflow-y-scroll scrollbar scrollbar-none pb-12">
-                {/* Property Type Filter */}
-
-                {/* Price Range Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("administration")}
-                  </p>
-
-                  <div id="administration" className="mb-4">
-                    <RangeSlider
-                      type="range"
-                      min={50_000}
-                      max={1_000_000}
-                      step={50_000}
-                      value={[filters.aminPrice, filters.amaxPrice]} // ✅ dynamic
-                      onInput={ahandlePriceChange}
-                      aria-label="Price range slider"
+              <div>
+                <p className="py-2 font-semibold text-primary">
+                  {t("propertyType")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {PROPERTY_TYPES.map((type) => (
+                    <FilterButton
+                      key={type}
+                      label={t(type)}
+                      isSelected={filters.propertyType.includes(type)}
+                      onClick={() => toggleArrayFilter("propertyType", type)}
                     />
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {/* Min Price Input */}
-                    <div className="relative w-1/2">
-                      <input
-                        type="text"
-                        aria-label="Minimum Price"
-                        inputMode="text"
-                        value={`${formatShort(filters.aminPrice)} COP`}
-                        onChange={(e) => {
-                          const parsed = parseShort(e.target.value);
-                          if (!isNaN(parsed) && parsed >= 50_000 && parsed <= filters.amaxPrice) {
-                            ahandlePriceChange([parsed, filters.amaxPrice]);
-                          }
-                        }}
-                        placeholder={t("min")}
-                        className="border border-black rounded-none w-full p-2 pr-10 outline-none font-light"
-                      />
-                    </div>
-
-                    {/* Max Price Input */}
-                    <div className="relative w-1/2">
-                      <input
-                        type="text"
-                        aria-label="Maximum Price"
-                        inputMode="text"
-                        value={`${formatShort(filters.amaxPrice)} COP`}
-                        onChange={(e) => {
-                          const parsed = parseShort(e.target.value);
-                          if (!isNaN(parsed) && parsed <= 1_000_000 && parsed >= filters.aminPrice) {
-                            ahandlePriceChange([filters.aminPrice, parsed]);
-                          }
-                        }}
-                        placeholder={t("max")}
-                        className="border border-black rounded-none w-full p-2 pr-1 outline-none font-light"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-
-
-                <div>
-                  <p className="py-2 font-semibold text-primary">
-                    {t("propertyType")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {PROPERTY_TYPES.map((type) => (
-                      <FilterButton
-                        key={type}
-                        label={t(type)}
-                        isSelected={filters.propertyType.includes(type)}
-                        onClick={() => toggleArrayFilter("propertyType", type)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Bedrooms Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("beds")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {BEDROOM_OPTIONS.map((bed) => (
-                      <FilterButton
-                        key={bed}
-                        label={bed}
-                        isSelected={filters.beds.includes(bed)}
-                        onClick={() => toggleArrayFilter("beds", bed)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Bathrooms Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("baths")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {BATHROOM_OPTIONS.map((bath) => (
-                      <FilterButton
-                        key={bath}
-                        label={bath}
-                        isSelected={filters.baths.includes(bath)}
-                        onClick={() => toggleArrayFilter("baths", bath)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* parking spot */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("parking")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {PARKIING_OPTIONS.map((parking) => (
-                      <FilterButton
-                        key={parking}
-                        label={parking}
-                        isSelected={filters.parking.includes(parking)}
-                        onClick={() => toggleArrayFilter("parking", parking)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Views Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("views")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {VIEW_OPTIONS.map((view) => (
-                      <FilterButton
-                        key={view}
-                        label={t(view)}
-                        isSelected={filters.views.includes(view)}
-                        onClick={() => toggleArrayFilter("views", view)}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-
-
-
-
-                {/* Outdoor Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("outdoor")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {OUTDOOR_OPTIONS.map((out) => (
-                      <FilterButton
-                        key={out}
-                        label={t(out)}
-                        isSelected={filters.outdoor.includes(out)}
-                        onClick={() => toggleArrayFilter("outdoor", out)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Property Style Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("propertyStyle")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {PROPERTY_STYLES.map((style) => (
-                      <FilterButton
-                        key={style}
-                        label={t(style)}
-                        isSelected={filters.propertyStyle.includes(style)}
-                        onClick={() =>
-                          toggleArrayFilter("propertyStyle", style)
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("propertyStatus")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {PROPERTY_STATUS.map((status) => (
-                      <FilterButton
-                        key={status}
-                        label={t(status)}
-                        isSelected={filters.propertyStatus.includes(status)}
-                        onClick={() =>
-                          toggleArrayFilter("propertyStatus", status)
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Floors Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("floors")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {FLOOR_OPTIONS.map((floor) => (
-                      <FilterButton
-                        key={floor}
-                        label={t(floor)}
-                        isSelected={filters.floors.includes(floor)}
-                        onClick={() => toggleArrayFilter("floors", floor)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Noise Level Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("noiseLevel")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {NOISE_LEVELS.map((noise) => (
-                      <FilterButton
-                        key={noise}
-                        label={t(noise)}
-                        isSelected={filters.noiseLevel.includes(noise)}
-                        onClick={() => toggleArrayFilter("noiseLevel", noise)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Laundry Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("laundry")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {LAUNDRY_OPTIONS.map((laund) => (
-                      <FilterButton
-                        key={laund}
-                        label={t(laund)}
-                        isSelected={filters.laundry.includes(laund)}
-                        onClick={() => toggleArrayFilter("laundry", laund)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Security Features Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("securityFeatures")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {SECURITY_FEATURES.map((sec) => (
-                      <FilterButton
-                        key={sec}
-                        label={t(sec)}
-                        isSelected={filters.securityFeatures.includes(sec)}
-                        onClick={() =>
-                          toggleArrayFilter("securityFeatures", sec)
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-
-
-
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("amenities")}
-                  </p>
-
-                  <div className="flex flex-col gap-4">
-                    {AMENITIES_WITH_I.map((category) => (
-                      <div key={category.id}>
-                        <p className="text-sm font-semibold text-gray-700 mb-2">
-                          {t(category.name)}
-                        </p>
-                        <div className="flex flex-wrap gap-3">
-                          {category.items.map((amenity) => (
-                            <FilterButton
-                              key={amenity}
-                              label={t(amenity)}
-                              isSelected={filters.amenities.includes(amenity)}
-                              onClick={() => toggleArrayFilter("amenities", amenity)}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-
-                {/* Internet Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("internet")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {INTERNET_TYPES.map((net) => (
-                      <FilterButton
-                        key={net}
-                        label={t(net)}
-                        isSelected={filters.internet.includes(net)}
-                        onClick={() => toggleArrayFilter("internet", net)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Heating Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("waterHeater")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {HEATING_TYPES.map((heat) => (
-                      <FilterButton
-                        key={heat}
-                        label={t(heat)}
-                        isSelected={filters.heating.includes(heat)}
-                        onClick={() => toggleArrayFilter("heating", heat)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Cooling Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("coolingSystem")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {COOLING_TYPES.map((cool) => (
-                      <FilterButton
-                        key={cool}
-                        label={t(cool)}
-                        isSelected={filters.cooling.includes(cool)}
-                        onClick={() => toggleArrayFilter("cooling", cool)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Nearby Infrastructure Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("nearbyInfrastructure")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {NEARBY_INFRASTRUCTURE.map((infra) => (
-                      <FilterButton
-                        key={infra}
-                        label={t(infra)}
-                        isSelected={filters.nearbyInfrastructure.includes(
-                          infra
-                        )}
-                        onClick={() =>
-                          toggleArrayFilter("nearbyInfrastructure", infra)
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Power Backup Filter */}
-                <div>
-                  <p className="py-2 font-semibold text-primary text-base">
-                    {t("powerBackup")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {POWER_BACKUP.map((power) => (
-                      <FilterButton
-                        key={power}
-                        label={t(power)}
-                        isSelected={filters.powerBackup.includes(power)}
-                        onClick={() => toggleArrayFilter("powerBackup", power)}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div className="mt-5 flex w-full mb-20">
-                  <SheetClose
-                    onClick={() => {
-                      setFilters({
-                        dealType: "",
-                        condition: filters.condition,
-                        propertyType: [],
-                        minPrice: 50,
-                        maxPrice: 500,
-                        aminPrice: 50,
-                        amaxPrice: 500,
-                        radius: "",
-                        beds: [],
-                        baths: [],
-                        parking: [],
-                        views: [],
-                        outdoor: [],
-                        propertyStyle: [],
-                        propertyStatus: [],
-                        floors: [],
-                        noiseLevel: [],
-                        laundry: [],
-                        securityFeatures: [],
-                        amenities: [],
-                        internet: [],
-                        heating: [],
-                        cooling: [],
-                        location: location,
-                        nearbyInfrastructure: [],
-                        powerBackup: [],
-                      });
-                      router.push(`/properties?dealType=${filters.dealType}`);
-                    }}
-                    className="text-black text-lg py-1 rounded-none bg-neutral-200 hover:bg-neutral-300 w-full"
-                  >
-                    {t("clear")}
-                  </SheetClose>
-                  <SheetClose
-                    onClick={handleSearch}
-                    className="text-white text-lg rounded-none py-1 bg-secondary hover:bg-secondary2 w-full"
-                  >
-                    {t("search")}
-                  </SheetClose>
+                  ))}
                 </div>
               </div>
-            </SheetContent>
-          </Sheet>
-          <Button
-            variant="primary"
-            onClick={handleSearch}
-            className="text-white text-lg px-6 rounded-md w-full"
-          >
-            {t("search")}
-          </Button>
+              {/* Bedrooms Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("beds")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {BEDROOM_OPTIONS.map((bed) => (
+                    <FilterButton
+                      key={bed}
+                      label={bed}
+                      isSelected={filters.beds.includes(bed)}
+                      onClick={() => toggleArrayFilter("beds", bed)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Bathrooms Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("baths")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {BATHROOM_OPTIONS.map((bath) => (
+                    <FilterButton
+                      key={bath}
+                      label={bath}
+                      isSelected={filters.baths.includes(bath)}
+                      onClick={() => toggleArrayFilter("baths", bath)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* parking spot */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("parking")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {PARKIING_OPTIONS.map((parking) => (
+                    <FilterButton
+                      key={parking}
+                      label={parking}
+                      isSelected={filters.parking.includes(parking)}
+                      onClick={() => toggleArrayFilter("parking", parking)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Views Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("views")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {VIEW_OPTIONS.map((view) => (
+                    <FilterButton
+                      key={view}
+                      label={t(view)}
+                      isSelected={filters.views.includes(view)}
+                      onClick={() => toggleArrayFilter("views", view)}
+                    />
+                  ))}
+                </div>
+              </div>
 
 
-        </div>
+
+
+
+              {/* Outdoor Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("outdoor")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {OUTDOOR_OPTIONS.map((out) => (
+                    <FilterButton
+                      key={out}
+                      label={t(out)}
+                      isSelected={filters.outdoor.includes(out)}
+                      onClick={() => toggleArrayFilter("outdoor", out)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Property Style Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("propertyStyle")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {PROPERTY_STYLES.map((style) => (
+                    <FilterButton
+                      key={style}
+                      label={t(style)}
+                      isSelected={filters.propertyStyle.includes(style)}
+                      onClick={() =>
+                        toggleArrayFilter("propertyStyle", style)
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("propertyStatus")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {PROPERTY_STATUS.map((status) => (
+                    <FilterButton
+                      key={status}
+                      label={t(status)}
+                      isSelected={filters.propertyStatus.includes(status)}
+                      onClick={() =>
+                        toggleArrayFilter("propertyStatus", status)
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Floors Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("floors")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {FLOOR_OPTIONS.map((floor) => (
+                    <FilterButton
+                      key={floor}
+                      label={t(floor)}
+                      isSelected={filters.floors.includes(floor)}
+                      onClick={() => toggleArrayFilter("floors", floor)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Noise Level Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("noiseLevel")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {NOISE_LEVELS.map((noise) => (
+                    <FilterButton
+                      key={noise}
+                      label={t(noise)}
+                      isSelected={filters.noiseLevel.includes(noise)}
+                      onClick={() => toggleArrayFilter("noiseLevel", noise)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Laundry Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("laundry")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {LAUNDRY_OPTIONS.map((laund) => (
+                    <FilterButton
+                      key={laund}
+                      label={t(laund)}
+                      isSelected={filters.laundry.includes(laund)}
+                      onClick={() => toggleArrayFilter("laundry", laund)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Security Features Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("securityFeatures")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {SECURITY_FEATURES.map((sec) => (
+                    <FilterButton
+                      key={sec}
+                      label={t(sec)}
+                      isSelected={filters.securityFeatures.includes(sec)}
+                      onClick={() =>
+                        toggleArrayFilter("securityFeatures", sec)
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+
+
+
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("amenities")}
+                </p>
+
+                <div className="flex flex-col gap-4">
+                  {AMENITIES_WITH_I.map((category) => (
+                    <div key={category.id}>
+                      <p className="text-sm font-semibold text-gray-700 mb-2">
+                        {t(category.name)}
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        {category.items.map((amenity) => (
+                          <FilterButton
+                            key={amenity}
+                            label={t(amenity)}
+                            isSelected={filters.amenities.includes(amenity)}
+                            onClick={() => toggleArrayFilter("amenities", amenity)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+
+              {/* Internet Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("internet")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {INTERNET_TYPES.map((net) => (
+                    <FilterButton
+                      key={net}
+                      label={t(net)}
+                      isSelected={filters.internet.includes(net)}
+                      onClick={() => toggleArrayFilter("internet", net)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Heating Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("waterHeater")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {HEATING_TYPES.map((heat) => (
+                    <FilterButton
+                      key={heat}
+                      label={t(heat)}
+                      isSelected={filters.heating.includes(heat)}
+                      onClick={() => toggleArrayFilter("heating", heat)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Cooling Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("coolingSystem")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {COOLING_TYPES.map((cool) => (
+                    <FilterButton
+                      key={cool}
+                      label={t(cool)}
+                      isSelected={filters.cooling.includes(cool)}
+                      onClick={() => toggleArrayFilter("cooling", cool)}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Nearby Infrastructure Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("nearbyInfrastructure")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {NEARBY_INFRASTRUCTURE.map((infra) => (
+                    <FilterButton
+                      key={infra}
+                      label={t(infra)}
+                      isSelected={filters.nearbyInfrastructure.includes(
+                        infra
+                      )}
+                      onClick={() =>
+                        toggleArrayFilter("nearbyInfrastructure", infra)
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Power Backup Filter */}
+              <div>
+                <p className="py-2 font-semibold text-primary text-base">
+                  {t("powerBackup")}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {POWER_BACKUP.map((power) => (
+                    <FilterButton
+                      key={power}
+                      label={t(power)}
+                      isSelected={filters.powerBackup.includes(power)}
+                      onClick={() => toggleArrayFilter("powerBackup", power)}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-5 flex w-full mb-20">
+                <SheetClose
+                  onClick={() => {
+                    setFilters({
+                      dealType: "",
+                      condition: filters.condition,
+                      propertyType: [],
+                      minPrice: 50,
+                      maxPrice: 500,
+                      aminPrice: 50,
+                      amaxPrice: 500,
+                      radius: "",
+                      beds: [],
+                      baths: [],
+                      parking: [],
+                      views: [],
+                      outdoor: [],
+                      propertyStyle: [],
+                      propertyStatus: [],
+                      floors: [],
+                      noiseLevel: [],
+                      laundry: [],
+                      securityFeatures: [],
+                      amenities: [],
+                      internet: [],
+                      heating: [],
+                      cooling: [],
+                      location: location,
+                      nearbyInfrastructure: [],
+                      powerBackup: [],
+                      sortBy: "",
+                    });
+                    router.push(`/properties?dealType=${filters.dealType}`);
+                  }}
+                  className="text-black text-lg py-1 rounded-none bg-neutral-200 hover:bg-neutral-300 w-full"
+                >
+                  {t("clear")}
+                </SheetClose>
+                <SheetClose
+                  onClick={handleSearch}
+                  className="text-white text-lg rounded-none py-1 bg-secondary hover:bg-secondary2 w-full"
+                >
+                  {t("search")}
+                </SheetClose>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+        <Button
+          variant="primary"
+          onClick={handleSearch}
+          className="text-white text-lg px-6 rounded-md w-[49%]  "
+        >
+          {t("search")}
+        </Button>
       </div>
+
     </div>
+    //   </div >
+    // </div >
   );
 };
 

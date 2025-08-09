@@ -30,7 +30,7 @@ export interface Location {
 export interface SearchFilters {
   dealType?: string;
   condition?: string;
-  location?: Location;
+  location?: Location[]; // changed from Location to Location[]
   radius?: string;
   propertyType: Array<(typeof PROPERTY_TYPES)[number]>;
   minPrice: number;
@@ -54,7 +54,7 @@ export interface SearchFilters {
   cooling: Array<(typeof COOLING_TYPES)[number]>;
   nearbyInfrastructure: Array<(typeof NEARBY_INFRASTRUCTURE)[number]>;
   powerBackup: Array<(typeof POWER_BACKUP)[number]>;
-  sortBy?: "recent" | "lowestprice" | "highestprice";
+  sortBy?: string;
 
 }
 

@@ -60,12 +60,19 @@ const Properties = () => {
 
         setProperties(response.data.data || []);
 
-        if (filters.location?.latitude && filters.location?.longitude) {
-          setCenter({
-            lat: Number(filters.location.latitude),
-            lng: Number(filters.location.longitude),
-          });
+        if (Array.isArray(filters.location) && filters.location.length > 0) {
+          const firstValidLocation = filters.location.find(
+            (loc) => loc.latitude && loc.longitude
+          );
+
+          if (firstValidLocation) {
+            setCenter({
+              lat: Number(firstValidLocation.latitude),
+              lng: Number(firstValidLocation.longitude),
+            });
+          }
         }
+
       } catch (err) {
         console.error("Failed to fetch properties:", err);
         setProperties([]);

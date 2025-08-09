@@ -1195,8 +1195,11 @@ const AddProperty = () => {
                   key={name}
                   label={t(name)}
                   error={errors.amenities?.message}
-                  options={options}
-                  selectedOptions={
+                  options={
+                    Array.isArray(options)
+                      ? options.map((opt: any) => typeof opt === "string" ? opt : opt.name)
+                      : [] // ✅ ensures it's always string[]
+                  } selectedOptions={
                     watch("amenities")?.find((item: any) => item.name === name)?.sub_amenities || []
                   }
                   onChange={(selected) => {

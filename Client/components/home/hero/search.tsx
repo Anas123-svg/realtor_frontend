@@ -15,7 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 //@ts-ignore
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
@@ -25,8 +25,9 @@ import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/lib/utils";
 
 interface Filters {
-  propertyType: string;
-  location: string;
+  propertyType: string[];
+  location: string[]; // change to string[] instead of array of objects
+
   dealType: "Sale" | "New" | "Rental";
   areaSize: string;
   minPrice: number;
@@ -47,9 +48,10 @@ const SearchCard: React.FC = () => {
   const searchParams = useSearchParams();
 
 
+
   const [filters, setFilters] = useState<Filters>({
-    propertyType: "House",
-    location: "0",
+    propertyType: [],
+    location: [],
     minPrice: MIN_PRICE_SALE,
     maxPrice: MAX_PRICE_SALE,
     areaSize: "",
@@ -71,8 +73,15 @@ const SearchCard: React.FC = () => {
     const maxPrice = dealType === "Sale" ? MAX_PRICE_SALE : MAX_PRICE_RENTAL;
 
     setFilters({
-      propertyType: searchParams.get("propertyType") || "House",
-      location: searchParams.get("id") || "0",
+      propertyType: searchParams.get("propertyType")
+        ? JSON.parse(searchParams.get("propertyType")!) // ["House", "Apartment"]
+        : [],
+
+      location: searchParams.get("locations")
+        ? JSON.parse(searchParams.get("locations")!).map((id: number) =>
+          locations.find((l) => l.id === id)
+        ).filter(Boolean) // keep only valid ones
+        : [],
       dealType,
       areaSize: searchParams.get("areaSize") || "",
       beds: searchParams.get("beds") || "",
@@ -97,7 +106,7 @@ const SearchCard: React.FC = () => {
     try {
       const selectedLocation = locations[+filters.location];
       const queryParams = new URLSearchParams({
-        propertyType: filters.propertyType,
+        propertyType: JSON.stringify(filters.propertyType), // ["House", "Apartment"]
         dealType: filters.dealType,
         minPrice: filters.minPrice.toString(),
         maxPrice: filters.maxPrice.toString(),
@@ -128,12 +137,26 @@ const SearchCard: React.FC = () => {
       role="search"
     >
       <div className="w-full flex flex-col sm:flex-row gap-10">
+
+
+
+
+
+
         <label className="w-full">
           <Select
-            onValueChange={(value) =>
-              setFilters((prev) => ({ ...prev, propertyType: value }))
-            }
-            value={filters.propertyType}
+            onValueChange={(value) => {
+              setFilters((prev) => {
+                const current = prev.propertyType || [];
+                return {
+                  ...prev,
+                  propertyType: current.includes(value)
+                    ? current.filter((t) => t !== value)
+                    : [...current, value],
+                };
+              });
+            }}
+            value="" // keep empty so placeholder stays
           >
             <SelectTrigger
               className="border-none gap-2 focus:ring-0 p-0 text-base"
@@ -142,22 +165,44 @@ const SearchCard: React.FC = () => {
               {t("propertyType")}
             </SelectTrigger>
             <SelectContent>
-              {PROPERTY_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {t(type)}
-                </SelectItem>
-              ))}
+              {PROPERTY_TYPES.map((type) => {
+                const selected = filters.propertyType?.includes(type);
+                return (
+                  <SelectItem
+                    key={type}
+                    value={type}
+                    className="flex  justify-between items-center"
+                  >
+                    <div className="flex items-center justify-between gap-2 w-full">
+                      <span>{t(type)}</span>
+
+                      {selected && <Check className="w-4 h-4" />}
+
+                    </div>
+
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
-          <p className="font-semibold ">{t(filters.propertyType)}</p>
         </label>
+
+
 
         <label className="w-full">
           <Select
-            onValueChange={(value) =>
-              setFilters((prev) => ({ ...prev, location: value }))
-            }
-            value={filters.location}
+            onValueChange={(value) => {
+              setFilters((prev) => {
+                // Toggle selection for multi-select
+                const current = prev.location || [];
+                if (current.includes(value)) {
+                  return { ...prev, location: current.filter((loc) => loc !== value) };
+                } else {
+                  return { ...prev, location: [...current, value] };
+                }
+              });
+            }}
+            value="" // Keep empty so it doesn't show the selected items in the trigger
           >
             <SelectTrigger
               className="border-none gap-2 focus:ring-0 p-0 text-base"
@@ -166,15 +211,28 @@ const SearchCard: React.FC = () => {
               {t("location")}
             </SelectTrigger>
             <SelectContent>
-              {locations.map((location) => (
-                <SelectItem key={location.id} value={location.id.toString()}>
-                  {location.label}
-                </SelectItem>
-              ))}
+              {locations.map((location) => {
+                const isSelected = filters.location?.includes(location.id.toString());
+                return (
+                  <SelectItem
+                    key={location.id}
+                    value={location.id.toString()}
+                    className="flex justify-between items-center"
+                  >
+                    <span>{location.label}</span>
+                    {isSelected && <span className="ml-2">✔</span>}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
-          <p className="font-semibold ">{selectedLocation.label}</p>
         </label>
+
+
+
+
+
+
       </div>
 
       <div className="w-full flex flex-col sm:flex-row items-center gap-10">
@@ -227,10 +285,10 @@ const SearchCard: React.FC = () => {
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
-          <p className="font-semibold">
+          {/* <p className="font-semibold">
             {formatCurrency(filters.minPrice)} COP -{" "}
             {formatCurrency(filters.maxPrice)} COP
-          </p>
+          </p> */}
         </label>
 
 
