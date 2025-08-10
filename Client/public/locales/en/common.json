@@ -4,6 +4,7 @@
   "navExistingProperties": "Existing Properties",
   "navNewDevelopments": "New Developments",
   "navSellRent": "Sell or Rent Property",
+  "navServices": "Services",
   "navRentals": "Rentals",
   "navContact": "Contact Us",
   "footerQuickLinks": "Quick Links",
@@ -314,5 +315,6 @@
   "administration": "Administration Price",
   "parking": "Parking spots",
   "areaSize": "Area Size",
-  "adminFeeRange": "Admin Fee Range"
+  "adminFeeRange": "Admin Fee Range",
+  "ComprehensiveVacationRentalService":"ComprehensiveVacationRentalService"
 }

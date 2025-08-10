@@ -4,6 +4,7 @@
   "navExistingProperties": "Propiedades existentes",
   "navNewDevelopments": "Nuevos desarrollos",
   "navSellRent": "Venda o alquile su propiedad",
+  "navServices": "Servicios",
   "navRentals": "Alquileres",
   "navContact": "Contáctenos",
   "footerQuickLinks": "Enlaces rápidos",
@@ -314,5 +315,6 @@
   "administration": "Administracion mensual",
   "parking": "parquederos",
   "areaSize": "Área/del",
-  "adminFeeRange": "Administración Mensual"
+  "adminFeeRange": "Administración Mensual",
+  "ComprehensiveVacationRentalService":"Servicio integral de alquiler vacacional"
 }
