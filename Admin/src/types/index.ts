@@ -22,6 +22,8 @@ type Blog = {
   updated_at: string;
 };
 
+
+
 type Property = {
   id: number;
   images: string[];

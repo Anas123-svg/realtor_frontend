@@ -9,6 +9,7 @@ import Loader from "@/components/common/Loader";
 import Delete from "@/components/Delete";
 import { FaEdit } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import SearchCard from "@/components/PropertySearch/search";
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -74,53 +75,11 @@ const Properties = () => {
 
           </div>
 
-          <div className="flex items-center justify-center gap-4 flex-wrap w-full border-y border-stroke dark:border-strokedark py-4">
-            {/* Property Type */}
-            <div className="flex flex-col items-center gap-2">
-              <span className="font-medium text-black whitespace-nowrap">{t("propertyType")}:</span>
-              <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
-                <option>Casa</option>
-                <option>Apartamento</option>
-                <option>Local Comercial</option>
-                <option>Lotes</option>
-                <option>Bodegas</option>
-                <option>Oficinas</option>
-                <option>Apartasuite</option>
-              </select>
-            </div>
-
-            {/* Property Status */}
-            <div className="flex flex-col items-center gap-2">
-              <span className="font-medium text-black whitespace-nowrap">{t("propertyStatus")}:</span>
-              <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
-                <option>Usados</option>
-                <option>Nuevos</option>
-                <option>Sobre Planos</option>
-              </select>
-            </div>
-
-            {/* Property Style */}
-            <div className="flex flex-col items-center gap-2">
-              <span className="font-medium text-black whitespace-nowrap">{t("propertyStyle")}:</span>
-              <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
-                <option>Moderno</option>
-                <option>Clásico</option>
-                <option>Contemporáneo</option>
-                <option>Campestre</option>
-                <option>Colonial</option>
-              </select>
-            </div>
-
-            {/* Nearby Infrastructure */}
-            <div className="flex flex-col items-center gap-2">
-              <span className="font-medium text-black whitespace-nowrap">{t("nearbyInfrastructure")}:</span>
-              <select className="rounded border border-stroke bg-gray px-2 py-1 text-sm dark:border-strokedark dark:bg-meta-4">
-                <option>Airport</option>
-                <option>Universities</option>
-                <option>Natural Reserves</option>
-              </select>
-            </div>
+          <div className="flex items-center justify-start w-full overflow-x-auto scrollbar-hide border-y border-stroke dark:border-strokedark py-4">
+            <SearchCard />
           </div>
+
+
 
 
           <div className="hidden sm:block">

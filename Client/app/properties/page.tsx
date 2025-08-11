@@ -94,6 +94,8 @@ const Properties = () => {
     [fetchProperties]
   );
 
+
+
   return (
     <div className="pt-16">
       <div className="container mt-[2.2%] py-2 flex justify-center mb-2">

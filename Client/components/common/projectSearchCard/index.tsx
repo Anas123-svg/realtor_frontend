@@ -97,7 +97,7 @@ const ProjectSearchCard = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white mt-10 px-4 py-3 border rounded-md flex justify-between items-center w-full shadow-lg whitespace-nowrap"
+      className="bg-white mt-10 px-6 py-8 border rounded-[20px] flex justify-between items-center w-full shadow-lg whitespace-nowrap"
     >
       <div className="flex flex-col xl:flex-row gap-14 items-end w-full">
         <div className="flex flex-col sm:flex-row gap-5 items-end w-full">

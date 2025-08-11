@@ -104,6 +104,8 @@ const FilterButton: React.FC<{
   </button>
 );
 
+
+
 const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -287,6 +289,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
 
 
 
+
   const formatToMillions = (value: number) => `${Math.round(value / 1_000_000)}M`;
   const parseMillions = (value: string): number => {
     const match = value.toUpperCase().replace(/[^0-9M]/g, '');
@@ -313,29 +316,40 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
   //   router.push(`/properties?${query.toString()}`);
   // }, [filters, location, router, onSearchComplete]);
 
-  const handleSearch = useCallback(() => {
-    let updatedFilters = { ...filters };
+  // const handleSearch = useCallback(() => {
+  //   let updatedFilters = { ...filters };
 
-    if (location.length > 0) {
-      // Store full array of selected locations
-      updatedFilters = { ...filters, location };
-    } else {
-      // No locations selected
-      updatedFilters = { ...filters, location: [] };
-    }
+  //   if (location.length > 0) {
+  //     // Store full array of selected locations
+  //     updatedFilters = { ...filters, location };
+  //   } else {
+  //     // No locations selected
+  //     updatedFilters = { ...filters, location: [] };
+  //   }
 
-    const query = buildSearchQuery(updatedFilters);
+  //   const query = buildSearchQuery(updatedFilters);
 
-    // Optional callback for external handling
-    onSearchComplete?.(updatedFilters);
+  //   // Optional callback for external handling
+  //   onSearchComplete?.(updatedFilters);
 
-    // Navigate to properties page with search params
-    router.push(`/properties?${query.toString()}`);
-  }, [filters, location, router, onSearchComplete]);
+
+
+  //   // Navigate to properties page with search params
+  //   router.push(`/properties?${query.toString()}`);
+
+  // }, [filters, location, router, onSearchComplete]);
+
+
+  const handleSearch = () => {
+    console.log("Filters for search:", filters);
+    const queryString = buildSearchQuery(filters).toString();
+    console.log("Query string:", queryString);
+    router.push(`/properties?${queryString}`);
+  };
 
 
   return (
-    <div className="bg-white  gap-3 px-4 py-3 border rounded-md  flex justify-between items-center w-full shadow-lg sticky top-10 z-20">
+    <div className="bg-white  gap-3 px-6 py-8 border rounded-[20px]  flex justify-between items-center w-full shadow-lg sticky top-10 z-20">
       {/* // <div className="bg-white border rounded-md px-4 py-10 shadow-sm w-full sticky top-10 z-20"> */}
 
 
@@ -353,8 +367,11 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
             className="border px-2 py-1 rounded w-full text-left h-9 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-300"
           >
             {filters.location?.length
-              ? filters.location.map((l) => l.label).join(", ")
+              ? filters.location.length > 1
+                ? `${filters.location[0].label}...`
+                : filters.location[0].label
               : t("location")}
+
           </SelectTrigger>
 
           <SelectContent>

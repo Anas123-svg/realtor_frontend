@@ -1,4 +1,5 @@
 // src/utils/searchUtils.ts
+import { locations } from "@/constants";
 import { SearchFilters } from "@/types/searchTypes";
 
 export const parseSearchParams = (
@@ -10,9 +11,11 @@ export const parseSearchParams = (
   return {
     dealType: searchParams.get("dealType") || undefined,
     condition: searchParams.get("condition") || undefined,
-    location: searchParams.get("location")
-      ? JSON.parse(searchParams.get("location")!)
-      : undefined,
+
+    location: searchParams.get("locations")
+      ? JSON.parse(searchParams.get("locations")!)
+      : [],
+
     radius: searchParams.get("radius") || undefined,
     propertyType: parseJsonParam(searchParams.get("propertyType")),
     minPrice: Number(searchParams.get("min")) || undefined,
@@ -38,28 +41,26 @@ export const parseSearchParams = (
   };
 };
 
-export const buildSearchQuery = (
-  filters: Partial<SearchFilters>
-): URLSearchParams => {
-  const query = new URLSearchParams();
+
+
+// utils/searchUtils.ts
+export const buildSearchQuery = (filters: Record<string, any>) => {
+  const params = new URLSearchParams();
 
   Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      if (Array.isArray(value) && value.length > 0) {
-        query.append(key, JSON.stringify(value));
-      } else if (!Array.isArray(value)) {
-        query.append(
-          key,
-          typeof value === "object" ? JSON.stringify(value) : value.toString()
-        );
+    if (value === undefined || value === null) return;
+
+    if (Array.isArray(value)) {
+      if (key === "location" || key === "locations") {
+        // Serialize full location objects as JSON string in "locations" param
+        if (value.length) params.set("locations", JSON.stringify(value));
+      } else {
+        if (value.length) params.set(key, JSON.stringify(value));
       }
+    } else {
+      params.set(key, String(value));
     }
   });
 
-
-
-
-
-
-  return query;
+  return params;
 };

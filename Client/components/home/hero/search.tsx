@@ -99,26 +99,77 @@ const SearchCard: React.FC = () => {
     }));
   }, []);
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+
+  //   try {
+  //     const selectedLocation = locations[+filters.location];
+  //     const queryParams = new URLSearchParams({
+  //       propertyType: JSON.stringify(filters.propertyType), // ["House", "Apartment"]
+  //       dealType: filters.dealType,
+  //       minPrice: filters.minPrice.toString(),
+  //       maxPrice: filters.maxPrice.toString(),
+  //       beds: filters.beds,
+  //       baths: filters.baths,
+  //       longitude: selectedLocation.longitude.toString(),
+  //       latitude: selectedLocation.latitude.toString(),
+  //       region: selectedLocation.region,
+  //       areaSize: filters.areaSize,
+  //       id: selectedLocation.id.toString(),
+  //     });
+
+
+  //     router.push(`/properties/all?${queryParams.toString()}`);
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const selectedLocation = locations[+filters.location];
+      // If no location is selected, stop early
+      if (!filters.location.length) {
+        console.error("No location selected");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Use the first selected location for coordinates
+      const selectedLocation = locations.find(
+        loc => loc.id.toString() === filters.location[0]
+      );
+
+      if (!selectedLocation) {
+        console.error("Selected location not found");
+        setIsSubmitting(false);
+        return;
+      }
+
       const queryParams = new URLSearchParams({
-        propertyType: JSON.stringify(filters.propertyType), // ["House", "Apartment"]
+        propertyType: JSON.stringify(filters.propertyType),
+        locations: JSON.stringify(
+          selectedLocations.map(loc => ({
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+            region: loc.region,
+            id: loc.id
+          }))
+        ),
         dealType: filters.dealType,
         minPrice: filters.minPrice.toString(),
         maxPrice: filters.maxPrice.toString(),
         beds: filters.beds,
         baths: filters.baths,
-        longitude: selectedLocation.longitude.toString(),
-        latitude: selectedLocation.latitude.toString(),
-        region: selectedLocation.region,
         areaSize: filters.areaSize,
-        id: selectedLocation.id.toString(),
       });
-
 
       router.push(`/properties/all?${queryParams.toString()}`);
     } catch (error) {
@@ -128,7 +179,12 @@ const SearchCard: React.FC = () => {
     }
   };
 
-  const selectedLocation = locations[+filters.location];
+
+
+  const selectedLocations = locations.filter(loc =>
+    filters.location.includes(loc.id.toString())
+  );
+
 
   return (
     <form

@@ -22,6 +22,7 @@ import {
   Mountain,
   Clock,
   DollarSign,
+  Car,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -105,7 +106,7 @@ const About = (props: Props) => {
           label: t("condition"),
           value: props.property.condition,
         },
-        { icon: Ruler, label: t("parkingSpace"), value: `${props.property.parkingSpace} m²` },
+        { icon: Car, label: t("parkingSpace"), value: `${props.property.parkingSpace} ` },
 
       ],
     },

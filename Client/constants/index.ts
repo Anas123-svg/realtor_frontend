@@ -65,6 +65,12 @@ export const navLinks = [
 
 
 
+export interface AmenityCategoryDef {
+  id: number;
+  name: string;
+  items: string[];
+}
+
 
 export interface AmenityCategoryDef {
   id: number;
