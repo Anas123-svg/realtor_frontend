@@ -146,7 +146,7 @@ const SearchCard: React.FC = () => {
                 )
             });
 
-            router.push(`/properties?${queryParams.toString()}`);
+            router.push(`search/properties?${queryParams.toString()}`);
         } catch (error) {
             console.error(error);
         } finally {
