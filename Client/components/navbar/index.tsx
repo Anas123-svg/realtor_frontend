@@ -35,8 +35,8 @@ const Navbar = () => {
         (scroll
           ? "shadow bg-white text-primary"
           : pathname !== "/"
-          ? "shadow bg-background text-primary"
-          : "bg-transparent text-white")
+            ? "shadow bg-background text-primary"
+            : "bg-transparent text-white")
       }
     >
       <div className="flex justify-between items-center py-4 px-5 sm:px-8 lg:px-16 whitespace-nowrap">

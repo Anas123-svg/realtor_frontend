@@ -1,4 +1,4 @@
-import { AMENITIES_WITH_I, AMENITIES_WITH_ID } from "@/constants/index";
+import { AMENITIES_WITH_ID } from "@/constants/index";
 
 type GroupedAmenity = {
     id: number;

@@ -37,11 +37,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           label: t("properties"),
           route: "/properties",
         },
-        {
-          icon: <FaHouseChimney className="fill-current" size={20} />,
-          label: t("short-term-rental"),
-          route: "/rental",
-        },
+
         {
           icon: <FaBuilding className="fill-current" size={20} />,
           label: t("projects"),

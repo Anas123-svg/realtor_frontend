@@ -6,20 +6,13 @@ import {
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue,
 } from "@/components/ui/select";
 import { AMENITIE, NEARBY_INFRASTRUCTURE, PROPERTY_STATUS, PROPERTY_STYLES, PROPERTY_TYPES, RADIUS_OPTIONS } from "@/constants";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Check, ChevronDown } from "lucide-react";
+
+import { Check } from "lucide-react";
 //@ts-ignore
-import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
-import { Switch } from "@/components/ui/switch";
 import { locations } from "@/constants";
 import { useTranslation } from "react-i18next";
 // import { formatCurrency } from "@/lib/utils";
@@ -35,12 +28,6 @@ interface Filters {
 
 }
 
-
-
-const MIN_PRICE_RENTAL = 500000;
-const MAX_PRICE_RENTAL = 10000000;
-const MIN_PRICE_SALE = 50000000;
-const MAX_PRICE_SALE = 5000000000;
 
 const SearchCard: React.FC = () => {
     const router = useRouter();
@@ -113,22 +100,13 @@ const SearchCard: React.FC = () => {
 
         try {
             // If no location is selected, stop early
-            if (!filters.location.length) {
-                console.error("No location selected");
-                setIsSubmitting(false);
-                return;
-            }
+
 
             // Use the first selected location for coordinates
             const selectedLocation = locations.find(
                 loc => loc.id.toString() === filters.location[0]
             );
 
-            if (!selectedLocation) {
-                console.error("Selected location not found");
-                setIsSubmitting(false);
-                return;
-            }
 
             const queryParams = new URLSearchParams({
                 propertyType: JSON.stringify(filters.propertyType),
@@ -146,7 +124,7 @@ const SearchCard: React.FC = () => {
                 )
             });
 
-            router.push(`search/properties?${queryParams.toString()}`);
+            router.push(`properties?${queryParams.toString()}`);
         } catch (error) {
             console.error(error);
         } finally {

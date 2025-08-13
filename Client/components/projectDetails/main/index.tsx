@@ -71,9 +71,11 @@ const Main = ({ project }: Props) => {
             <DollarSign className="w-4 h-4" />
             {t("priceRange")}:{" "}
             {project?.priceRange
-              .split("-")
-              .map((price) => formatCurrency(Number(price)))
-              .join(" - ")}
+              ? project.priceRange
+                .split("-")
+                .map((price) => formatCurrency(Number(price)))
+                .join(" - ")
+              : "N/A"}
           </Badge>
 
           <Badge
@@ -81,11 +83,12 @@ const Main = ({ project }: Props) => {
             className="px-4 py-2 flex items-center gap-2 text-sm"
           >
             <DollarSign className="w-4 h-4" />
-            {t("adminFeeRange")}:{" "}
             {project?.adminFeeRange
-              .split("-")
-              .map((price) => formatCurrency(Number(price)))
-              .join(" - ")}
+              ? project.adminFeeRange
+                .split("-")
+                .map((price) => formatCurrency(Number(price)))
+                .join(" - ")
+              : "N/A"}
           </Badge>
 
           <Badge

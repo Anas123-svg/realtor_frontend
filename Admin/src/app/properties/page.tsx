@@ -8,18 +8,66 @@ import axios from "axios";
 import Loader from "@/components/common/Loader";
 import Delete from "@/components/Delete";
 import { FaEdit } from "react-icons/fa";
-import { useTranslation } from "react-i18next";
 import SearchCard from "@/components/PropertySearch/search";
+
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { AMENITIE, BATHROOMS, NEARBY_INFRASTRUCTURE, PROPERTY_STATUS, PROPERTY_STYLES, PROPERTY_TYPES, } from "@/constants";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { Check } from "lucide-react";
+//@ts-ignore
+import "react-range-slider-input/dist/style.css";
+import { locations } from "@/constants";
+import { useTranslation } from "react-i18next";
+
+
+interface Filters {
+  propertyType: string[];
+  bathrooms: string[];
+  propertyStatus: string[];
+  nearbyInfrastructure: string[];
+  location: string[]; // change to string[] instead of array of objects
+  amenities: string[]; // ✅ New
+
+
+}
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
-  const fetchProperties = async () => {
+
+  const [filters, setFilters] = useState<Filters>({
+    propertyType: [],
+    bathrooms: [],
+    propertyStatus: [],
+    nearbyInfrastructure: [],
+    location: [],
+    amenities: []
+  });
+
+
+
+  const fetchProperties = async (currentFilters: Filters) => {
     try {
+      const queryParams = new URLSearchParams({
+        propertyType: JSON.stringify(currentFilters.propertyType),
+        bathrooms: JSON.stringify(currentFilters.bathrooms),
+        propertyStatus: JSON.stringify(currentFilters.propertyStatus),
+        nearbyInfrastructure: JSON.stringify(currentFilters.nearbyInfrastructure),
+        amenities: JSON.stringify(currentFilters.amenities),
+        locations: JSON.stringify(currentFilters.location)
+      });
+
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/properties`,
+        `${process.env.NEXT_PUBLIC_API_URL}/properties?}`
       );
       setProperties(response.data);
     } catch (error) {
@@ -30,15 +78,93 @@ const Properties = () => {
   };
 
   useEffect(() => {
-    fetchProperties();
-  }, []);
+    fetchProperties(filters);
+  }, [filters]);
 
-  const filteredProperties = properties.filter(
-    (property) =>
+
+  const filteredProperties = properties.filter((property) => {
+    const matchesSearch =
       property.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.reference_no?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.neighborhood?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.location?.region.toLowerCase().includes(searchTerm.toLowerCase()),
+      property.location?.region.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesFilters =
+      (filters.propertyType.length === 0 || filters.propertyType.includes(property.propertyType)) &&
+      (filters.bathrooms.length === 0 || filters.bathrooms.includes(String(property.bathrooms))) &&
+      (filters.propertyStatus.length === 0 || filters.propertyStatus.includes(property.propertyStatus)) &&
+      (filters.nearbyInfrastructure.length === 0 || filters.nearbyInfrastructure.some(ni => property.nearbyInfrastructure.includes(ni))) &&
+      (filters.amenities.length === 0 || filters.amenities.some(am => property.amenities.includes(am))) &&
+      (filters.location.length === 0 || filters.location.includes(property.location.id.toString())
+      );
+
+    return matchesSearch && matchesFilters;
+  });
+
+
+
+  const searchParams = useSearchParams();
+
+
+
+
+
+
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+  const router = useRouter();
+
+
+
+
+
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+
+  //   try {
+
+  //     const queryParams = new URLSearchParams({
+  //       propertyType: JSON.stringify(filters.propertyType),
+  //       propertyStyle: JSON.stringify(filters.propertyStyle),
+  //       propertyStatus: JSON.stringify(filters.propertyStatus),
+  //       nearbyInfrastructure: JSON.stringify(filters.nearbyInfrastructure),
+  //       amenities: JSON.stringify(filters.amenities), // ✅ Added
+  //       locations: JSON.stringify(
+  //         selectedLocations.map(loc => ({
+  //           latitude: loc.latitude,
+  //           longitude: loc.longitude,
+  //           region: loc.region,
+  //           id: loc.id
+  //         }))
+  //       )
+  //     });
+
+  //     router.push(`properties?${queryParams.toString()}`);
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  const clearAllFilters = () => {
+    setFilters({
+      propertyType: [],
+      bathrooms: [],
+      propertyStatus: [],
+      nearbyInfrastructure: [],
+      amenities: [],
+      location: []
+    });
+  };
+
+
+
+  const selectedLocations = locations.filter(loc =>
+    filters.location.includes(loc.id.toString())
   );
 
   return (
@@ -76,8 +202,300 @@ const Properties = () => {
           </div>
 
           <div className="flex items-center justify-start w-full overflow-x-auto scrollbar-hide border-y border-stroke dark:border-strokedark py-4">
-            <SearchCard />
+            <form
+              // onSubmit={
+              className="bg-white w-full max-w-[95%] mx-auto whitespace-nowrap rounded-xl p-5 gap-4 flex flex-row flex-nowrap text-center sm:text-left items-center border border-zinc-300"
+              role="search"
+            >
+              <div className="w-full flex flex-col sm:flex-row lg:flex-nowrap flex-wrap gap-4">
+
+                {/* Property Type */}
+                <label className="flex-1 flex flex-col">
+                  <Select
+                    onValueChange={(value) => {
+                      setFilters((prev) => {
+                        const current = prev.propertyType || [];
+                        return {
+                          ...prev,
+                          propertyType: current.includes(value)
+                            ? current.filter((t) => t !== value)
+                            : [...current, value],
+                        };
+                      });
+                    }}
+                    value=""
+                  >
+                    <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+                      {t("propertyType")}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROPERTY_TYPES.map((type) => {
+                        const selected = filters.propertyType?.includes(type);
+                        return (
+                          <SelectItem
+                            key={type}
+                            value={type}
+                            className="flex justify-between items-center"
+                          >
+                            <div className="flex items-center justify-between gap-2 w-full">
+                              <span>{t(type)}</span>
+                              {selected && <Check className="w-4 h-4" />}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  {filters.propertyType.length > 0 && (
+                    <span className="text-sm text-center text-gray-500 mt-1 truncate">
+                      {t(filters.propertyType[0])}
+                      {filters.propertyType.length > 1 && " ..."}
+                    </span>
+                  )}
+                </label>
+
+                {/* Property Style */}
+                <label className="flex-1 flex flex-col">
+                  <Select
+                    onValueChange={(value) => {
+                      // const numValue = Number(value); // only if using number[]
+                      setFilters((prev) => {
+                        const current = prev.bathrooms || [];
+                        return {
+                          ...prev,
+                          bathrooms: current.includes(value)
+                            ? current.filter((t) => t !== value)
+                            : [...current, value],
+                        };
+                      });
+                    }}
+
+                    value=""
+                  >
+                    <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+                      {t("baths")}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BATHROOMS.map((type) => {
+                        const selected = filters.bathrooms?.includes(type);
+                        return (
+                          <SelectItem
+                            key={type}
+                            value={type}
+                            className="flex justify-between items-center"
+                          >
+                            <div className="flex items-center justify-between gap-2 w-full">
+                              <span>{t(type)}</span>
+                              {selected && <Check className="w-4 h-4" />}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  {filters.bathrooms.length > 0 && (
+                    <span className="text-sm text-center text-gray-500 mt-1 truncate">
+                      {t(filters.bathrooms[0])}
+                      {filters.bathrooms.length > 1 && " ..."}
+                    </span>
+                  )}
+                </label>
+
+                {/* Property Status */}
+                <label className="flex-1 flex flex-col">
+                  <Select
+                    onValueChange={(value) => {
+                      setFilters((prev) => {
+                        const current = prev.propertyStatus || [];
+                        return {
+                          ...prev,
+                          propertyStatus: current.includes(value)
+                            ? current.filter((t) => t !== value)
+                            : [...current, value],
+                        };
+                      });
+                    }}
+                    value=""
+                  >
+                    <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+                      {t("propertyStatus")}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROPERTY_STATUS.map((type) => {
+                        const selected = filters.propertyStatus?.includes(type);
+                        return (
+                          <SelectItem
+                            key={type}
+                            value={type}
+                            className="flex justify-between items-center"
+                          >
+                            <div className="flex items-center justify-between gap-2 w-full">
+                              <span>{t(type)}</span>
+                              {selected && <Check className="w-4 h-4" />}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  {filters.propertyStatus.length > 0 && (
+                    <span className="text-sm text-center text-gray-500 mt-1 truncate">
+                      {t(filters.propertyStatus[0])}
+                      {filters.propertyStatus.length > 1 && " ..."}
+                    </span>
+                  )}
+                </label>
+
+                {/* Location */}
+                <label className="flex-1 flex flex-col">
+                  <Select
+                    onValueChange={(value) => {
+                      setFilters((prev) => {
+                        const current = prev.location || [];
+                        return current.includes(value)
+                          ? { ...prev, location: current.filter((loc) => loc !== value) }
+                          : { ...prev, location: [...current, value] };
+                      });
+                    }}
+                    value=""
+                  >
+                    <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+                      {t("location")}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {locations.map((location) => {
+                        const isSelected = filters.location?.includes(location.id.toString());
+                        return (
+                          <SelectItem
+                            key={location.id}
+                            value={location.id.toString()}
+                            className="flex justify-between items-center"
+                          >
+                            <span>{location.label}</span>
+                            {isSelected && <span className="ml-2">✔</span>}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  {filters.location.length > 0 && (
+                    <span className="text-sm text-center text-gray-500 mt-1 truncate">
+                      {locations.find(l => l.id.toString() === filters.location[0])?.label}
+                      {filters.location.length > 1 && " ..."}
+                    </span>
+                  )}
+                </label>
+
+                {/* Nearby Infrastructure */}
+                <label className="flex-1 flex flex-col">
+                  <Select
+                    onValueChange={(value) => {
+                      setFilters((prev) => {
+                        const current = prev.nearbyInfrastructure || [];
+                        return {
+                          ...prev,
+                          nearbyInfrastructure: current.includes(value)
+                            ? current.filter((t) => t !== value)
+                            : [...current, value],
+                        };
+                      });
+                    }}
+                    value=""
+                  >
+                    <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+                      {t("nearbyInfrastructure")}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {NEARBY_INFRASTRUCTURE.map((type) => {
+                        const selected = filters.nearbyInfrastructure?.includes(type);
+                        return (
+                          <SelectItem
+                            key={type}
+                            value={type}
+                            className="flex justify-between items-center"
+                          >
+                            <div className="flex items-center justify-between gap-2 w-full">
+                              <span>{t(type)}</span>
+                              {selected && <Check className="w-4 h-4" />}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  {filters.nearbyInfrastructure.length > 0 && (
+                    <span className="text-sm text-center text-gray-500 mt-1  truncate">
+                      {t(filters.nearbyInfrastructure[0])}
+                      {filters.nearbyInfrastructure.length > 1 && " ..."}
+                    </span>
+                  )}
+                </label>
+
+                {/* Amenities */}
+                <label className="flex-1 flex flex-col">
+                  <Select
+                    onValueChange={(value) => {
+                      setFilters((prev) => {
+                        const current = prev.amenities || [];
+                        return {
+                          ...prev,
+                          amenities: current.includes(value)
+                            ? current.filter((t) => t !== value)
+                            : [...current, value],
+                        };
+                      });
+                    }}
+                    value=""
+                  >
+                    <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+                      {t("amenities")}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(AMENITIE).map(([category, items]) => (
+                        <div key={category}>
+                          <div className="px-3 py-1 font-semibold text-sm text-gray-600">
+                            {t(category)}
+                          </div>
+                          {items.map((item) => {
+                            const selected = filters.amenities?.includes(item);
+                            return (
+                              <SelectItem
+                                key={item}
+                                value={item}
+                                className="flex justify-between items-center"
+                              >
+                                <div className="flex items-center justify-between gap-2 w-full">
+                                  <span>{t(item)}</span>
+                                  {selected && <Check className="w-4 h-4" />}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {filters.amenities.length > 0 && (
+                    <span className="text-sm text-center text-gray-500 mt-1 truncate">
+                      {t(filters.amenities[0])}
+                      {filters.amenities.length > 1 && " ..."}
+                    </span>
+                  )}
+                </label>
+
+                <button
+                  type="button"
+
+                  onClick={clearAllFilters}
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90"
+                >
+                  {t("clearallfiltter")}
+                </button>
+
+              </div>
+            </form>
           </div>
+
 
 
 
@@ -192,7 +610,7 @@ const Properties = () => {
                     <Delete
                       api={`/properties/${property.id}`}
                       message="Property deleted successfully"
-                      fetch={fetchProperties}
+                      fetch={() => fetchProperties(filters)}
                     />
                   </div>
                 </div>
@@ -253,7 +671,7 @@ const Properties = () => {
                       <Delete
                         api={`/properties/${property.id}`}
                         message="Property deleted successfully"
-                        fetch={fetchProperties}
+                        fetch={() => fetchProperties(filters)}
                       />
                     </div>
                   </div>

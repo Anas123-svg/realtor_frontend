@@ -24,7 +24,12 @@ const ProjectDetails = () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`
       );
-      setProject(response.data.project);
+
+
+      const project = response.data.project ?? response.data;
+
+
+      setProject(project);
       setProperties(response.data.properties || []);
     } catch (error) {
       console.error("Failed to fetch project:", error);

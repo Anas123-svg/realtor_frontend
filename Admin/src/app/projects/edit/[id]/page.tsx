@@ -57,7 +57,8 @@ const ProjectSchema = z.object({
       sub_amenities: z.array(z.string())
     })
   ),
-  progress: z.number().min(0, "Progress is required"),
+  progress: z
+    .preprocess(val => val === "" ? undefined : Number(val), z.number().min(0).optional()),
   investmentPotential: z.string().min(1, "Investment potential is required"),
   FAQ: z
     .array(
@@ -67,7 +68,9 @@ const ProjectSchema = z.object({
       }),
     )
     .optional(),
-  properties: z.array(z.number()).min(1, "At least one property is required"),
+  // properties: z.array(z.number()).min(1, "At least one property is required"),
+  properties: z.array(z.number()).default([]),
+
 });
 
 type MapComponentProps = {
@@ -333,12 +336,18 @@ const EditProject = () => {
 
   const { id } = useParams();
   const router = useRouter();
+  const [search, setSearch] = useState("");
+
+
+
   const fetchProject = async () => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`,
       );
-      const project = response.data.project;
+
+      const project = response.data.project ?? response.data;
+
       setValue("images", project.images);
       setValue("title", project.title);
       setValue("description", project.description);
@@ -372,9 +381,11 @@ const EditProject = () => {
       setValue("FAQ", project.FAQ);
       setValue("properties", project.properties);
     } catch (error: any) {
-      toast.error(error.response.data.message || "Failed to fetch project");
+      toast.error(error.response?.data.message || "Failed to fetch project");
     }
   };
+
+
   const fetchProperties = async () => {
     try {
       const response = await axios.get(
@@ -406,21 +417,61 @@ const EditProject = () => {
     [setValue],
   );
 
+
+
+
+  // Filtered properties based on search query
+  const filteredProperties = properties.filter((property) =>
+    (property.title + " - " + t(property.dealType))
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+
+  // const onSubmit = async (data: ProjectFormData) => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await axios.put(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`,
+  //       data,
+  //     );
+  //     toast.success(response.data.message || "Project edited successfully");
+  //     router.push("/projects");
+  //   } catch (error: any) {
+  //     toast.error(error.response.data.message || "Failed to edit project");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const onSubmit = async (data: ProjectFormData) => {
     try {
       setLoading(true);
+
+      // 🆕 Log URL and payload for debugging
+      console.log("PUT request to:", `${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`);
+      console.log("Payload:", data);
+
+      // ✅ Send request
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`,
-        data,
+        data
       );
-      toast.success(response.data.message || "Project edited successfully");
+
+      // 🆕 Safer success message access
+      toast.success(response.data?.message || "Project edited successfully");
+
       router.push("/projects");
     } catch (error: any) {
-      toast.error(error.response.data.message || "Failed to edit project");
+      // 🆕 Safe optional chaining to prevent 'Cannot read properties of undefined'
+      console.error("Edit project error:", error);
+      toast.error(error.response?.data?.message || "Failed to edit project");
     } finally {
       setLoading(false);
     }
   };
+
+
   const addVideoLink = (link: string) => {
     const videos = watch("videos") || [];
     setValue("videos", [...videos, link]);
@@ -951,7 +1002,7 @@ const EditProject = () => {
                     )}
                   />
                 </div>
-                <ToggleButtonGroup
+                {/* <ToggleButtonGroup
                   label={t("properties")}
                   error={errors.properties?.message}
                   options={properties.map(
@@ -974,7 +1025,46 @@ const EditProject = () => {
                       .map((property) => property.id);
                     setValue("properties", selectedIDs);
                   }}
+                /> */}
+
+                <h1 className="text-black">{t("properties")}</h1>
+
+                {/* Search input */}
+                <input
+                  type="text"
+                  placeholder={t("Search property...")}
+                  className="w-full  bg-gray    border rounded px-3 py-2 mb-2"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
+
+                {/* Scrollable container with hidden scrollbar */}
+                <div className="max-h-[300px] overflow-y-auto border rounded p-2 scrollbar-hide">
+                  <ToggleButtonGroup
+                    label=""
+                    error={errors.properties?.message}
+                    options={filteredProperties.map(
+                      (property) => property.title + " - " + t(property.dealType)
+                    )}
+                    selectedOptions={watch("properties").map((id) => {
+                      const prop = properties.find((property) => property.id === id);
+                      return prop ? prop.title + " - " + t(prop.dealType) : "";
+                    })}
+                    onChange={(selectedTitles) => {
+                      const selectedIDs = properties
+                        .filter((property) =>
+                          selectedTitles.includes(
+                            property.title + " - " + t(property.dealType)
+                          )
+                        )
+                        .map((property) => property.id);
+                      setValue("properties", selectedIDs);
+                    }}
+                  />
+                </div>
+
+
+
                 <div className="mb-5.5 w-full">
                   <Controller
                     name="FAQ"

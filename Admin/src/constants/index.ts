@@ -406,6 +406,219 @@ export const AMENITIES = [
 
 
 
+export interface AmenityCategoryDef {
+  id: number;
+  name: string;
+  items: string[];
+}
+
+export const AMENITIES_WITH_I: AmenityCategoryDef[] = [
+  {
+    id: 1,
+    name: "Pools & Water Features",
+    items: [
+      "Adult swimming pool",
+      "Kids' swimming pool",
+      "Lap pool",
+      "Jacuzzi",
+      "Solarium",
+    ],
+  },
+  {
+    id: 2,
+    name: "Social & Entertainment",
+    items: [
+      "BBQ area",
+      "Lounge bar",
+      "Bar/restaurant area",
+      "Event hall",
+      "Beach club",
+      "Mini-theater",
+      "Game room",
+    ],
+  },
+  {
+    id: 3,
+    name: "Health & Wellness",
+    items: ["Gym", "Multi-purpose exercise room", "Spa", "Massage room"],
+  },
+  {
+    id: 4,
+    name: "Sports & Outdoor",
+    items: [
+      "Jogging trail",
+      "Bicycle trail",
+      "Kids' playroom",
+      "Multi-sports court",
+      "Squash court",
+      "Paddle court",
+      "Tennis court",
+      "Football pitch",
+      "Mini golf",
+      "Bowling",
+    ],
+  },
+  {
+    id: 5,
+    name: "Business & Services",
+    items: [
+      "Coworking space",
+      "Staff service area",
+      "Administration office",
+      "Reception area",
+      "Mini-market zone",
+    ],
+  },
+  {
+    id: 6,
+    name: "Security & Sustainability",
+    items: [
+      "Recycling area",
+      "Communal parking",
+      "Elevators",
+      "Gated community",
+      "Security guard",
+      "Alarm system",
+    ],
+  },
+];
+
+
+
+export const AMENITIES_WITH_ID = [
+  {
+    id: 1,
+    name: "Pools & Water Features",
+    items: [
+      "Adult swimming pool",
+      "Kids' swimming pool",
+      "Lap pool",
+      "Jacuzzi",
+      "Solarium"
+    ],
+  },
+  {
+    id: 2,
+    name: "Social & Entertainment",
+    items: [
+      "BBQ area",
+      "Lounge bar",
+      "Bar/restaurant area",
+      "Event hall",
+      "Beach club",
+      "Mini-theater",
+      "Game room"
+    ],
+  },
+  {
+    id: 3,
+    name: "Health & Wellness",
+    items: [
+      "Gym",
+      "Multi-purpose exercise room",
+      "Spa",
+      "Massage room"
+    ],
+  },
+  {
+    id: 4,
+    name: "Sports & Outdoor",
+    items: [
+      "Jogging trail",
+      "Bicycle trail",
+      "Kids' playroom",
+      "Multi-sports court",
+      "Squash court",
+      "Paddle court",
+      "Tennis court",
+      "Football pitch",
+      "Mini golf",
+      "Bowling"
+    ],
+  },
+  {
+    id: 5,
+    name: "Business & Services",
+    items: [
+      "Coworking space",
+      "Staff service area",
+      "Administration office",
+      "Reception area",
+      "Mini-market zone"
+    ],
+  },
+  {
+    id: 6,
+    name: "Security & Sustainability",
+    items: [
+      "Recycling area",
+      "Communal parking",
+      "Elevators",
+      "Gated community",
+      "Security guard",
+      "Alarm system"
+    ],
+  },
+];
+
+
+export const AMENITIESF = {
+  "Pools & Water Features": [
+    "Adult swimming pool",
+    "Kids' swimming pool",
+    "Lap pool",
+    "Jacuzzi",
+    "Solarium"
+  ],
+  "Social & Entertainment": [
+    "BBQ area",
+    "Lounge bar",
+    "Bar/restaurant area",
+    "Event hall",
+    "Beach club",
+    "Mini-theater",
+    "Game room"
+  ],
+  "Health & Wellness": [
+    "Gym",
+    "Multi-purpose exercise room",
+    "Spa",
+    "Massage room"
+  ],
+  "Sports & Outdoor": [
+    "Jogging trail",
+    "Bicycle trail",
+    "Kids' playroom",
+    "Multi-sports court",
+    "Squash court",
+    "Paddle court",
+    "Tennis court",
+    "Football pitch",
+    "Mini golf",
+    "Bowling"
+  ],
+  "Business & Services": [
+    "Coworking space",
+    "Staff service area",
+    "Administration office",
+    "Reception area",
+    "Mini-market zone"
+  ],
+  "Security & Sustainability": [
+    "Recycling area",
+    "Communal parking",
+    "Elevators",
+    "Gated community",
+    "Security guard",
+    "Alarm system"
+  ],
+};
+
+
+
+
+
+
 
 
 
@@ -532,6 +745,13 @@ export const NEIGHBORHOOD = [
   "Beachfront",
   "Mountain View",
   "None",
+];
+
+export const BATHROOMS = [
+  "1",
+  "2",
+  "3",
+  "4+",
 ];
 
 

@@ -30,6 +30,7 @@ type Property = {
   title: string;
   description: string;
   location: {
+    id: number;
     longitude: number;
     latitude: number;
     region: string;
@@ -42,7 +43,7 @@ type Property = {
   dealType: string;
   view: string[];
   outdoor: string[];
-  propertyStyle: string[];
+  propertyStyle: string;
   floors: number;
   noiseLevel: string;
   laundry: string;

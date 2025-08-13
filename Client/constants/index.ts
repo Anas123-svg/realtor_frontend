@@ -36,6 +36,12 @@ export const navLinks = [
         title: "touristRental",
         url: "/properties?dealType=Tourist%20Rental",
       },
+
+      {
+        title: "AirbndRental",
+        url: "/services"
+      },
+
       {
         title: "residentialRental",
         url: "/properties?dealType=Residential%20Rental",
@@ -62,14 +68,6 @@ export const navLinks = [
 
 
 
-
-
-
-export interface AmenityCategoryDef {
-  id: number;
-  name: string;
-  items: string[];
-}
 
 
 export interface AmenityCategoryDef {

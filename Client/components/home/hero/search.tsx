@@ -97,7 +97,10 @@ const SearchCard: React.FC = () => {
       minPrice: value[0],
       maxPrice: value[1],
     }));
+    setPriceChanged(true); // mark that user changed the range
+
   }, []);
+
 
   // const handleSubmit = async (e: React.FormEvent) => {
   //   e.preventDefault();
@@ -136,22 +139,14 @@ const SearchCard: React.FC = () => {
 
     try {
       // If no location is selected, stop early
-      if (!filters.location.length) {
-        console.error("No location selected");
-        setIsSubmitting(false);
-        return;
-      }
+
 
       // Use the first selected location for coordinates
       const selectedLocation = locations.find(
         loc => loc.id.toString() === filters.location[0]
       );
 
-      if (!selectedLocation) {
-        console.error("Selected location not found");
-        setIsSubmitting(false);
-        return;
-      }
+
 
       const queryParams = new URLSearchParams({
         propertyType: JSON.stringify(filters.propertyType),
@@ -181,6 +176,10 @@ const SearchCard: React.FC = () => {
 
 
 
+  const [priceChanged, setPriceChanged] = useState(false);
+
+
+
   const selectedLocations = locations.filter(loc =>
     filters.location.includes(loc.id.toString())
   );
@@ -193,12 +192,7 @@ const SearchCard: React.FC = () => {
       role="search"
     >
       <div className="w-full flex flex-col sm:flex-row gap-10">
-
-
-
-
-
-
+        {/* Property Type */}
         <label className="w-full">
           <Select
             onValueChange={(value) => {
@@ -212,69 +206,54 @@ const SearchCard: React.FC = () => {
                 };
               });
             }}
-            value="" // keep empty so placeholder stays
+            value=""
           >
-            <SelectTrigger
-              className="border-none gap-2 focus:ring-0 p-0 text-base"
-              aria-label="Property Type"
-            >
+            <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
               {t("propertyType")}
             </SelectTrigger>
             <SelectContent>
               {PROPERTY_TYPES.map((type) => {
                 const selected = filters.propertyType?.includes(type);
                 return (
-                  <SelectItem
-                    key={type}
-                    value={type}
-                    className="flex  justify-between items-center"
-                  >
-                    <div className="flex items-center justify-between gap-2 w-full">
-                      <span>{t(type)}</span>
-
-                      {selected && <Check className="w-4 h-4" />}
-
-                    </div>
-
+                  <SelectItem key={type} value={type} className="flex justify-between items-center">
+                    <span>{t(type)}</span>
+                    {selected && <span className="ml-2">✔</span>}
                   </SelectItem>
                 );
               })}
             </SelectContent>
           </Select>
+
+          {filters.propertyType?.length > 0 && (
+            <p className="mt-1 text-xs text-center text-gray-600">
+              {filters.propertyType.length === 1
+                ? t(filters.propertyType[0])
+                : `${t(filters.propertyType[0])} ...`}
+            </p>
+          )}
         </label>
 
-
-
+        {/* Location */}
         <label className="w-full">
           <Select
             onValueChange={(value) => {
               setFilters((prev) => {
-                // Toggle selection for multi-select
                 const current = prev.location || [];
-                if (current.includes(value)) {
-                  return { ...prev, location: current.filter((loc) => loc !== value) };
-                } else {
-                  return { ...prev, location: [...current, value] };
-                }
+                return current.includes(value)
+                  ? { ...prev, location: current.filter((loc) => loc !== value) }
+                  : { ...prev, location: [...current, value] };
               });
             }}
-            value="" // Keep empty so it doesn't show the selected items in the trigger
+            value=""
           >
-            <SelectTrigger
-              className="border-none gap-2 focus:ring-0 p-0 text-base"
-              aria-label="Location"
-            >
+            <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
               {t("location")}
             </SelectTrigger>
             <SelectContent>
               {locations.map((location) => {
                 const isSelected = filters.location?.includes(location.id.toString());
                 return (
-                  <SelectItem
-                    key={location.id}
-                    value={location.id.toString()}
-                    className="flex justify-between items-center"
-                  >
+                  <SelectItem key={location.id} value={location.id.toString()} className="flex justify-between items-center">
                     <span>{location.label}</span>
                     {isSelected && <span className="ml-2">✔</span>}
                   </SelectItem>
@@ -282,22 +261,25 @@ const SearchCard: React.FC = () => {
               })}
             </SelectContent>
           </Select>
+
+          {filters.location?.length > 0 && (
+            <p className="mt-1 text-xs text-center text-gray-600">
+              {filters.location.length === 1
+                ? locations.find((l) => l.id.toString() === filters.location[0])?.label
+                : `${locations.find((l) => l.id.toString() === filters.location[0])?.label} ...`}
+            </p>
+          )}
         </label>
-
-
-
-
-
-
       </div>
 
+      {/* Price Range and Area */}
+      {/* Price Range and Area */}
       <div className="w-full flex flex-col sm:flex-row items-center gap-10">
+
+        {/* Price Range */}
         <label className="w-full">
           <DropdownMenu>
-            <DropdownMenuTrigger
-              className="w-full border-none p-0 text-left outline-none"
-              aria-label="Price Range"
-            >
+            <DropdownMenuTrigger className="w-full border-none p-0 text-left outline-none">
               <div className="flex h-10 w-full items-center justify-between py-2">
                 <p>{t("priceRange")}</p>
                 <ChevronDown className="h-4 w-4 opacity-50" />
@@ -306,16 +288,8 @@ const SearchCard: React.FC = () => {
             <DropdownMenuContent className="p-5 w-[300px]">
               <div id="range" className="mb-4">
                 <RangeSlider
-                  min={
-                    filters.dealType === "Sale"
-                      ? MIN_PRICE_SALE
-                      : MIN_PRICE_RENTAL
-                  }
-                  max={
-                    filters.dealType === "Sale"
-                      ? MAX_PRICE_SALE
-                      : MAX_PRICE_RENTAL
-                  }
+                  min={filters.dealType === "Sale" ? MIN_PRICE_SALE : MIN_PRICE_RENTAL}
+                  max={filters.dealType === "Sale" ? MAX_PRICE_SALE : MAX_PRICE_RENTAL}
                   step={500000}
                   value={[filters.minPrice, filters.maxPrice]}
                   onInput={handlePriceChange}
@@ -341,85 +315,105 @@ const SearchCard: React.FC = () => {
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* <p className="font-semibold">
-            {formatCurrency(filters.minPrice)} COP -{" "}
-            {formatCurrency(filters.maxPrice)} COP
-          </p> */}
+
+          {/* Show price range only after user changes it */}
+          {priceChanged && (
+            <p className="mt-1 text-xs text-center text-gray-600">
+              {`${formatCurrency(filters.minPrice)} COP - ${formatCurrency(filters.maxPrice)} COP`}
+            </p>
+          )}
         </label>
 
-
+        {/* Area Size */}
         <label className="w-full">
           <Select
-            onValueChange={(value) =>
-              setFilters((prev) => ({ ...prev, areaSize: value }))
-            }
-            value={filters.areaSize}
+            onValueChange={(value) => {
+              setFilters((prev) => {
+                // If the selected value is already chosen, deselect it
+                return {
+                  ...prev,
+                  areaSize: prev.areaSize === value ? "" : value,
+                };
+              });
+            }}
+            value="" // keep empty so placeholder always shows
           >
             <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
-              {filters.areaSize
-                ? `${filters.areaSize} m²`
-                : t("areaSize")}
+              {t("areaSize")}
             </SelectTrigger>
-
             <SelectContent>
-              <SelectItem value="10">10 m²</SelectItem>
-              <SelectItem value="20">20 m²</SelectItem>
-              <SelectItem value="50+">50+ m²</SelectItem>
+              {["10", "20", "50+"].map((size) => (
+                <SelectItem key={size} value={size} className="flex  justify-between items-center">
+                  <span>{`${size} m²`}</span>
+                  {filters.areaSize === size && <span className="ml-2">✔</span>}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-        </label>
 
+          {filters.areaSize && (
+            <p className="mt-1 text-xs text-center text-gray-600">{`${filters.areaSize} m²`}</p>
+          )}
+        </label>
 
       </div>
 
 
+
+      {/* Beds, Baths, Deal Type */}
       <div className="w-full flex flex-col sm:flex-row items-center gap-10">
+        {/* Beds */}
+        <label className="w-full text-center">
+          <Select
+            onValueChange={(value) =>
+              setFilters((prev) => ({ ...prev, beds: prev.beds === value ? "" : value }))
+            }
+            value=""
+          >
+            <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
+              {t("beds")}
+            </SelectTrigger>
+            <SelectContent>
+              {["1", "2", "3", "4", "4+"].map((b) => (
+                <SelectItem key={b} value={b} className="flex justify-between items-center">
+                  <span>{b}</span>
+                  {filters.beds === b && <span className="ml-2">✔</span>}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {filters.beds && (
+            <p className="mt-1 text-xs text-center text-gray-600">{filters.beds}</p>
+          )}
+        </label>
 
+        {/* Baths */}
         <label className="w-full">
           <Select
             onValueChange={(value) =>
-              setFilters((prev) => ({ ...prev, beds: value }))
+              setFilters((prev) => ({ ...prev, baths: prev.baths === value ? "" : value }))
             }
-            value={filters.beds}
+            value=""
           >
             <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
-              {filters.beds ? `${filters.beds} ${t("beds")}` : t("beds")}
+              {t("baths")}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">1</SelectItem>
-              <SelectItem value="2">2</SelectItem>
-              <SelectItem value="3">3</SelectItem>
-              <SelectItem value="4">4</SelectItem>
-              <SelectItem value="4+">4+</SelectItem>
+              {["1", "2", "3", "4", "4+"].map((b) => (
+                <SelectItem key={b} value={b} className="flex justify-between items-center">
+                  <span>{b}</span>
+                  {filters.baths === b && <span className="ml-2">✔</span>}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
+          {filters.baths && (
+            <p className="mt-1 text-xs text-center text-gray-600">{filters.baths}</p>
+          )}
         </label>
 
-        <label className="w-full">
-          <Select
-            onValueChange={(value) =>
-              setFilters((prev) => ({ ...prev, baths: value }))
-            }
-            value={filters.baths}
-          >
-            <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
-              {filters.baths ? `${filters.baths} ${t("baths")}` : t("baths")}
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">1</SelectItem>
-              <SelectItem value="2">2</SelectItem>
-              <SelectItem value="3">3</SelectItem>
-              <SelectItem value="4">4</SelectItem>
-              <SelectItem value="4+">4+</SelectItem>
-            </SelectContent>
-          </Select>
-        </label>
-
-
-
-
-        <label className="w-full flex flex-col  items-center justify-center gap-3">
-          {/* <span className="font-bold">{t("propertyType")}</span> */}
+        {/* Deal Type */}
+        <label className="w-full flex flex-col items-center justify-center gap-3">
           <Select
             value={filters.dealType}
             onValueChange={(value: "Sale" | "New" | "Rental") => {
@@ -427,18 +421,13 @@ const SearchCard: React.FC = () => {
                 ...prev,
                 dealType: value,
                 minPrice:
-                  value === "Sale" || value === "New"
-                    ? MIN_PRICE_SALE
-                    : MIN_PRICE_RENTAL,
+                  value === "Sale" || value === "New" ? MIN_PRICE_SALE : MIN_PRICE_RENTAL,
                 maxPrice:
-                  value === "Sale" || value === "New"
-                    ? MAX_PRICE_SALE
-                    : MAX_PRICE_RENTAL,
+                  value === "Sale" || value === "New" ? MAX_PRICE_SALE : MAX_PRICE_RENTAL,
               }));
             }}
-
           >
-            <SelectTrigger className=" rounded-md">
+            <SelectTrigger className="rounded-md">
               <span>
                 {filters.dealType === "Sale"
                   ? t("existingProperties")
@@ -453,13 +442,10 @@ const SearchCard: React.FC = () => {
               <SelectItem value="Rental">{t("rentalProperties")}</SelectItem>
             </SelectContent>
           </Select>
-          {/* <p className="font-semibold ">{t(filters.dealType)}</p> */}
-
         </label>
-
-
       </div>
 
+      {/* Submit Button */}
       <Button
         type="submit"
         variant="primary"
@@ -469,6 +455,7 @@ const SearchCard: React.FC = () => {
         {isSubmitting ? t("searching") : t("searchProperty")}
       </Button>
     </form>
+
   );
 };
 
