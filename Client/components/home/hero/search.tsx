@@ -28,7 +28,7 @@ interface Filters {
   propertyType: string[];
   location: string[]; // change to string[] instead of array of objects
 
-  dealType: "Sale" | "New" | "Rental";
+  dealType: "" | "Sale" | "New" | "Rental";
   areaSize: string;
   minPrice: number;
   maxPrice: number;
@@ -57,7 +57,7 @@ const SearchCard: React.FC = () => {
     areaSize: "",
     beds: "",
     baths: "",
-    dealType: "Sale",
+    dealType: "",
   });
 
 
@@ -67,8 +67,7 @@ const SearchCard: React.FC = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const dealType =
-      (searchParams.get("dealType") as "Sale" | "Rental") || "Sale";
+    const dealType = (searchParams.get("dealType") as "Sale" | "New" | "Rental") || "";
     const minPrice = dealType === "Sale" ? MIN_PRICE_SALE : MIN_PRICE_RENTAL;
     const maxPrice = dealType === "Sale" ? MAX_PRICE_SALE : MAX_PRICE_RENTAL;
 
@@ -140,11 +139,6 @@ const SearchCard: React.FC = () => {
     try {
       // If no location is selected, stop early
 
-
-      // Use the first selected location for coordinates
-      const selectedLocation = locations.find(
-        loc => loc.id.toString() === filters.location[0]
-      );
 
 
 
@@ -277,7 +271,7 @@ const SearchCard: React.FC = () => {
       <div className="w-full flex flex-col sm:flex-row items-center gap-10">
 
         {/* Price Range */}
-        <label className="w-full">
+        {/* <label className="w-full">
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full border-none p-0 text-left outline-none">
               <div className="flex h-10 w-full items-center justify-between py-2">
@@ -311,6 +305,73 @@ const SearchCard: React.FC = () => {
                   value={`${formatCurrency(filters.maxPrice)} COP`}
                   readOnly
                   className="border border-black rounded-none w-1/2 p-2 outline-none placeholder:font-light font-light"
+                />
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {priceChanged && (
+            <p className="mt-1 text-xs text-center text-gray-600">
+              {`${formatCurrency(filters.minPrice)} COP - ${formatCurrency(filters.maxPrice)} COP`}
+            </p>
+          )}
+        </label> */}
+
+        <label className="w-full">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="w-full border-none p-0 text-left outline-none">
+              <div className="flex h-10 w-full items-center justify-between py-2">
+                <p>{t("priceRange")}</p>
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="p-5 w-[300px]">
+              {/* Slider */}
+              <div id="range" className="mb-4">
+                <RangeSlider
+                  min={filters.dealType === "Sale" ? MIN_PRICE_SALE : MIN_PRICE_RENTAL}
+                  max={filters.dealType === "Sale" ? MAX_PRICE_SALE : MAX_PRICE_RENTAL}
+                  step={500000}
+                  value={[filters.minPrice, filters.maxPrice]}
+                  onInput={handlePriceChange}
+                  aria-label="Price range slider"
+                />
+              </div>
+
+              {/* Manual entry */}
+              <div className="flex items-center">
+                <input
+                  type="number"
+                  aria-label="Minimum price"
+                  min={0}
+                  max={1000000000000000000000}
+                  value={filters.minPrice}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setFilters((prev) => ({
+                      ...prev,
+                      minPrice: isNaN(val) ? 0 : val,
+                    }));
+                    setPriceChanged(true);
+                  }}
+                  className="border border-black rounded-none w-1/2 p-2 outline-none font-light"
+                />
+                <span className="mx-2">-</span>
+                <input
+                  type="number"
+                  aria-label="Maximum price"
+                  min={0}
+                  max={1000000000000000000000}
+                  value={filters.maxPrice}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setFilters((prev) => ({
+                      ...prev,
+                      maxPrice: isNaN(val) ? 0 : val,
+                    }));
+                    setPriceChanged(true);
+                  }}
+                  className="border border-black rounded-none w-1/2 p-2 outline-none font-light"
                 />
               </div>
             </DropdownMenuContent>
@@ -413,36 +474,60 @@ const SearchCard: React.FC = () => {
         </label>
 
         {/* Deal Type */}
-        <label className="w-full flex flex-col items-center justify-center gap-3">
+        <label className="w-full">
           <Select
-            value={filters.dealType}
-            onValueChange={(value: "Sale" | "New" | "Rental") => {
+            value={filters.dealType || ""}
+            onValueChange={(value: "Sale" | "New" | "Rental") =>
               setFilters((prev) => ({
                 ...prev,
-                dealType: value,
+                dealType: prev.dealType === value ? "" : value,
                 minPrice:
-                  value === "Sale" || value === "New" ? MIN_PRICE_SALE : MIN_PRICE_RENTAL,
+                  value === "Sale" || value === "New"
+                    ? MIN_PRICE_SALE
+                    : value === "Rental"
+                      ? MIN_PRICE_RENTAL
+                      : prev.minPrice,
                 maxPrice:
-                  value === "Sale" || value === "New" ? MAX_PRICE_SALE : MAX_PRICE_RENTAL,
-              }));
-            }}
+                  value === "Sale" || value === "New"
+                    ? MAX_PRICE_SALE
+                    : value === "Rental"
+                      ? MAX_PRICE_RENTAL
+                      : prev.maxPrice,
+              }))
+            }
           >
-            <SelectTrigger className="rounded-md">
-              <span>
-                {filters.dealType === "Sale"
-                  ? t("existingProperties")
-                  : filters.dealType === "New"
-                    ? t("newDevelopments")
-                    : t("rentalProperties")}
-              </span>
+            <SelectTrigger className="border-none rounded-md gap-2 focus:ring-0 p-0 text-base">
+              {t("dealType")}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Sale">{t("existingProperties")}</SelectItem>
-              <SelectItem value="New">{t("newDevelopments")}</SelectItem>
-              <SelectItem value="Rental">{t("rentalProperties")}</SelectItem>
+              <SelectItem value="Sale" className="flex justify-between items-center">
+                <span>{t("existingProperties")}</span>
+                {filters.dealType === "Sale" && <span className="ml-2">✔</span>}
+              </SelectItem>
+              <SelectItem value="New" className="flex justify-between items-center">
+                <span>{t("newDevelopments")}</span>
+                {filters.dealType === "New" && <span className="ml-2">✔</span>}
+              </SelectItem>
+              <SelectItem value="Rental" className="flex justify-between items-center">
+                <span>{t("rentalProperties")}</span>
+                {filters.dealType === "Rental" && <span className="ml-2">✔</span>}
+              </SelectItem>
             </SelectContent>
           </Select>
+
+          {filters.dealType && (
+            <p className="mt-1 text-xs text-center text-gray-600">
+              {filters.dealType === "Sale"
+                ? t("existingProperties")
+                : filters.dealType === "New"
+                  ? t("newDevelopments")
+                  : t("rentalProperties")}
+            </p>
+          )}
         </label>
+
+
+
       </div>
 
       {/* Submit Button */}

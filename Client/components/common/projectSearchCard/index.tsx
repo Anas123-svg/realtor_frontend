@@ -133,34 +133,6 @@ const ProjectSearchCard = () => {
 
 
 
-          {/* <label className="w-full">
-            <Select
-              onValueChange={(e) =>
-                setFilters((prev) => ({ ...prev, radius: e }))
-              }
-              disabled={
-                !selectedLocation.longitude || !selectedLocation.latitude
-              }
-              value={filters.radius}
-            >
-              <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
-                {t("radius")}
-              </SelectTrigger>
-              <SelectContent>
-                {RADIUS_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.value + " " + t("miles")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500">
-              {filters.radius
-                ? filters.radius + " " + t("miles")
-                : t("selectRadius")}
-            </p>
-          </label> */}
-
           <label className="w-full">
             <Select
               onValueChange={(e) =>

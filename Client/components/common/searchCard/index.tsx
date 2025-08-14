@@ -431,8 +431,8 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
             </p> */}
       </label>
 
-
-      <label className="flex-1">
+      {/* price range */}
+      {/* <label className="flex-1">
         <DropdownMenu>
           <DropdownMenuTrigger
             className="w-full border-none p-0 text-left outline-none"
@@ -448,7 +448,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
             <div id="range" className="mb-4">
               <RangeSlider
 
-                key={filters.dealType} // Forces re-render
+                key={filters.dealType} 
                 min={getPriceRange()[0]}
                 max={getPriceRange()[1]}
                 step={getStep()}
@@ -462,7 +462,6 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Min Price Input */}
               <div className="relative w-1/2">
                 <input
                   type="text"
@@ -481,7 +480,6 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                 />
               </div>
 
-              {/* Max Price Input */}
               <div className="relative w-1/2">
                 <input
                   type="text"
@@ -502,7 +500,74 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+      </label> */}
+
+      <label className="flex-1">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="w-full border-none p-0 text-left outline-none"
+            aria-label="Price Range"
+          >
+            <div className="flex h-10 w-full items-center justify-between py-2">
+              <p>{t("priceRange")}</p>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </div>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="p-5 w-[300px]">
+            <div id="range" className="mb-4">
+              <RangeSlider
+                key={filters.dealType} // Forces re-render
+                min={getPriceRange()[0]}
+                max={getPriceRange()[1]}
+                step={getStep()}
+                value={[filters.minPrice, filters.maxPrice]}
+                onInput={handlePriceChange}
+                aria-label="Price range slider"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Min Price Input */}
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  aria-label="Minimum Price"
+                  inputMode="numeric"
+                  value={`${formatToMillions(filters.minPrice)} COP`}
+                  onChange={(e) => {
+                    const parsed = parseMillions(e.target.value);
+                    if (!isNaN(parsed) && parsed >= 0 && parsed <= 1e21) { // allow huge numbers
+                      handlePriceChange([parsed, filters.maxPrice]);
+                    }
+                  }}
+                  placeholder={t("min")}
+                  className="border border-black rounded-none w-full p-2 pr-10 outline-none font-light"
+                />
+              </div>
+
+              {/* Max Price Input */}
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  aria-label="Maximum Price"
+                  inputMode="numeric"
+                  value={`${formatToMillions(filters.maxPrice)} COP`}
+                  onChange={(e) => {
+                    const parsed = parseMillions(e.target.value);
+                    if (!isNaN(parsed) && parsed >= 0 && parsed <= 1e21) { // allow huge numbers
+                      handlePriceChange([filters.minPrice, parsed]);
+                    }
+                  }}
+                  placeholder={t("max")}
+                  className="border border-black rounded-none w-full p-2 pr-1 outline-none font-light"
+                />
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </label>
+
 
 
 
@@ -595,56 +660,75 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                   {t("administration")}
                 </p>
 
+                {/* Slider */}
                 <div id="administration" className="mb-4">
                   <RangeSlider
                     type="range"
                     min={50_000}
                     max={1_000_000}
                     step={50_000}
-                    value={[filters.aminPrice, filters.amaxPrice]} // ✅ dynamic
+                    value={[
+                      Math.min(Math.max(filters.aminPrice, 50_000), 1_000_000),
+                      Math.min(Math.max(filters.amaxPrice, 50_000), 1_000_000),
+                    ]}
                     onInput={ahandlePriceChange}
                     aria-label="Price range slider"
                   />
                 </div>
 
+
+                {/* Inputs */}
                 <div className="flex items-center gap-2">
-                  {/* Min Price Input */}
+                  {/* Min Price */}
                   <div className="relative w-1/2">
                     <input
-                      type="text"
+                      type="number"
                       aria-label="Minimum Price"
-                      inputMode="text"
-                      value={`${formatShort(filters.aminPrice)} COP`}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={filters.aminPrice || ""}
                       onChange={(e) => {
-                        const parsed = parseShort(e.target.value);
-                        if (!isNaN(parsed) && parsed >= 50_000 && parsed <= filters.amaxPrice) {
+                        const parsed = parseInt(e.target.value, 10);
+                        if (!isNaN(parsed)) {
                           ahandlePriceChange([parsed, filters.amaxPrice]);
+                        } else {
+                          ahandlePriceChange([0, filters.amaxPrice]);
                         }
                       }}
                       placeholder={t("min")}
-                      className="border border-black rounded-none w-full p-2 pr-10 outline-none font-light"
+                      className="border border-black rounded-none w-full p-2 pr-12 outline-none font-light"
                     />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+                      COP
+                    </span>
                   </div>
 
-                  {/* Max Price Input */}
+                  {/* Max Price */}
                   <div className="relative w-1/2">
                     <input
-                      type="text"
+                      type="number"
                       aria-label="Maximum Price"
-                      inputMode="text"
-                      value={`${formatShort(filters.amaxPrice)} COP`}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={filters.amaxPrice || ""}
                       onChange={(e) => {
-                        const parsed = parseShort(e.target.value);
-                        if (!isNaN(parsed) && parsed <= 1_000_000 && parsed >= filters.aminPrice) {
+                        const parsed = parseInt(e.target.value, 10);
+                        if (!isNaN(parsed)) {
                           ahandlePriceChange([filters.aminPrice, parsed]);
+                        } else {
+                          ahandlePriceChange([filters.aminPrice, 0]);
                         }
                       }}
                       placeholder={t("max")}
-                      className="border border-black rounded-none w-full p-2 pr-1 outline-none font-light"
+                      className="border border-black rounded-none w-full p-2 pr-12 outline-none font-light"
                     />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+                      COP
+                    </span>
                   </div>
                 </div>
               </div>
+
 
 
 
