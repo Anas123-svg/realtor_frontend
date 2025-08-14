@@ -300,7 +300,7 @@
   "Diversification": "Diversificación",
   "projectType": "Tipo de Proyecto",
   "projectStatus": "Estado del Proyecto",
-  "areaRange": "Área del Proyecto",
+  "areaRange": "Área",
   "housingType": "Tipo de Vivienda",
   "bedroomRange": "Dormitorios",
   "floorRange": "Número de Pisos",
@@ -349,5 +349,6 @@
   "spanishTerritoriesSantaMarta": "Santa Marta",
   "spanishTerritoriesOwners": "Propietarios",
   "spanishTerritoriesOwnersDesc": "El principal servicio de gestión de alquileres vacacionales del Reino Unido para anfitriones ha llegado a España.",
-  "ComprehensiveVacationRentalService": "Servicio integral de alquiler vacacional"
+  "ComprehensiveVacationRentalService": "Servicio integral de alquiler vacacional",
+  "SelectAll": "Seleccionar todo"
 }
