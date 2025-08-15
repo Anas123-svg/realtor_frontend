@@ -66,7 +66,9 @@ import {
 import { Check, ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/lib/utils";
-import { Checkbox, Popover } from "@headlessui/react";
+import { Checkbox } from "@headlessui/react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+
 const MIN_PRICE_RENTAL = 500000;
 const MAX_PRICE_RENTAL = 10000000;
 const MIN_PRICE_SALE = 50000000;
@@ -258,7 +260,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
     }));
   }, []);
 
-    const handleAreaChange = useCallback((value: [number, number]) => {
+  const handleAreaChange = useCallback((value: [number, number]) => {
     setFilters((prev) => ({
       ...prev,
       minArea: value[0],
@@ -512,168 +514,549 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
         </DropdownMenu>
       </label> */}
 
-<label className="flex-1">
-  <DropdownMenu>
-    <DropdownMenuTrigger
-      className="w-full border-none p-0 text-left outline-none"
-      aria-label="Price Range"
-    >
-      <div className="flex h-10 w-full items-center justify-between py-2">
-        <p>{t("priceRange")}</p>
-        <ChevronDown className="h-4 w-4 opacity-50" />
-      </div>
-    </DropdownMenuTrigger>
+      <label className="flex-1">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="w-full border-none p-0 text-left outline-none"
+            aria-label="Price Range"
+          >
+            <div className="flex h-10 w-full items-center justify-between py-2">
+              <p>{t("priceRange")}</p>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </div>
+          </DropdownMenuTrigger>
 
-    <DropdownMenuContent className="p-5 w-[300px]">
-      {/* Slider */}
-      <div id="range" className="mb-4">
-        <RangeSlider
-          key={filters.dealType} // Forces re-render when deal type changes
-          min={getPriceRange()[0]}
-          max={getPriceRange()[1]}
-          step={getStep()}
-          value={[filters.minPrice, filters.maxPrice]}
-          onInput={handlePriceChange}
-          aria-label="Price range slider"
-        />
-      </div>
+          <DropdownMenuContent className="p-5 w-[300px]">
+            {/* Slider */}
+            <div id="range" className="mb-4">
+              <RangeSlider
+                key={filters.dealType} // Forces re-render when deal type changes
+                min={getPriceRange()[0]}
+                max={getPriceRange()[1]}
+                step={getStep()}
+                value={[filters.minPrice, filters.maxPrice]}
+                onInput={handlePriceChange}
+                aria-label="Price range slider"
+              />
+            </div>
 
-      {/* Read-only Display */}
-      <div className="flex items-center gap-2">
-        {/* Min Price */}
-        <div className="relative w-1/2">
-          <input
-            type="text"
-            aria-label="Minimum Price"
-            value={`${filters.minPrice / 1_000_000}M`}
-            readOnly
-            className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
-          />
-        </div>
+            {/* Read-only Display */}
+            <div className="flex items-center gap-2">
+              {/* Min Price */}
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  aria-label="Minimum Price"
+                  value={`${filters.minPrice / 1_000_000}M`}
+                  readOnly
+                  className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
+                />
+              </div>
 
-        {/* Max Price */}
-        <div className="relative w-1/2">
-          <input
-            type="text"
-            aria-label="Maximum Price"
-            value={`${filters.maxPrice / 1_000_000}M`}
-            readOnly
-            className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
-          />
-        </div>
-      </div>
-    </DropdownMenuContent>
-  </DropdownMenu>
-</label>
-
-{/* Area Range */}
-
-<label className="flex-1">
-  <DropdownMenu>
-    <DropdownMenuTrigger
-      className="w-full border-none p-0 text-left outline-none"
-      aria-label="Area"
-    >
-      <div className="flex h-10 w-full items-center justify-between py-2">
-        <p>{t("Area")}</p>
-        <ChevronDown className="h-4 w-4 opacity-50" />
-      </div>
-    </DropdownMenuTrigger>
-
-    <DropdownMenuContent className="p-5 w-[300px]">
-      {/* Slider */}
-      <div id="range" className="mb-4">
-        <RangeSlider
-          key={filters.dealType} // Forces re-render when deal type changes
-          min={10}
-          max={1000}
-          step={5}
-          value={[filters.minArea, filters.maxArea]}
-          onInput={handleAreaChange}
-          aria-label="Area range slider"
-        />
-      </div>
-
-      {/* Read-only Display */}
-      <div className="flex items-center gap-2">
-        {/* Min Price */}
-        <div className="relative w-1/2">
-          <input
-            type="text"
-            aria-label="Minimum Area"
-            value={`${filters.minArea}m²`}
-            readOnly
-            className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
-          />
-        </div>
-
-        {/* Max Price */}
-        <div className="relative w-1/2">
-          <input
-            type="text"
-            aria-label="Maximum Area"
-            value={`${filters.maxArea}m²`}
-            readOnly
-            className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
-          />
-        </div>
-      </div>
-    </DropdownMenuContent>
-  </DropdownMenu>
-</label>
-
-
-
-
+              {/* Max Price */}
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  aria-label="Maximum Price"
+                  value={`${filters.maxPrice / 1_000_000}M`}
+                  readOnly
+                  className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
+                />
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </label>
 
       <label className="flex-1">
-        <Select
-          onValueChange={(e) =>
-            updateFilter("beds", [e] as SearchFilters["beds"])
-          }
-          value={filters.beds.toString()}
-        >
-          <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
-            {t("beds")}
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">1</SelectItem>
-            <SelectItem value="2">2</SelectItem>
-            <SelectItem value="3">3</SelectItem>
-            <SelectItem value="4">4</SelectItem>
-            <SelectItem value="4+">4+</SelectItem>
-          </SelectContent>
-        </Select>
-        {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
-              {filters.beds.length > 0
-                ? filters.beds.join(", ")
-                : t("selectBeds")}
-            </p> */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="w-full flex items-center justify-between rounded-md p-2 text-left bg-white"
+            >
+              <span>
+                {t("propertyType")}
+              </span>
+              <ChevronDown className="w-4 h-4 text-gray-500" />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent
+            side="bottom"
+            align="start"
+            className="w-full max-w-[300px] sm:max-w-[350px] p-2 bg-white rounded-md shadow-md"
+          >
+            <div className="flex flex-col gap-2 max-h-[250px] overflow-y-auto">
+
+              {/* Select All */}
+              <label
+                className="flex justify-between items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded font-medium"
+              >
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="hidden"
+                    checked={filters.propertyType?.length === PROPERTY_TYPES.length}
+                    onChange={() => {
+                      setFilters((prev) => ({
+                        ...prev,
+                        propertyType:
+                          filters.propertyType?.length === PROPERTY_TYPES.length
+                            ? [] // unselect all
+                            : PROPERTY_TYPES, // select all
+                      }));
+                    }}
+                  />
+                  <span>{t("SelectAll")}</span>
+                </div>
+                {filters.propertyType?.length === PROPERTY_TYPES.length && (
+                  <Check className="w-4 h-4 text-green-600" />
+                )}
+              </label>
+
+              {/* Property types list */}
+              {PROPERTY_TYPES.map((type) => {
+                const isSelected = filters.propertyType?.includes(type);
+                return (
+                  <label
+                    key={type}
+                    className="flex justify-between items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={isSelected}
+                        onChange={() => {
+                          setFilters((prev) => {
+                            const current = prev.propertyType || [];
+                            return isSelected
+                              ? { ...prev, propertyType: current.filter((t) => t !== type) }
+                              : { ...prev, propertyType: [...current, type] };
+                          });
+                        }}
+                      />
+                      <span>{t(type)}</span>
+                    </div>
+                    {isSelected && <Check className="w-4 h-4 text-green-600" />}
+                  </label>
+                );
+              })}
+            </div>
+          </PopoverContent>
+        </Popover>
       </label>
+
+
+      {/* Area Range */}
+
       <label className="flex-1">
-        <Select
-          onValueChange={(e) =>
-            updateFilter("baths", [e] as SearchFilters["baths"])
-          }
-          value={filters.baths.toString()}
-        >
-          <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
-            {t("baths")}
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">1</SelectItem>
-            <SelectItem value="2">2</SelectItem>
-            <SelectItem value="3">3</SelectItem>
-            <SelectItem value="4">4</SelectItem>
-            <SelectItem value="4+">4+</SelectItem>
-          </SelectContent>
-        </Select>
-        {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
-              {filters.baths.length > 0
-                ? filters.baths.join(", ")
-                : t("selectBaths")}
-            </p> */}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="w-full border-none p-0 text-left outline-none"
+            aria-label="Area"
+          >
+            <div className="flex h-10 w-full items-center justify-between py-2">
+              <p>{t("Area")}</p>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </div>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="p-5 w-[300px]">
+            {/* Slider */}
+            <div id="range" className="mb-4">
+              <RangeSlider
+                key={filters.dealType} // Forces re-render when deal type changes
+                min={10}
+                max={1000}
+                step={5}
+                value={[filters.minArea, filters.maxArea]}
+                onInput={handleAreaChange}
+                aria-label="Area range slider"
+              />
+            </div>
+
+            {/* Read-only Display */}
+            <div className="flex items-center gap-2">
+              {/* Min Price */}
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  aria-label="Minimum Area"
+                  value={`${filters.minArea}m²`}
+                  readOnly
+                  className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
+                />
+              </div>
+
+              {/* Max Price */}
+              <div className="relative w-1/2">
+                <input
+                  type="text"
+                  aria-label="Maximum Area"
+                  value={`${filters.maxArea}m²`}
+                  readOnly
+                  className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
+                />
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </label>
+
+
+
+
+
+{/*<label className="flex-1"> 
+//   <Select 
+//     onValueChange={(e) =>
+//       updateFilter("beds", [e] as SearchFilters["beds"])
+//     }
+//     value={filters.beds.toString()}
+//   >
+//     <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+//       {t("beds")}
+//     </SelectTrigger>
+//     <SelectContent>
+//       <SelectItem value="1">1</SelectItem>
+//       <SelectItem value="2">2</SelectItem>
+//       <SelectItem value="3">3</SelectItem>
+//       <SelectItem value="4">4</SelectItem>
+//       <SelectItem value="4+">4+</SelectItem>
+//     </SelectContent>
+//   </Select>
+//   {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+//         {filters.beds.length > 0
+//           ? filters.beds.join(", ")
+//           : t("selectBeds")}
+//       </p> */}
+ {/*</label>
+
+// <label className="flex-1">
+//   <Select
+//     onValueChange={(e) =>
+//       updateFilter("baths", [e] as SearchFilters["baths"])
+//     }
+//     value={filters.baths.toString()}
+//   >
+//     <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+//       {t("baths")}
+//     </SelectTrigger>
+//     <SelectContent>
+//       <SelectItem value="1">1</SelectItem>
+//       <SelectItem value="2">2</SelectItem>
+//       <SelectItem value="3">3</SelectItem>
+//       <SelectItem value="4">4</SelectItem>
+//       <SelectItem value="4+">4+</SelectItem>
+//     </SelectContent>
+//   </Select>
+//   {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+//         {filters.baths.length > 0
+//           ? filters.baths.join(", ")
+//           : t("selectBaths")}
+//       </p> */}
+{/*</label>
+
+// <label className="flex-1">
+//   <Select
+//     onValueChange={(e) =>
+//       updateFilter("parking", [e] as SearchFilters["parking"])
+//     }
+//     value={filters.parking.toString()}
+//   >
+//     <SelectTrigger className="border-none gap-2 focus:ring-0 p-0 text-base">
+//       {t("parking")}
+//     </SelectTrigger>
+//     <SelectContent>
+//       <SelectItem value="1">1</SelectItem>
+//       <SelectItem value="2">2</SelectItem>
+//       <SelectItem value="3">3</SelectItem>
+//       <SelectItem value="4">4</SelectItem>
+//       <SelectItem value="4+">4+</SelectItem>
+//     </SelectContent>
+//   </Select>
+//   {/* <p className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-neutral-500 whitespace-nowrap">
+//         {filters.baths.length > 0
+//           ? filters.baths.join(", ")
+//           : t("selectBaths")}
+//       </p> */}
+ {/*</label>*/}
+
+
+
+
+
+
+
+
+
+
+      {/* Beds Filter */}
+      <label className="flex-1">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center justify-between w-full h-10 px-2 bg-white rounded-md text-left text-base focus:outline-none"
+            >
+              <span className="truncate">
+                {t("beds")}
+
+              </span>
+              <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0" />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent
+            side="bottom"
+            align="start"
+            className="w-full max-w-[200px] p-2 bg-white rounded-md shadow-md"
+          >
+            <div className="flex flex-col gap-2">
+              {(() => {
+                const allValues = ["1", "2", "3", "4", "4+"] as SearchFilters["beds"][number][];
+                const allSelected = filters.beds?.length === allValues.length;
+
+                return (
+                  <label
+                    className="flex justify-between items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded font-semibold"
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={allSelected}
+                        onChange={() => {
+                          setFilters((prev): SearchFilters => ({
+                            ...prev,
+                            beds: allSelected ? [] : allValues,
+                          }));
+                        }}
+                      />
+                      <span>{t("SelectAll")}</span>
+                    </div>
+                    {allSelected && <Check className="w-4 h-4 text-green-600" />}
+                  </label>
+                );
+              })()}
+
+              {(["1", "2", "3", "4", "4+"] as SearchFilters["beds"][number][]).map(
+                (value) => {
+                  const isSelected = filters.beds?.includes(value);
+                  return (
+                    <label
+                      key={value}
+                      className="flex justify-between items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                    >
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={isSelected}
+                          onChange={() => {
+                            setFilters((prev): SearchFilters => {
+                              const current = prev.beds || [];
+                              return {
+                                ...prev,
+                                beds: isSelected
+                                  ? current.filter((v) => v !== value)
+                                  : [...current, value],
+                              };
+                            });
+                          }}
+                        />
+                        <span>{value}</span>
+                      </div>
+                      {isSelected && <Check className="w-4 h-4 text-green-600" />}
+                    </label>
+                  );
+                }
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
+      </label>
+
+
+
+            {/* Baths Filter */}
+
+      <label className="flex-1">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center justify-between w-full h-10 px-2 bg-white rounded-md text-left text-base focus:outline-none"
+            >
+              <span className="truncate">
+                {t("baths")}
+
+              </span>
+
+              <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0" />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent
+            side="bottom"
+            align="start"
+            className="w-full max-w-[200px] p-2 bg-white rounded-md shadow-md"
+          >
+            <div className="flex flex-col gap-2">
+              {(() => {
+                const allValues = ["1", "2", "3", "4", "4+"] as SearchFilters["baths"][number][];
+                const allSelected = filters.baths?.length === allValues.length;
+
+                return (
+                  <label
+                    className="flex justify-between items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded font-semibold"
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={allSelected}
+                        onChange={() => {
+                          setFilters((prev): SearchFilters => ({
+                            ...prev,
+                            baths: allSelected ? [] : allValues,
+                          }));
+                        }}
+                      />
+                      <span>{t("SelectAll")}</span>
+                    </div>
+                    {allSelected && <Check className="w-4 h-4 text-green-600" />}
+                  </label>
+                );
+              })()}
+
+              {(["1", "2", "3", "4", "4+"] as SearchFilters["baths"][number][]).map(
+                (value) => {
+                  const isSelected = filters.baths?.includes(value);
+                  return (
+                    <label
+                      key={value}
+                      className="flex justify-between items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                    >
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={isSelected}
+                          onChange={() => {
+                            setFilters((prev): SearchFilters => {
+                              const current = prev.baths || [];
+                              return {
+                                ...prev,
+                                baths: isSelected
+                                  ? current.filter((v) => v !== value)
+                                  : [...current, value],
+                              };
+                            });
+                          }}
+                        />
+                        <span>{value}</span>
+                      </div>
+                      {isSelected && <Check className="w-4 h-4 text-green-600" />}
+                    </label>
+                  );
+                }
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
+      </label>
+
+      {/* Parking Filter */}
+      <label className="flex-1">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center justify-between w-full h-10 px-2 bg-white rounded-md text-left text-base focus:outline-none"
+            >
+              <span className="truncate">
+                {t("parking")}
+              </span>
+
+              <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0" />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent
+            side="bottom"
+            align="start"
+            className="w-full max-w-[200px] p-2 bg-white rounded-md shadow-md"
+          >
+            <div className="flex flex-col gap-2">
+              {(() => {
+                const allValues = ["1", "2", "3", "4", "4+"] as SearchFilters["parking"][number][];
+                const allSelected = filters.parking?.length === allValues.length;
+
+                return (
+                  <label
+                    className="flex justify-between items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded font-semibold"
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={allSelected}
+                        onChange={() => {
+                          setFilters((prev): SearchFilters => ({
+                            ...prev,
+                            parking: allSelected ? [] : allValues,
+                          }));
+                        }}
+                      />
+                      <span>{t("SelectAll")}</span>
+                    </div>
+                    {allSelected && <Check className="w-4 h-4 text-green-600" />}
+                  </label>
+                );
+              })()}
+
+              {(["1", "2", "3", "4", "4+"] as SearchFilters["parking"][number][]).map(
+                (value) => {
+                  const isSelected = filters.parking?.includes(value);
+                  return (
+                    <label
+                      key={value}
+                      className="flex justify-between items-center gap-2 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded"
+                    >
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={isSelected}
+                          onChange={() => {
+                            setFilters((prev): SearchFilters => {
+                              const current = prev.parking || [];
+                              return {
+                                ...prev,
+                                parking: isSelected
+                                  ? current.filter((v) => v !== value)
+                                  : [...current, value],
+                              };
+                            });
+                          }}
+                        />
+                        <span>{value}</span>
+                      </div>
+                      {isSelected && <Check className="w-4 h-4 text-green-600" />}
+                    </label>
+                  );
+                }
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
+      </label>
+
+
+
       <label className="flex-1">
         <Select
           onValueChange={(val) =>
@@ -688,6 +1071,8 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
             <SelectItem value="recent">{t("recent")}</SelectItem>
             <SelectItem value="priceLowToHigh">{t("priceLowToHigh")}</SelectItem>
             <SelectItem value="priceHighToLow">{t("priceHighToLow")}</SelectItem>
+            <SelectItem value="areaHighToLow">{t("areaHighToLow")}</SelectItem>
+            <SelectItem value="areaLowToHigh">{t("areaLowToHigh")}</SelectItem>
           </SelectContent>
         </Select>
       </label>
@@ -695,12 +1080,12 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
 
 
 
-      <div className="flex  flex-row w-[35%] justify-between">
+      <div className="flex  flex-row w-[20%] justify-between">
         <Sheet>
-          <SheetTrigger className="w-[49%] mr-[-30px] bg-secondary rounded-md border border-neutral-200 text-white px-3 py-2 whitespace-nowrap hover:bg-secondary2 transition duration-300">
+          <SheetTrigger className="w-[45%] mr-[-20px] bg-secondary rounded-md border border-neutral-200 text-white px-3 py-2 whitespace-nowrap hover:bg-secondary2 transition duration-300">
             {t("more")}
           </SheetTrigger>
-          <SheetContent>
+          <SheetContent >
             <SheetTitle className="mb-5 text-center text-secondary font-bold text-3xl">
               {t("advanceFilters")}
             </SheetTitle>
@@ -785,7 +1170,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
 
 
 
-              <div>
+              {/* <div>
                 <p className="py-2 font-semibold text-primary">
                   {t("propertyType")}
                 </p>
@@ -799,7 +1184,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                     />
                   ))}
                 </div>
-              </div>
+              </div> */}
               {/* Bedrooms Filter */}
               <div>
                 <p className="py-2 font-semibold text-primary text-base">
@@ -1153,7 +1538,7 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
         <Button
           variant="primary"
           onClick={handleSearch}
-          className="text-white text-lg px-6 rounded-md w-[49%]  "
+          className="text-white text-lg px-6 rounded-md w-[45%]  "
         >
           {t("search")}
         </Button>

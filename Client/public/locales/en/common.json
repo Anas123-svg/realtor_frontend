@@ -30,6 +30,8 @@
   "priceRange": "Price",
   "beds": "Beds",
   "selectBeds": "Select Beds",
+  "areaHighToLow": "Area: High to Low",
+  "areaLowToHigh": "Area: Low to High",
   "baths": "Baths",
   "selectBaths": "Select Baths",
   "area": "Area",

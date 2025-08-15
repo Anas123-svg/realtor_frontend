@@ -32,6 +32,8 @@
   "selectBeds": "Seleccionar",
   "baths": "Baños",
   "selectBaths": "Seleccionar",
+  "areaHighToLow": "Área: Mayor a Menor",
+  "areaLowToHigh": "Área: Menor a Mayor",
   "area": "Área",
   "more": "Más",
   "advanceFilters": "Filtros avanzados",
