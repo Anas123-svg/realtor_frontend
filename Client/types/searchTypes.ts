@@ -35,6 +35,8 @@ export interface SearchFilters {
   propertyType: Array<(typeof PROPERTY_TYPES)[number]>;
   minPrice: number;
   maxPrice: number;
+  minArea: number;
+  maxArea: number;
   aminPrice: number;
   amaxPrice: number;
   beds: Array<(typeof BEDROOM_OPTIONS)[number]>;

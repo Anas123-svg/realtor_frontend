@@ -141,6 +141,8 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
       initialFilters.maxPrice ??
       (initialFilters.dealType === "Sale" ? AMAX_PRICE_SALE : AMAX_PRICE_RENTAL),
     radius: initialFilters.radius || "",
+    minArea: initialFilters.minArea || 0,
+    maxArea: initialFilters.maxArea || 1000,
     beds: initialFilters.beds || [],
     baths: initialFilters.baths || [],
     parking: initialFilters.parking || [],
@@ -253,6 +255,14 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
       ...prev,
       minPrice: value[0],
       maxPrice: value[1],
+    }));
+  }, []);
+
+    const handleAreaChange = useCallback((value: [number, number]) => {
+    setFilters((prev) => ({
+      ...prev,
+      minArea: value[0],
+      maxArea: value[1],
     }));
   }, []);
 
@@ -502,72 +512,115 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
         </DropdownMenu>
       </label> */}
 
-      <label className="flex-1">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            className="w-full border-none p-0 text-left outline-none"
-            aria-label="Price Range"
-          >
-            <div className="flex h-10 w-full items-center justify-between py-2">
-              <p>{t("priceRange")}</p>
-              <ChevronDown className="h-4 w-4 opacity-50" />
-            </div>
-          </DropdownMenuTrigger>
+<label className="flex-1">
+  <DropdownMenu>
+    <DropdownMenuTrigger
+      className="w-full border-none p-0 text-left outline-none"
+      aria-label="Price Range"
+    >
+      <div className="flex h-10 w-full items-center justify-between py-2">
+        <p>{t("priceRange")}</p>
+        <ChevronDown className="h-4 w-4 opacity-50" />
+      </div>
+    </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="p-5 w-[300px]">
-            <div id="range" className="mb-4">
-              <RangeSlider
-                key={filters.dealType} // Forces re-render
-                min={getPriceRange()[0]}
-                max={getPriceRange()[1]}
-                step={getStep()}
-                value={[filters.minPrice, filters.maxPrice]}
-                onInput={handlePriceChange}
-                aria-label="Price range slider"
-              />
-            </div>
+    <DropdownMenuContent className="p-5 w-[300px]">
+      {/* Slider */}
+      <div id="range" className="mb-4">
+        <RangeSlider
+          key={filters.dealType} // Forces re-render when deal type changes
+          min={getPriceRange()[0]}
+          max={getPriceRange()[1]}
+          step={getStep()}
+          value={[filters.minPrice, filters.maxPrice]}
+          onInput={handlePriceChange}
+          aria-label="Price range slider"
+        />
+      </div>
 
-            <div className="flex items-center gap-2">
-              {/* Min Price Input */}
-              <div className="relative w-1/2">
-                <input
-                  type="text"
-                  aria-label="Minimum Price"
-                  inputMode="numeric"
-                  value={`${formatToMillions(filters.minPrice)} COP`}
-                  onChange={(e) => {
-                    const parsed = parseMillions(e.target.value);
-                    if (!isNaN(parsed) && parsed >= 0 && parsed <= 1e21) { // allow huge numbers
-                      handlePriceChange([parsed, filters.maxPrice]);
-                    }
-                  }}
-                  placeholder={t("min")}
-                  className="border border-black rounded-none w-full p-2 pr-10 outline-none font-light"
-                />
-              </div>
+      {/* Read-only Display */}
+      <div className="flex items-center gap-2">
+        {/* Min Price */}
+        <div className="relative w-1/2">
+          <input
+            type="text"
+            aria-label="Minimum Price"
+            value={`${filters.minPrice / 1_000_000}M`}
+            readOnly
+            className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
+          />
+        </div>
 
-              {/* Max Price Input */}
-              <div className="relative w-1/2">
-                <input
-                  type="text"
-                  aria-label="Maximum Price"
-                  inputMode="numeric"
-                  value={`${formatToMillions(filters.maxPrice)} COP`}
-                  onChange={(e) => {
-                    const parsed = parseMillions(e.target.value);
-                    if (!isNaN(parsed) && parsed >= 0 && parsed <= 1e21) { // allow huge numbers
-                      handlePriceChange([filters.minPrice, parsed]);
-                    }
-                  }}
-                  placeholder={t("max")}
-                  className="border border-black rounded-none w-full p-2 pr-1 outline-none font-light"
-                />
-              </div>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </label>
+        {/* Max Price */}
+        <div className="relative w-1/2">
+          <input
+            type="text"
+            aria-label="Maximum Price"
+            value={`${filters.maxPrice / 1_000_000}M`}
+            readOnly
+            className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
+          />
+        </div>
+      </div>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</label>
 
+{/* Area Range */}
+
+<label className="flex-1">
+  <DropdownMenu>
+    <DropdownMenuTrigger
+      className="w-full border-none p-0 text-left outline-none"
+      aria-label="Area"
+    >
+      <div className="flex h-10 w-full items-center justify-between py-2">
+        <p>{t("Area")}</p>
+        <ChevronDown className="h-4 w-4 opacity-50" />
+      </div>
+    </DropdownMenuTrigger>
+
+    <DropdownMenuContent className="p-5 w-[300px]">
+      {/* Slider */}
+      <div id="range" className="mb-4">
+        <RangeSlider
+          key={filters.dealType} // Forces re-render when deal type changes
+          min={10}
+          max={1000}
+          step={5}
+          value={[filters.minArea, filters.maxArea]}
+          onInput={handleAreaChange}
+          aria-label="Area range slider"
+        />
+      </div>
+
+      {/* Read-only Display */}
+      <div className="flex items-center gap-2">
+        {/* Min Price */}
+        <div className="relative w-1/2">
+          <input
+            type="text"
+            aria-label="Minimum Area"
+            value={`${filters.minArea}m²`}
+            readOnly
+            className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
+          />
+        </div>
+
+        {/* Max Price */}
+        <div className="relative w-1/2">
+          <input
+            type="text"
+            aria-label="Maximum Area"
+            value={`${filters.maxArea}m²`}
+            readOnly
+            className="bg-transparent border-none w-full p-2 text-center outline-none font-light"
+          />
+        </div>
+      </div>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</label>
 
 
 
@@ -1058,6 +1111,8 @@ const SearchCard: React.FC<SearchCardProps> = ({ onSearchComplete }) => {
                       maxPrice: 500,
                       aminPrice: 50,
                       amaxPrice: 500,
+                      minArea: 0,
+                      maxArea: 1000,
                       radius: "",
                       beds: [],
                       baths: [],

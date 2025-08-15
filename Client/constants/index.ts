@@ -24,7 +24,7 @@ export const navLinks = [
       },
       {
         title: "Properties in Projects",
-        url: "/properties?condition=Used&dealType=Sale",
+        url: "/properties?dealType=New",
       },
     ],
   },
