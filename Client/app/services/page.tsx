@@ -199,7 +199,7 @@ function SellRent() {
             </section>
 
             {/* Spain Section */}
-            <section className="w-[90%] md:w-[85%] mx-auto py-12 text-center">
+            <section className="w-[90%] md:w-[85%] mx-auto py-11 text-center">
                 <h1 className="text-xl sm:text-4xl font-bold text-[#070a65] mb-2">
                     {t("vacationRentalSpainTitle")} <span className="text-yellow-600">Spain</span>
                 </h1>
