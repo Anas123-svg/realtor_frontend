@@ -20,6 +20,9 @@ export const parseSearchParams = (
     propertyType: parseJsonParam(searchParams.get("propertyType")),
     minPrice: Number(searchParams.get("min")) || undefined,
     maxPrice: Number(searchParams.get("max")) || undefined,
+    minArea: Number(searchParams.get("min")) || undefined,
+    maxArea: Number(searchParams.get("max")) || undefined,
+
     beds: parseJsonParam(searchParams.get("beds")),
     baths: parseJsonParam(searchParams.get("baths")),
     views: parseJsonParam(searchParams.get("views")),

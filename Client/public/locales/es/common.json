@@ -27,11 +27,13 @@
   "radius": "Radio",
   "selectRadius": "Seleccionar radio",
   "miles": "Millas",
-  "priceRange": "Rangos de precios",
+  "priceRange": "Precio",
   "beds": "Dormitorios",
   "selectBeds": "Seleccionar",
   "baths": "Baños",
   "selectBaths": "Seleccionar",
+  "areaHighToLow": "Área: Mayor a Menor",
+  "areaLowToHigh": "Área: Menor a Mayor",
   "area": "Área",
   "more": "Más",
   "advanceFilters": "Filtros avanzados",
@@ -300,7 +302,7 @@
   "Diversification": "Diversificación",
   "projectType": "Tipo de Proyecto",
   "projectStatus": "Estado del Proyecto",
-  "areaRange": "Área del Proyecto",
+  "areaRange": "Área",
   "housingType": "Tipo de Vivienda",
   "bedroomRange": "Dormitorios",
   "floorRange": "Número de Pisos",
@@ -349,5 +351,6 @@
   "spanishTerritoriesSantaMarta": "Santa Marta",
   "spanishTerritoriesOwners": "Propietarios",
   "spanishTerritoriesOwnersDesc": "El principal servicio de gestión de alquileres vacacionales del Reino Unido para anfitriones ha llegado a España.",
-  "ComprehensiveVacationRentalService": "Servicio integral de alquiler vacacional"
+  "ComprehensiveVacationRentalService": "Servicio integral de alquiler vacacional",
+  "SelectAll": "Seleccionar todo"
 }
